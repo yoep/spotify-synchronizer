@@ -8,9 +8,11 @@ import be.studios.yoep.spotify.synchronizer.views.ViewProperties;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -23,6 +25,7 @@ import java.io.IOException;
 public class ViewLoader {
     private static final String VIEW_DIRECTORY = "/views/";
     private static final String FONT_DIRECTORY = "/fonts/";
+    private static final String IMAGE_DIRECTORY = "/images/";
 
     private final ApplicationContext applicationContext;
     private final ViewManager viewManager;
@@ -76,14 +79,16 @@ public class ViewLoader {
      *
      * @param view Set the view to load and show.
      */
-    public void show(String view) {
+    public void show(String view, ViewProperties properties) {
         Assert.hasText(view, "view cannot be empty");
+        Assert.notNull(properties, "properties cannot be null");
         Scene windowView = loadScene(view);
         Stage window;
 
         try {
             window = viewManager.getPrimaryWindow();
             window.setScene(windowView);
+            setWindowViewProperties(window, properties);
         } catch (WindowNotFoundException | PrimaryWindowNotAvailableException ex) {
             log.error(ex.getMessage(), ex);
         }
@@ -101,12 +106,8 @@ public class ViewLoader {
         Scene windowView = loadScene(view);
         Stage window = new Stage();
 
-        if (properties.isMaximizeDisabled()) {
-            window.setResizable(false);
-        }
-
+        setWindowViewProperties(window, properties);
         window.setScene(windowView);
-        window.setTitle(properties.getTitle());
         viewManager.addWindowView(window, windowView);
 
         if (properties.isDialog()) {
@@ -116,9 +117,24 @@ public class ViewLoader {
         }
     }
 
+    private void setWindowViewProperties(Stage window, ViewProperties properties) {
+        if (properties.isMaximizeDisabled()) {
+            window.setResizable(false);
+        }
+        if (StringUtils.isNoneEmpty(properties.getIcon())) {
+            window.getIcons().add(loadWindowIcon(properties.getIcon()));
+        }
+
+        window.setTitle(properties.getTitle());
+    }
+
     private Scene loadScene(String view) {
         Parent loadedView = load(view);
         return new Scene(loadedView);
+    }
+
+    private Image loadWindowIcon(String iconName) {
+        return new Image(getClass().getResourceAsStream(IMAGE_DIRECTORY + iconName));
     }
 
     private void loadFonts() {

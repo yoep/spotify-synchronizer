@@ -2,6 +2,7 @@ package be.studios.yoep.spotify.synchronizer;
 
 import be.studios.yoep.spotify.synchronizer.loaders.ViewLoader;
 import be.studios.yoep.spotify.synchronizer.managers.ViewManager;
+import be.studios.yoep.spotify.synchronizer.views.ViewProperties;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.springframework.boot.Banner;
@@ -26,7 +27,11 @@ public class SpotifySynchronizer extends Application {
         ViewLoader loader = APPLICATION_CONTEXT.getBean(ViewLoader.class);
 
         viewManager.addPrimaryWindow(primaryStage);
-        loader.show("main.fxml");
+        loader.show("splash.fxml", ViewProperties.builder()
+                .title(ViewManager.PRIMARY_TITLE)
+                .icon("logo.png")
+                .maximizeDisabled(true)
+                .build());
         primaryStage.show();
     }
 }

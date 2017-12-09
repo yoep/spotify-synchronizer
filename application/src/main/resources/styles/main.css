@@ -11,3 +11,9 @@
     -fx-text-fill: gray;
 }
 
+.splash {
+    -fx-background-image: url("/images/splash.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
