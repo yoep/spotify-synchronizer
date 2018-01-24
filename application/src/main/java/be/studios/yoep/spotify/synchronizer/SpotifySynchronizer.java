@@ -22,7 +22,7 @@ public class SpotifySynchronizer extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         ViewManager viewManager = APPLICATION_CONTEXT.getBean(ViewManager.class);
         ViewLoader loader = APPLICATION_CONTEXT.getBean(ViewLoader.class);
 

@@ -1,5 +1,6 @@
 package be.studios.yoep.spotify.synchronizer.ui;
 
+import be.studios.yoep.spotify.synchronizer.ui.lang.Message;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ArrayUtils;
@@ -50,17 +51,10 @@ public class UIText {
     public String get(Message message, Object... args) {
 
         try {
-            return messageSource.getMessage(message.toString().toLowerCase(), args);
+            return messageSource.getMessage(message.getKey(), args);
         } catch (NoSuchMessageException ex) {
             log.error("Message key '" + message + "' not found", ex);
             return null;
         }
-    }
-
-    /**
-     * Possible UI messages.
-     */
-    public enum Message {
-
     }
 }

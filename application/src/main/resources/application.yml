@@ -1,3 +1,14 @@
 spring:
   application:
     name: Spotify Synchronizer
+
+server:
+  port: 9600
+
+spotify:
+  client-id: 0aada2191351445a8e91aa2b0b9747b8
+  endpoints:
+    authorization: https://accounts.spotify.com/authorize
+    tokens: https://accounts.spotify.com/api/token
+    redirect: http://localhost:9600
+
