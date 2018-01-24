@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.web.WebView?>
+<GridPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="be.studios.yoep.spotify.synchronizer.views.LoginView"
+          prefHeight="450.0" prefWidth="300.0">
+    <columnConstraints>
+        <ColumnConstraints/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints/>
+    </rowConstraints>
+    <WebView fx:id="webview" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+</GridPane>

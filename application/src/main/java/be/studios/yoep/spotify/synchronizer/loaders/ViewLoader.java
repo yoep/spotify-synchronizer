@@ -5,6 +5,7 @@ import be.studios.yoep.spotify.synchronizer.managers.ViewManager;
 import be.studios.yoep.spotify.synchronizer.managers.WindowNotFoundException;
 import be.studios.yoep.spotify.synchronizer.ui.UIText;
 import be.studios.yoep.spotify.synchronizer.views.ViewProperties;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -82,16 +83,18 @@ public class ViewLoader {
     public void show(String view, ViewProperties properties) {
         Assert.hasText(view, "view cannot be empty");
         Assert.notNull(properties, "properties cannot be null");
-        Scene windowView = loadScene(view);
-        Stage window;
+        Platform.runLater(() -> {
+            Scene windowView = loadScene(view);
+            Stage window;
 
-        try {
-            window = viewManager.getPrimaryWindow();
-            window.setScene(windowView);
-            setWindowViewProperties(window, properties);
-        } catch (WindowNotFoundException | PrimaryWindowNotAvailableException ex) {
-            log.error(ex.getMessage(), ex);
-        }
+            try {
+                window = viewManager.getPrimaryWindow();
+                window.setScene(windowView);
+                setWindowViewProperties(window, properties);
+            } catch (WindowNotFoundException | PrimaryWindowNotAvailableException ex) {
+                log.error(ex.getMessage(), ex);
+            }
+        });
     }
 
     /**
@@ -103,18 +106,20 @@ public class ViewLoader {
     public void showWindow(String view, ViewProperties properties) {
         Assert.hasText(view, "view cannot be empty");
         Assert.notNull(properties, "properties cannot be null");
-        Scene windowView = loadScene(view);
-        Stage window = new Stage();
+        Platform.runLater(() -> {
+            Scene windowView = loadScene(view);
+            Stage window = new Stage();
 
-        setWindowViewProperties(window, properties);
-        window.setScene(windowView);
-        viewManager.addWindowView(window, windowView);
+            setWindowViewProperties(window, properties);
+            window.setScene(windowView);
+            viewManager.addWindowView(window, windowView);
 
-        if (properties.isDialog()) {
-            window.showAndWait();
-        } else {
-            window.show();
-        }
+            if (properties.isDialog()) {
+                window.showAndWait();
+            } else {
+                window.show();
+            }
+        });
     }
 
     private void setWindowViewProperties(Stage window, ViewProperties properties) {

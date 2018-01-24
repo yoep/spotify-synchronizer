@@ -31,7 +31,7 @@ public class SplashView implements Initializable {
         connectToSpotify();
     }
 
-    protected void connectToSpotify() {
+    private void connectToSpotify() {
         String connectText = text.get(SplashMessage.CONNECTING_TO_SPOTIFY);
 
         log.debug(connectText);
