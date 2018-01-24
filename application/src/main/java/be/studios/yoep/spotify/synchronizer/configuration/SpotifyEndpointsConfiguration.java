@@ -3,12 +3,16 @@ package be.studios.yoep.spotify.synchronizer.configuration;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import java.net.URI;
+
 @Data
 public class SpotifyEndpointsConfiguration {
     @NotEmpty
-    private String authorization;
+    private URI authorization;
     @NotEmpty
-    private String tokens;
+    private URI tokens;
     @NotEmpty
-    private String redirect;
+    private URI redirect;
+    @NotEmpty
+    private URI userTracks;
 }

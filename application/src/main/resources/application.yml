@@ -11,4 +11,5 @@ spotify:
     authorization: https://accounts.spotify.com/authorize
     tokens: https://accounts.spotify.com/api/token
     redirect: http://localhost:9600
+    user-tracks: https://api.spotify.com/v1/me/tracks
 
