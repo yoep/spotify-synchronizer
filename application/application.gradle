@@ -11,6 +11,7 @@ dependencies {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
     compile 'org.springframework.boot:spring-boot-starter-log4j2'
+    compile 'org.springframework.security:spring-security-jwt'
     compile 'org.springframework.security.oauth:spring-security-oauth2'
     compile 'org.springframework.retry:spring-retry'
     compile 'org.apache.commons:commons-collections4:4.1'

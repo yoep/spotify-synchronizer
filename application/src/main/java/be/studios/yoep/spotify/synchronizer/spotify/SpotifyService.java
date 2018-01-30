@@ -10,16 +10,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SpotifyService {
-    private final OAuth2RestTemplate restTemplate;
+    private final OAuth2RestTemplate spotifyRestTemplate;
     private final SpotifyConfiguration configuration;
 
-    public SpotifyService(OAuth2RestTemplate restTemplate, SpotifyConfiguration configuration) {
-        this.restTemplate = restTemplate;
+    public SpotifyService(OAuth2RestTemplate spotifyRestTemplate, SpotifyConfiguration configuration) {
+        this.spotifyRestTemplate = spotifyRestTemplate;
         this.configuration = configuration;
     }
 
     @Async
     public void getTracks() {
-        ResponseEntity<Object> result = restTemplate.exchange(configuration.getEndpoints().getUserTracks(), HttpMethod.GET, HttpEntity.EMPTY, Object.class);
+//        ResponseEntity<Object> result =
+//                spotifyRestTemplate.exchange(configuration.getEndpoints().getUserTracks(), HttpMethod.GET, HttpEntity.EMPTY, Object.class);
     }
 }

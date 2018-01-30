@@ -1,25 +1,20 @@
 package be.studios.yoep.spotify.synchronizer;
 
 import be.studios.yoep.spotify.synchronizer.configuration.SpotifyConfiguration;
-import be.studios.yoep.spotify.synchronizer.spotify.SpotifyAccessTokenProvider;
 import be.studios.yoep.spotify.synchronizer.ui.UIText;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.retry.backoff.FixedBackOffPolicy;
-import org.springframework.retry.interceptor.RetryInterceptorBuilder;
-import org.springframework.retry.interceptor.RetryOperationsInterceptor;
-import org.springframework.retry.policy.SimpleRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
+import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
-import org.springframework.web.context.request.RequestContextListener;
 
 import java.util.Collections;
 
@@ -45,11 +40,6 @@ public class SpotifySynchronizerConfiguration {
     }
 
     @Bean
-    public RequestContextListener requestContextListener() {
-        return new RequestContextListener();
-    }
-
-    @Bean
     public OAuth2ProtectedResourceDetails spotifyAuthorization(SpotifyConfiguration configuration) {
         AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
         details.setId("spotify");
@@ -64,9 +54,13 @@ public class SpotifySynchronizerConfiguration {
     }
 
     @Bean
-    public OAuth2RestTemplate spotifyRestTemplate(OAuth2ProtectedResourceDetails spotifyAuthorization, SpotifyAccessTokenProvider accessTokenProvider) {
-        OAuth2RestTemplate spotifyTemplate = new OAuth2RestTemplate(spotifyAuthorization, new DefaultOAuth2ClientContext());
-        spotifyTemplate.setAccessTokenProvider(accessTokenProvider);
-        return spotifyTemplate;
+    public OAuth2RestTemplate spotifyRestTemplate(OAuth2ProtectedResourceDetails spotifyAuthorization) {
+        return new OAuth2RestTemplate(spotifyAuthorization, new DefaultOAuth2ClientContext());
+    }
+
+    @Bean
+    public OAuth2RestTemplate authorizationTemplate(OAuth2ProtectedResourceDetails spotifyAuthorization,
+                                                    @Qualifier("oauth2ClientContext") OAuth2ClientContext clientContext) {
+        return new OAuth2RestTemplate(spotifyAuthorization, clientContext);
     }
 }

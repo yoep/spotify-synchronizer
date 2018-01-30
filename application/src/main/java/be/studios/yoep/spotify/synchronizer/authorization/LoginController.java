@@ -6,9 +6,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class LoginController {
-    @GetMapping("/login")
+    public static final String ENDPOINT = "/login";
+
+    @GetMapping(ENDPOINT)
     @ResponseBody
     public String login() {
-        return "test";
+        return "test login";
+    }
+
+    @GetMapping("/authorized")
+    @ResponseBody
+    public String authorized() {
+        return "test authorized";
     }
 }
