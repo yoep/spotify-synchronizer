@@ -20,7 +20,7 @@ public class SpotifyService {
 
     @Async
     public void getTracks() {
-//        ResponseEntity<Object> result =
-//                spotifyRestTemplate.exchange(configuration.getEndpoints().getUserTracks(), HttpMethod.GET, HttpEntity.EMPTY, Object.class);
+        ResponseEntity<Object> result =
+                spotifyRestTemplate.exchange(configuration.getEndpoints().getUserTracks(), HttpMethod.GET, HttpEntity.EMPTY, Object.class);
     }
 }
