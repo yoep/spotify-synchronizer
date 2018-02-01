@@ -10,6 +10,7 @@ import java.util.ArrayList;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class SpotifyToken extends AbstractAuthenticationToken {
+    private String authorizationCode;
     private OAuth2AccessToken accessToken;
 
     public SpotifyToken() {

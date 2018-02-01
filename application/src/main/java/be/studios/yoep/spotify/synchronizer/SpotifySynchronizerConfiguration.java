@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.AccessTokenProviderChain;
 import org.springframework.security.oauth2.client.token.DefaultAccessTokenRequest;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsAccessTokenProvider;
@@ -48,7 +47,7 @@ public class SpotifySynchronizerConfiguration {
     }
 
     @Bean
-    public OAuth2ProtectedResourceDetails spotifyAuthorization(SpotifyConfiguration configuration) {
+    public AuthorizationCodeResourceDetails spotifyAuthorization(SpotifyConfiguration configuration) {
         AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
         details.setClientId(configuration.getClientId());
         details.setClientSecret(configuration.getClientSecret());
@@ -61,7 +60,7 @@ public class SpotifySynchronizerConfiguration {
     }
 
     @Bean
-    public OAuth2RestTemplate spotifyRestTemplate(OAuth2ProtectedResourceDetails spotifyAuthorization, AuthorizationService authorizationService) {
+    public OAuth2RestTemplate spotifyRestTemplate(AuthorizationCodeResourceDetails spotifyAuthorization, AuthorizationService authorizationService) {
         OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(spotifyAuthorization, new DefaultOAuth2ClientContext(new DefaultAccessTokenRequest()));
         oAuth2RestTemplate.setAccessTokenProvider(new AccessTokenProviderChain(asList(
                 new SpotifyAccessTokenProvider(authorizationService),
