@@ -1,8 +1,8 @@
 package be.studios.yoep.spotify.synchronizer;
 
 import be.studios.yoep.spotify.synchronizer.authorization.AuthorizationService;
-import be.studios.yoep.spotify.synchronizer.configuration.SpotifyConfiguration;
 import be.studios.yoep.spotify.synchronizer.authorization.SpotifyAccessTokenProvider;
+import be.studios.yoep.spotify.synchronizer.configuration.SpotifyConfiguration;
 import be.studios.yoep.spotify.synchronizer.ui.UIText;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +21,8 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 import org.springframework.security.oauth2.client.token.grant.implicit.ImplicitAccessTokenProvider;
 import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordAccessTokenProvider;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
+
+import java.util.Collections;
 
 import static java.util.Arrays.asList;
 
@@ -50,7 +52,7 @@ public class SpotifySynchronizerConfiguration {
         AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
         details.setClientId(configuration.getClientId());
         details.setClientSecret(configuration.getClientSecret());
-        details.setScope(asList("openid", "user-library-read"));
+        details.setScope(Collections.singletonList("user-library-read"));
         details.setAccessTokenUri(configuration.getEndpoints().getTokens().toString());
         details.setUserAuthorizationUri(configuration.getEndpoints().getAuthorization().toString());
         details.setPreEstablishedRedirectUri(configuration.getEndpoints().getRedirect().toString());

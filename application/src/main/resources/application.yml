@@ -1,9 +1,8 @@
 spring:
   application:
     name: Spotify Synchronizer
-
-server:
-  port: 9600
+  main:
+    web-environment: false
 
 spotify:
   client-id: 0aada2191351445a8e91aa2b0b9747b8

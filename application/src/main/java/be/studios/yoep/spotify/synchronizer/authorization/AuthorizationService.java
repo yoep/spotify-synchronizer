@@ -3,17 +3,20 @@ package be.studios.yoep.spotify.synchronizer.authorization;
 import be.studios.yoep.spotify.synchronizer.loaders.ViewLoader;
 import be.studios.yoep.spotify.synchronizer.views.LoginView;
 import be.studios.yoep.spotify.synchronizer.views.ViewProperties;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.oauth2.client.resource.UserRedirectRequiredException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 import static java.util.Optional.ofNullable;
 
+@EqualsAndHashCode
+@ToString
 @Getter
 @Service
 public class AuthorizationService {
@@ -31,17 +34,18 @@ public class AuthorizationService {
     public void startAuthorization(UserRedirectRequiredException userRedirectRequired) {
         this.authorizing = true;
         loginView.setUrl(getRedirectUrl(userRedirectRequired));
+        loginView.setCallback(this::authorize);
         openLoginDialog();
-    }
-
-    public void authorize(HttpServletResponse response) {
-        token = new SpotifyToken();
-        this.authorizing = false;
     }
 
     @Retryable(value = AccessTokenNotAvailable.class, interceptor = "spotifyRetry")
     public SpotifyToken getAccessTokenWhenAvailable() throws AccessTokenNotAvailable {
         return ofNullable(token).orElseThrow(AccessTokenNotAvailable::new);
+    }
+
+    private void authorize(String url) {
+        token = new SpotifyToken();
+        this.authorizing = false;
     }
 
     private String getRedirectUrl(UserRedirectRequiredException e) {

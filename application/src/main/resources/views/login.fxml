@@ -5,7 +5,7 @@
 <GridPane xmlns="http://javafx.com/javafx"
           xmlns:fx="http://javafx.com/fxml"
           fx:controller="be.studios.yoep.spotify.synchronizer.views.LoginView"
-          prefHeight="450.0" prefWidth="300.0">
+          prefHeight="550.0" prefWidth="400.0">
     <columnConstraints>
         <ColumnConstraints/>
     </columnConstraints>
