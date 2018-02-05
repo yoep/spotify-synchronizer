@@ -22,7 +22,8 @@ public class LoginView implements Initializable {
     private final SpotifyConfiguration configuration;
 
     private String url;
-    private Consumer<String> callback;
+    private Consumer<String> successCallback;
+    private Consumer<String> cancelledCallback;
 
     public LoginView(SpotifyConfiguration configuration) {
         this.configuration = configuration;
@@ -34,7 +35,7 @@ public class LoginView implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         Assert.hasText(url, "url has not been configured");
-        Assert.notNull(callback, "callback has not been configured");
+        Assert.notNull(successCallback, "successCallback has not been configured");
 
         WebEngine engine = webview.getEngine();
         engine.load(url);
@@ -42,11 +43,11 @@ public class LoginView implements Initializable {
     }
 
     private void verifyIfRedirectIsCallback(String url) {
-        Assert.notNull(callback, "callback has not been configured");
+        Assert.notNull(successCallback, "successCallback has not been configured");
 
         if (url.contains(configuration.getEndpoints().getRedirect().toString())) {
             closeWindow();
-            callback.accept(url);
+            successCallback.accept(url);
         }
     }
 

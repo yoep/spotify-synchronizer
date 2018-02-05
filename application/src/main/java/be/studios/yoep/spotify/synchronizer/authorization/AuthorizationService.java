@@ -9,7 +9,6 @@ import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.oauth2.client.resource.UserRedirectRequiredException;
-import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -17,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Optional.ofNullable;
-import static org.springframework.security.oauth2.common.OAuth2AccessToken.ACCESS_TOKEN;
 
 @Log4j2
 @EqualsAndHashCode
@@ -29,24 +27,51 @@ public class AuthorizationService {
     private final LoginView loginView;
 
     private SpotifyToken token;
-    private boolean authorizing;
 
+    //region Constructors
+
+    /**
+     * Initialize a new instance of {@link AuthorizationService}.
+     *
+     * @param viewLoader Set the view loader for loading the login view.
+     * @param loginView  Set the login view component.
+     */
     public AuthorizationService(ViewLoader viewLoader, LoginView loginView) {
         this.viewLoader = viewLoader;
         this.loginView = loginView;
     }
 
+    //endregion
+
+    //region Methods
+
+    /**
+     * Start the authorization process based on the given user redirect.
+     *
+     * @param userRedirectRequired Set the user redirect for the authorization process.
+     */
     public void startAuthorization(UserRedirectRequiredException userRedirectRequired) {
-        this.authorizing = true;
+        log.debug("User has not been authorized yet, starting authorization process");
         loginView.setUrl(getRedirectUrl(userRedirectRequired));
-        loginView.setCallback(this::authorize);
+        loginView.setSuccessCallback(this::authorize);
         openLoginDialog();
     }
 
+    /**
+     * Gets the access token when it is available.
+     * This method will retry based in the {@code spotifyRetry} configuration.
+     *
+     * @return Returns the spotify token when available.
+     * @throws AccessTokenNotAvailable Is thrown when the retry policy is exhausted.
+     */
     @Retryable(value = AccessTokenNotAvailable.class, interceptor = "spotifyRetry")
     public SpotifyToken getAccessTokenWhenAvailable() throws AccessTokenNotAvailable {
         return ofNullable(token).orElseThrow(AccessTokenNotAvailable::new);
     }
+
+    //endregion
+
+    //region Functions
 
     private void authorize(String url) {
         Map<String, String> params = getParameters(url);
@@ -55,7 +80,6 @@ public class AuthorizationService {
             SpotifyToken token = new SpotifyToken();
             token.setAuthorizationCode(params.get("code"));
             this.token = token;
-            this.authorizing = false;
         } else {
             log.error(params.getOrDefault("error", "Unable to obtain access code"));
         }
@@ -74,6 +98,7 @@ public class AuthorizationService {
             builder.queryParam("state", e.getStateKey());
         }
 
+        builder.queryParam("show_dialog", "true");
         return builder.build().encode().toUriString();
     }
 
@@ -94,4 +119,6 @@ public class AuthorizationService {
                 .maximizeDisabled(true)
                 .build());
     }
+
+    //endregion
 }
