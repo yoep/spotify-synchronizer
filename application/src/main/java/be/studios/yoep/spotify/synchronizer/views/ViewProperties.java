@@ -14,4 +14,5 @@ public class ViewProperties {
     private String icon;
     private boolean dialog;
     private boolean maximizeDisabled;
+    private boolean centerOnScreen;
 }

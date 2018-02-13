@@ -7,10 +7,13 @@ import be.studios.yoep.spotify.synchronizer.ui.UIText;
 import be.studios.yoep.spotify.synchronizer.views.ViewProperties;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -91,6 +94,7 @@ public class ViewLoader {
                 window = viewManager.getPrimaryWindow();
                 window.setScene(windowView);
                 setWindowViewProperties(window, properties);
+                window.show();
             } catch (WindowNotFoundException | PrimaryWindowNotAvailableException ex) {
                 log.error(ex.getMessage(), ex);
             }
@@ -115,11 +119,27 @@ public class ViewLoader {
             viewManager.addWindowView(window, windowView);
 
             if (properties.isDialog()) {
+                window.initModality(Modality.APPLICATION_MODAL);
                 window.showAndWait();
             } else {
                 window.show();
+                if(properties.isCenterOnScreen()) {
+                    centerOnScreen(window);
+                }
             }
         });
+    }
+
+    /**
+     * Center the given window on the screen.
+     *
+     * @param window Set the window to center.
+     */
+    private void centerOnScreen(Stage window) {
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+
+        window.setX((screenBounds.getWidth() - screenBounds.getWidth()) / 2);
+        window.setY((screenBounds.getHeight() - screenBounds.getHeight()) / 2);
     }
 
     private void setWindowViewProperties(Stage window, ViewProperties properties) {

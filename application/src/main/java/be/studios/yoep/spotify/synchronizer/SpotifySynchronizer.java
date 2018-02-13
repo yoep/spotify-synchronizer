@@ -33,7 +33,7 @@ public class SpotifySynchronizer extends Application {
                 .title(ViewManager.PRIMARY_TITLE)
                 .icon("logo.png")
                 .maximizeDisabled(true)
+                .centerOnScreen(true)
                 .build());
-        primaryStage.show();
     }
 }
