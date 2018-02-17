@@ -1,4 +1,4 @@
-package be.studios.yoep.spotify.synchronizer.spotify.contract.v1;
+package be.studios.yoep.spotify.synchronizer.spotify.api.v1;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Album {
-    private AlbumType albumType;
-    private List<Artist> artists;
+public class Artist {
+    private List<ExternalUrl> externalUrls;
 }

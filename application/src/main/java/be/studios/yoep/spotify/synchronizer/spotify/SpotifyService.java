@@ -1,8 +1,8 @@
 package be.studios.yoep.spotify.synchronizer.spotify;
 
 import be.studios.yoep.spotify.synchronizer.configuration.SpotifyConfiguration;
-import be.studios.yoep.spotify.synchronizer.spotify.contract.v1.Track;
-import be.studios.yoep.spotify.synchronizer.spotify.contract.v1.Tracks;
+import be.studios.yoep.spotify.synchronizer.spotify.api.v1.Track;
+import be.studios.yoep.spotify.synchronizer.spotify.api.v1.Tracks;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;

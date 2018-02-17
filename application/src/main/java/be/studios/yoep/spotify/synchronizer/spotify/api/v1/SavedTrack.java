@@ -1,9 +1,8 @@
-package be.studios.yoep.spotify.synchronizer.spotify.contract.v1;
+package be.studios.yoep.spotify.synchronizer.spotify.api.v1;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +13,6 @@ public class SavedTrack {
     /**
      * The date and time the track was saved.
      */
-    @JsonProperty("added_at")
     private LocalDateTime addedAt;
     /**
      * Information about the track.
