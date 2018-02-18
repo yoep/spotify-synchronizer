@@ -1,7 +1,7 @@
 package be.studios.yoep.spotify.synchronizer.spotify;
 
 import be.studios.yoep.spotify.synchronizer.configuration.SpotifyConfiguration;
-import be.studios.yoep.spotify.synchronizer.spotify.api.v1.Track;
+import be.studios.yoep.spotify.synchronizer.spotify.api.v1.SavedTrack;
 import be.studios.yoep.spotify.synchronizer.spotify.api.v1.Tracks;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
@@ -25,17 +25,17 @@ public class SpotifyService {
     }
 
     @Async
-    public CompletableFuture<List<Track>> getTracks() {
-        List<Tracks> tracksList = new ArrayList<>();
+    public CompletableFuture<List<SavedTrack>> getTracks() {
+        List<SavedTrack> tracksList = new ArrayList<>();
         String endpoint = configuration.getEndpoints().getUserTracks().toString();
         Tracks tracks;
 
         do {
             tracks = spotifyRestTemplate.exchange(endpoint, HttpMethod.GET, HttpEntity.EMPTY, Tracks.class).getBody();
             endpoint = tracks.getNext();
-            tracksList.add(tracks);
+            tracksList.addAll(tracks.getItems());
         } while (StringUtils.isNotEmpty(endpoint));
 
-        return CompletableFuture.completedFuture(null);
+        return CompletableFuture.completedFuture(tracksList);
     }
 }

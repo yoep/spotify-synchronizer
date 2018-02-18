@@ -3,6 +3,7 @@ package be.studios.yoep.spotify.synchronizer.views;
 import be.studios.yoep.spotify.synchronizer.spotify.SpotifyService;
 import be.studios.yoep.spotify.synchronizer.ui.UIText;
 import be.studios.yoep.spotify.synchronizer.ui.lang.SplashMessage;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -33,9 +34,16 @@ public class SplashView implements Initializable {
 
     private void connectToSpotify() {
         String connectText = text.get(SplashMessage.CONNECTING_TO_SPOTIFY);
+        String connectedText = text.get(SplashMessage.CONNECTED_TO_SPOTIFY);
 
         log.debug(connectText);
         progressLabel.setText(connectText);
-        spotifyService.getTracks();
+        spotifyService.getTracks().whenComplete((tracks, ex) -> {
+            log.debug(connectedText);
+            log.debug("Found " + tracks.size() + " saved tracks");
+            Platform.runLater(() -> {
+                progressLabel.setText(connectedText);
+            });
+        });
     }
 }
