@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExternalUrl {
-    private String key;
-    private String value;
+public class Image {
+    private Integer height;
+    private String url;
+    private Integer width;
 }

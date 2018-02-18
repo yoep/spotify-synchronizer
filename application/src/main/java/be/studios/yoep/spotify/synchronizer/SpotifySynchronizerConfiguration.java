@@ -3,6 +3,9 @@ package be.studios.yoep.spotify.synchronizer;
 import be.studios.yoep.spotify.synchronizer.authorization.AuthorizationService;
 import be.studios.yoep.spotify.synchronizer.authorization.SpotifyAccessTokenProvider;
 import be.studios.yoep.spotify.synchronizer.configuration.SpotifyConfiguration;
+import be.studios.yoep.spotify.synchronizer.spotify.AlbumTypeDeserializer;
+import be.studios.yoep.spotify.synchronizer.spotify.SpotifyHttpMessageConverter;
+import be.studios.yoep.spotify.synchronizer.spotify.api.v1.AlbumType;
 import be.studios.yoep.spotify.synchronizer.ui.UIText;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -12,9 +15,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -36,7 +37,6 @@ import org.springframework.security.oauth2.client.token.grant.password.ResourceO
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,8 +60,6 @@ public class SpotifySynchronizerConfiguration {
     @Bean
     public Module javaTimeModule() {
         return new JavaTimeModule()
-                .addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")))
-                .addDeserializer(LocalDateTime.class, new LocalDateTimeDeserializer(ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")))
                 .addSerializer(LocalDate.class, new LocalDateSerializer(ofPattern("yyyy-MM-dd")))
                 .addDeserializer(LocalDate.class, new LocalDateDeserializer(ofPattern("yyyy-MM-dd")));
     }
@@ -75,11 +73,17 @@ public class SpotifySynchronizerConfiguration {
     public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder(List<Module> modules) {
         return new Jackson2ObjectMapperBuilder()
                 .modules(modules)
+                .deserializerByType(AlbumType.class, new AlbumTypeDeserializer())
                 .serializationInclusion(JsonInclude.Include.NON_EMPTY)
                 .propertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
-                .featuresToEnable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES)
+//                .featuresToEnable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES)
                 .featuresToEnable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE)
                 .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
+
+    @Bean
+    public MappingJackson2HttpMessageConverter jackson2HttpMessageConverter(Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
+        return new SpotifyHttpMessageConverter(jackson2ObjectMapperBuilder.build());
     }
 
     @Bean
@@ -105,7 +109,7 @@ public class SpotifySynchronizerConfiguration {
     @Bean
     public OAuth2RestTemplate spotifyRestTemplate(AuthorizationCodeResourceDetails spotifyAuthorization,
                                                   AuthorizationService authorizationService,
-                                                  Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder) {
+                                                  MappingJackson2HttpMessageConverter jackson2HttpMessageConverter) {
         OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(spotifyAuthorization, new DefaultOAuth2ClientContext(new DefaultAccessTokenRequest()));
         oAuth2RestTemplate.setAccessTokenProvider(new AccessTokenProviderChain(asList(
                 new SpotifyAccessTokenProvider(authorizationService),
@@ -114,7 +118,7 @@ public class SpotifySynchronizerConfiguration {
                 new ResourceOwnerPasswordAccessTokenProvider(),
                 new ClientCredentialsAccessTokenProvider())));
         List<HttpMessageConverter<?>> messageConverters = oAuth2RestTemplate.getMessageConverters();
-        messageConverters.add(new MappingJackson2HttpMessageConverter(jackson2ObjectMapperBuilder.build()));
+        messageConverters.add(6, jackson2HttpMessageConverter);
         return oAuth2RestTemplate;
     }
 }
