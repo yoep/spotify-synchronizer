@@ -10,6 +10,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -122,26 +123,25 @@ public class ViewLoader {
         Platform.runLater(() -> {
             Scene windowView = loadScene(view);
             window.setScene(windowView);
-            setWindowViewProperties(window, properties);
+            setWindowViewProperties(window, windowView, properties);
 
             if (properties.isDialog()) {
                 window.showAndWait();
             } else {
                 window.show();
             }
-
-            if (properties.isCenterOnScreen()) {
-                centerOnScreen(window);
-            }
         });
     }
 
-    private void setWindowViewProperties(Stage window, ViewProperties properties) {
+    private void setWindowViewProperties(Stage window, Scene view, ViewProperties properties) {
         if (!properties.isMaximizable()) {
             window.setResizable(false);
         }
         if (StringUtils.isNoneEmpty(properties.getIcon())) {
             window.getIcons().add(loadWindowIcon(properties.getIcon()));
+        }
+        if (properties.isCenterOnScreen()) {
+            centerOnScreen(window, view);
         }
 
         window.setTitle(properties.getTitle());
@@ -151,12 +151,14 @@ public class ViewLoader {
      * Center the given window on the screen.
      *
      * @param window Set the window to center.
+     * @param view   Set the view which will be shown.
      */
-    private void centerOnScreen(Stage window) {
+    private void centerOnScreen(Stage window, Scene view) {
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        Region region = (Region) view.getRoot();
 
-        window.setX((screenBounds.getWidth() - screenBounds.getWidth()) / 2);
-        window.setY((screenBounds.getHeight() - screenBounds.getHeight()) / 2);
+        window.setX((screenBounds.getWidth() - region.getPrefWidth()) / 2);
+        window.setY((screenBounds.getHeight() - region.getPrefHeight()) / 2);
     }
 
     private Scene loadScene(String view) {
@@ -172,3 +174,4 @@ public class ViewLoader {
         Font.loadFont(getClass().getResource(FONT_DIRECTORY + "fontawesome-webfont.ttf").toExternalForm(), 10);
     }
 }
+
