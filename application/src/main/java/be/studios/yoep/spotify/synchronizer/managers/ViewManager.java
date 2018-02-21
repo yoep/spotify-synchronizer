@@ -1,26 +1,25 @@
 package be.studios.yoep.spotify.synchronizer.managers;
 
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import lombok.Getter;
-import lombok.ToString;
+import javafx.stage.WindowEvent;
+import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Log4j2
-@Getter
+@Value
 @ToString
 @Component
 public class ViewManager {
-    public static final String PRIMARY_TITLE = "Spotify Synchronizer";
-
-    private final Map<Stage, Scene> windows = new HashMap<>();
-
-    private boolean primarySet;
+    private final List<Window> windows = new ArrayList<>();
 
     /**
      * Get the total amount of windows which are currently being shown.
@@ -35,15 +34,14 @@ public class ViewManager {
      * Get the primary window of the application.
      *
      * @return Returns the primary window.
-     * @throws WindowNotFoundException            Is thrown when the primary window couldn't be found back.
      * @throws PrimaryWindowNotAvailableException Is thrown when the primary window is not available yet.
      */
-    public Stage getPrimaryWindow() throws WindowNotFoundException, PrimaryWindowNotAvailableException {
-        if (primarySet) {
-            return getWindow(PRIMARY_TITLE);
-        } else {
-            throw new PrimaryWindowNotAvailableException();
-        }
+    public Stage getPrimaryWindow() throws PrimaryWindowNotAvailableException {
+        return windows.stream()
+                .filter(Window::isPrimaryWindow)
+                .map(Window::getStage)
+                .findFirst()
+                .orElseThrow(PrimaryWindowNotAvailableException::new);
     }
 
     /**
@@ -54,9 +52,9 @@ public class ViewManager {
      * @throws WindowNotFoundException Is thrown when the window with the given name couldn't be found.
      */
     public Stage getWindow(String name) throws WindowNotFoundException {
-        for (Stage window : windows.keySet()) {
-            if (window.getTitle().equals(name)) {
-                return window;
+        for (Window window : windows) {
+            if (window.getStage().getTitle().equals(name)) {
+                return window.getStage();
             }
         }
 
@@ -70,30 +68,47 @@ public class ViewManager {
      * @param view   Set the corresponding loaded view of the window.
      */
     public void addWindowView(Stage window, Scene view) {
-        Assert.notNull(window, "window cannot be null");
-
-        window.setOnCloseRequest(event -> this.windows.remove(event.getSource()));
-        windows.put(window, view);
-        log.debug("Currently showing " + getTotalWindows() + " window(s)");
+        addWindowView(window, view, false);
     }
 
     /**
-     * Add the primary window of the application.
+     * Add a new opened window to the manager.
      *
-     * @param window Set the primary window.
-     * @throws PrimaryWindowAlreadyPresentException Is thrown when the primary window is already present.
+     * @param window          Set the new window.
+     * @param view            Set the corresponding loaded view of the window.
+     * @param isPrimaryWindow Set if this window is the primary window of the application.
      */
-    public void addPrimaryWindow(Stage window) throws PrimaryWindowAlreadyPresentException {
+    public void addWindowView(Stage window, Scene view, boolean isPrimaryWindow) {
         Assert.notNull(window, "window cannot be null");
 
-        if (!primarySet) {
-            window.setTitle(PRIMARY_TITLE);
-            addWindowView(window, null);
-            primarySet = true;
-            log.debug("Primary window is available");
-        } else {
+        if (isPrimaryWindow && isPrimaryWindowAvailable()) {
             throw new PrimaryWindowAlreadyPresentException();
         }
+
+        window.setOnCloseRequest(onWindowClosingEventHandler());
+        windows.add(Window.builder()
+                .stage(window)
+                .scene(view)
+                .primaryWindow(isPrimaryWindow)
+                .build());
+        log.debug("Currently showing " + getTotalWindows() + " window(s)");
+    }
+
+    private boolean isPrimaryWindowAvailable() {
+        return windows.stream().anyMatch(Window::isPrimaryWindow);
+    }
+
+    private EventHandler<WindowEvent> onWindowClosingEventHandler() {
+        return event -> this.windows.removeIf(e -> e.getStage().equals(event.getSource()));
+    }
+
+    @Value
+    @Builder
+    @AllArgsConstructor
+    private class Window {
+        private Stage stage;
+        private Scene scene;
+        private boolean primaryWindow;
     }
 }
 
