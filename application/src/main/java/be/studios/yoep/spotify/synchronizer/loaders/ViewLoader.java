@@ -2,7 +2,6 @@ package be.studios.yoep.spotify.synchronizer.loaders;
 
 import be.studios.yoep.spotify.synchronizer.managers.PrimaryWindowNotAvailableException;
 import be.studios.yoep.spotify.synchronizer.managers.ViewManager;
-import be.studios.yoep.spotify.synchronizer.managers.WindowNotFoundException;
 import be.studios.yoep.spotify.synchronizer.ui.UIText;
 import be.studios.yoep.spotify.synchronizer.views.ViewProperties;
 import javafx.application.Platform;
@@ -95,7 +94,7 @@ public class ViewLoader {
                 window.setScene(windowView);
                 setWindowViewProperties(window, properties);
                 window.show();
-            } catch (WindowNotFoundException | PrimaryWindowNotAvailableException ex) {
+            } catch (PrimaryWindowNotAvailableException ex) {
                 log.error(ex.getMessage(), ex);
             }
         });
@@ -123,7 +122,7 @@ public class ViewLoader {
                 window.showAndWait();
             } else {
                 window.show();
-                if(properties.isCenterOnScreen()) {
+                if (properties.isCenterOnScreen()) {
                     centerOnScreen(window);
                 }
             }
@@ -143,7 +142,7 @@ public class ViewLoader {
     }
 
     private void setWindowViewProperties(Stage window, ViewProperties properties) {
-        if (properties.isMaximizeDisabled()) {
+        if (!properties.isMaximizable()) {
             window.setResizable(false);
         }
         if (StringUtils.isNoneEmpty(properties.getIcon())) {

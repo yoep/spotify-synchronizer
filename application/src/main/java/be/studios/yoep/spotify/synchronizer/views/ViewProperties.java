@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 public class ViewProperties {
     private String title;
     private String icon;
+    private boolean primaryWindow;
     private boolean dialog;
-    private boolean maximizeDisabled;
+    private boolean maximizable;
     private boolean centerOnScreen;
 }

@@ -29,8 +29,8 @@ public class SpotifySynchronizer extends Application {
         loader.show("splash.fxml", ViewProperties.builder()
                 .title("Spotify Synchronizer")
                 .icon("logo.png")
-                .maximizeDisabled(true)
                 .centerOnScreen(true)
+                .primaryWindow(true)
                 .build());
     }
 }
