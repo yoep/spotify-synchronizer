@@ -26,7 +26,7 @@ public class SpotifySynchronizer extends Application {
     public void start(Stage primaryStage) {
         ViewLoader loader = APPLICATION_CONTEXT.getBean(ViewLoader.class);
 
-        loader.show("splash.fxml", ViewProperties.builder()
+        loader.showPrimary(primaryStage, "splash.fxml", ViewProperties.builder()
                 .title("Spotify Synchronizer")
                 .icon("logo.png")
                 .centerOnScreen(true)
