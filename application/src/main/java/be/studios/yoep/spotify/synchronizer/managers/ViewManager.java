@@ -86,11 +86,7 @@ public class ViewManager {
         }
 
         window.setOnCloseRequest(onWindowClosingEventHandler());
-        windows.add(Window.builder()
-                .stage(window)
-                .scene(view)
-                .primaryWindow(isPrimaryWindow)
-                .build());
+        windows.add(new Window(window, view, isPrimaryWindow));
         log.debug("Currently showing " + getTotalWindows() + " window(s)");
     }
 
@@ -103,7 +99,6 @@ public class ViewManager {
     }
 
     @Value
-    @Builder
     @AllArgsConstructor
     private class Window {
         private Stage stage;
