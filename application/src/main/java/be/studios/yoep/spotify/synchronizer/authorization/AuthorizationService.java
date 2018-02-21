@@ -116,8 +116,8 @@ public class AuthorizationService {
 
     private void openLoginDialog() {
         viewLoader.showWindow("login.fxml", ViewProperties.builder()
-                .maximizeDisabled(true)
                 .icon("logo.png")
+                .maximizable(false)
                 .dialog(true)
                 .build());
     }

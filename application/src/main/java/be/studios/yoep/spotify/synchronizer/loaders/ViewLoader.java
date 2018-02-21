@@ -11,7 +11,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
-import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lombok.extern.log4j.Log4j2;
@@ -85,19 +84,26 @@ public class ViewLoader {
     public void show(String view, ViewProperties properties) {
         Assert.hasText(view, "view cannot be empty");
         Assert.notNull(properties, "properties cannot be null");
-        Platform.runLater(() -> {
-            Scene windowView = loadScene(view);
-            Stage window;
 
-            try {
-                window = viewManager.getPrimaryWindow();
-                window.setScene(windowView);
-                setWindowViewProperties(window, properties);
-                window.show();
-            } catch (PrimaryWindowNotAvailableException ex) {
-                log.error(ex.getMessage(), ex);
-            }
-        });
+        try {
+            showScene(viewManager.getPrimaryWindow(), view, properties);
+        } catch (PrimaryWindowNotAvailableException ex) {
+            log.error(ex.getMessage(), ex);
+        }
+    }
+
+    /**
+     * Show the primary scene on the given primary window.
+     *
+     * @param window     Set the window.
+     * @param view       Set the view scene to load.
+     * @param properties Set the view properties.
+     */
+    public void showPrimary(Stage window, String view, ViewProperties properties) {
+        Assert.notNull(window, "window cannot be empty");
+        Assert.hasText(view, "view cannot be empty");
+        Assert.notNull(properties, "properties cannot be null");
+        showScene(window, view, properties);
     }
 
     /**
@@ -109,24 +115,36 @@ public class ViewLoader {
     public void showWindow(String view, ViewProperties properties) {
         Assert.hasText(view, "view cannot be empty");
         Assert.notNull(properties, "properties cannot be null");
+        showScene(new Stage(), view, properties);
+    }
+
+    private void showScene(Stage window, String view, ViewProperties properties) {
         Platform.runLater(() -> {
             Scene windowView = loadScene(view);
-            Stage window = new Stage();
-
-            setWindowViewProperties(window, properties);
             window.setScene(windowView);
-            viewManager.addWindowView(window, windowView);
+            setWindowViewProperties(window, properties);
 
             if (properties.isDialog()) {
-                window.initModality(Modality.APPLICATION_MODAL);
                 window.showAndWait();
             } else {
                 window.show();
-                if (properties.isCenterOnScreen()) {
-                    centerOnScreen(window);
-                }
+            }
+
+            if (properties.isCenterOnScreen()) {
+                centerOnScreen(window);
             }
         });
+    }
+
+    private void setWindowViewProperties(Stage window, ViewProperties properties) {
+        if (!properties.isMaximizable()) {
+            window.setResizable(false);
+        }
+        if (StringUtils.isNoneEmpty(properties.getIcon())) {
+            window.getIcons().add(loadWindowIcon(properties.getIcon()));
+        }
+
+        window.setTitle(properties.getTitle());
     }
 
     /**
@@ -139,17 +157,6 @@ public class ViewLoader {
 
         window.setX((screenBounds.getWidth() - screenBounds.getWidth()) / 2);
         window.setY((screenBounds.getHeight() - screenBounds.getHeight()) / 2);
-    }
-
-    private void setWindowViewProperties(Stage window, ViewProperties properties) {
-        if (!properties.isMaximizable()) {
-            window.setResizable(false);
-        }
-        if (StringUtils.isNoneEmpty(properties.getIcon())) {
-            window.getIcons().add(loadWindowIcon(properties.getIcon()));
-        }
-
-        window.setTitle(properties.getTitle());
     }
 
     private Scene loadScene(String view) {
