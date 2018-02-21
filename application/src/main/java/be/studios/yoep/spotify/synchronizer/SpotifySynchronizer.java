@@ -30,7 +30,6 @@ public class SpotifySynchronizer extends Application {
                 .title("Spotify Synchronizer")
                 .icon("logo.png")
                 .centerOnScreen(true)
-                .primaryWindow(true)
                 .build());
     }
 }

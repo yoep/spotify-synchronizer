@@ -119,10 +119,20 @@ public class ViewLoader {
         showScene(new Stage(), view, properties);
     }
 
+    /**
+     * Show the given scene filename in the given window with the given properties.
+     *
+     * @param window     Set the window to show the view in.
+     * @param view       Set the view to load and render.
+     * @param properties Set the view properties.
+     */
     private void showScene(Stage window, String view, ViewProperties properties) {
         Platform.runLater(() -> {
             Scene windowView = loadScene(view);
+
             window.setScene(windowView);
+            viewManager.addWindowView(window, windowView);
+
             setWindowViewProperties(window, windowView, properties);
 
             if (properties.isDialog()) {
@@ -174,4 +184,3 @@ public class ViewLoader {
         Font.loadFont(getClass().getResource(FONT_DIRECTORY + "fontawesome-webfont.ttf").toExternalForm(), 10);
     }
 }
-

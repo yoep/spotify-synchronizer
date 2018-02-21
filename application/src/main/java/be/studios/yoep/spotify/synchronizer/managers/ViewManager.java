@@ -4,15 +4,16 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.ToString;
+import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Log4j2
 @Value
@@ -68,26 +69,24 @@ public class ViewManager {
      * @param view   Set the corresponding loaded view of the window.
      */
     public void addWindowView(Stage window, Scene view) {
-        addWindowView(window, view, false);
-    }
-
-    /**
-     * Add a new opened window to the manager.
-     *
-     * @param window          Set the new window.
-     * @param view            Set the corresponding loaded view of the window.
-     * @param isPrimaryWindow Set if this window is the primary window of the application.
-     */
-    public void addWindowView(Stage window, Scene view, boolean isPrimaryWindow) {
         Assert.notNull(window, "window cannot be null");
+        Assert.notNull(view, "view cannot be null");
 
-        if (isPrimaryWindow && isPrimaryWindowAvailable()) {
-            throw new PrimaryWindowAlreadyPresentException();
+        try {
+            Field primaryField = Stage.class.getDeclaredField("primary");
+            primaryField.setAccessible(true);
+            Boolean isPrimaryStage = (Boolean) primaryField.get(window);
+
+            if (isPrimaryStage && isPrimaryWindowAvailable()) {
+                throw new PrimaryWindowAlreadyPresentException();
+            }
+
+            window.setOnCloseRequest(onWindowClosingEventHandler());
+            windows.add(new Window(window, view, isPrimaryStage));
+            log.debug("Currently showing " + getTotalWindows() + " window(s)");
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            log.error(e.getMessage(), e);
         }
-
-        window.setOnCloseRequest(onWindowClosingEventHandler());
-        windows.add(new Window(window, view, isPrimaryWindow));
-        log.debug("Currently showing " + getTotalWindows() + " window(s)");
     }
 
     private boolean isPrimaryWindowAvailable() {
