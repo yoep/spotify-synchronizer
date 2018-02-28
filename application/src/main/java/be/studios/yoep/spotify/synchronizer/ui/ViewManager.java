@@ -1,5 +1,6 @@
-package be.studios.yoep.spotify.synchronizer.managers;
+package be.studios.yoep.spotify.synchronizer.ui;
 
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -94,7 +95,22 @@ public class ViewManager {
     }
 
     private EventHandler<WindowEvent> onWindowClosingEventHandler() {
-        return event -> this.windows.removeIf(e -> e.getStage().equals(event.getSource()));
+        return event -> {
+            Stage stage = (Stage) event.getSource();
+            Window window = this.windows.stream()
+                    .filter(e -> e.getStage() == stage)
+                    .findFirst()
+                    .orElseThrow(() -> new WindowNotFoundException(stage.getTitle()));
+
+            this.windows.remove(window);
+            log.debug("Currently showing " + getTotalWindows() + " window(s)");
+
+            if (window.isPrimaryWindow()) {
+                log.debug("Application closing, primary window is closed");
+                Platform.exit();
+                System.exit(0);
+            }
+        };
     }
 
     @Value

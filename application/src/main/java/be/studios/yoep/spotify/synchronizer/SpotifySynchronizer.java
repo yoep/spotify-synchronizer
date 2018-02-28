@@ -1,6 +1,6 @@
 package be.studios.yoep.spotify.synchronizer;
 
-import be.studios.yoep.spotify.synchronizer.loaders.ViewLoader;
+import be.studios.yoep.spotify.synchronizer.ui.ViewLoader;
 import be.studios.yoep.spotify.synchronizer.views.ViewProperties;
 import javafx.application.Application;
 import javafx.stage.Stage;

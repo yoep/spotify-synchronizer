@@ -1,4 +1,4 @@
-package be.studios.yoep.spotify.synchronizer.loaders;
+package be.studios.yoep.spotify.synchronizer.ui;
 
 public class ViewNotFoundException extends RuntimeException {
     public ViewNotFoundException(String view, Exception ex) {

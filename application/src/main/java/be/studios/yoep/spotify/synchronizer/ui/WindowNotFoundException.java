@@ -1,9 +1,9 @@
-package be.studios.yoep.spotify.synchronizer.managers;
+package be.studios.yoep.spotify.synchronizer.ui;
 
 import lombok.Getter;
 
 @Getter
-public class WindowNotFoundException extends Exception {
+public class WindowNotFoundException extends RuntimeException {
     private final String name;
 
     public WindowNotFoundException(String name) {

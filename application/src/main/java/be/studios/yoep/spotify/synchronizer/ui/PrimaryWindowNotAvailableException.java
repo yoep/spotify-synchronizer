@@ -1,4 +1,4 @@
-package be.studios.yoep.spotify.synchronizer.managers;
+package be.studios.yoep.spotify.synchronizer.ui;
 
 public class PrimaryWindowNotAvailableException extends Exception {
     public PrimaryWindowNotAvailableException() {

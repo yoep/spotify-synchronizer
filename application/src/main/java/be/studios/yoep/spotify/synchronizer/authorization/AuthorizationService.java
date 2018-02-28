@@ -1,6 +1,6 @@
 package be.studios.yoep.spotify.synchronizer.authorization;
 
-import be.studios.yoep.spotify.synchronizer.loaders.ViewLoader;
+import be.studios.yoep.spotify.synchronizer.ui.ViewLoader;
 import be.studios.yoep.spotify.synchronizer.views.LoginView;
 import be.studios.yoep.spotify.synchronizer.views.ViewProperties;
 import lombok.EqualsAndHashCode;
@@ -115,6 +115,7 @@ public class AuthorizationService {
     }
 
     private void openLoginDialog() {
+        log.debug("Showing login window");
         viewLoader.showWindow("login.fxml", ViewProperties.builder()
                 .icon("logo.png")
                 .maximizable(false)

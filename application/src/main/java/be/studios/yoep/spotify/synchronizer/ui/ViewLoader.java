@@ -1,8 +1,5 @@
-package be.studios.yoep.spotify.synchronizer.loaders;
+package be.studios.yoep.spotify.synchronizer.ui;
 
-import be.studios.yoep.spotify.synchronizer.managers.PrimaryWindowNotAvailableException;
-import be.studios.yoep.spotify.synchronizer.managers.ViewManager;
-import be.studios.yoep.spotify.synchronizer.ui.UIText;
 import be.studios.yoep.spotify.synchronizer.views.ViewProperties;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import lombok.extern.log4j.Log4j2;
@@ -116,7 +114,7 @@ public class ViewLoader {
     public void showWindow(String view, ViewProperties properties) {
         Assert.hasText(view, "view cannot be empty");
         Assert.notNull(properties, "properties cannot be null");
-        showScene(new Stage(), view, properties);
+        Platform.runLater(() -> showScene(new Stage(), view, properties));
     }
 
     /**
@@ -127,20 +125,19 @@ public class ViewLoader {
      * @param properties Set the view properties.
      */
     private void showScene(Stage window, String view, ViewProperties properties) {
-        Platform.runLater(() -> {
-            Scene windowView = loadScene(view);
+        Scene windowView = loadScene(view);
 
-            window.setScene(windowView);
-            viewManager.addWindowView(window, windowView);
+        window.setScene(windowView);
+        viewManager.addWindowView(window, windowView);
 
-            setWindowViewProperties(window, windowView, properties);
+        setWindowViewProperties(window, windowView, properties);
 
-            if (properties.isDialog()) {
-                window.showAndWait();
-            } else {
-                window.show();
-            }
-        });
+        if (properties.isDialog()) {
+            window.initModality(Modality.APPLICATION_MODAL);
+            window.showAndWait();
+        } else {
+            window.show();
+        }
     }
 
     private void setWindowViewProperties(Stage window, Scene view, ViewProperties properties) {
