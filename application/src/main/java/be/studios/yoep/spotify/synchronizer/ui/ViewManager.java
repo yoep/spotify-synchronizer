@@ -82,7 +82,7 @@ public class ViewManager {
                 throw new PrimaryWindowAlreadyPresentException();
             }
 
-            window.setOnCloseRequest(onWindowClosingEventHandler());
+            window.setOnHiding(onWindowClosingEventHandler());
             windows.add(new Window(window, view, isPrimaryStage));
             log.debug("Currently showing " + getTotalWindows() + " window(s)");
         } catch (IllegalAccessException | NoSuchFieldException e) {
