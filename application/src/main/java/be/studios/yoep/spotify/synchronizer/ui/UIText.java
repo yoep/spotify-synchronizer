@@ -28,7 +28,7 @@ public class UIText {
      */
     public UIText(ResourceBundleMessageSource messageSource) {
         this.messageSource = new MessageSourceAccessor(messageSource);
-        this.resourceBundle = new MessageSourceResourceBundle(messageSource, Locale.ENGLISH);
+        this.resourceBundle = new MessageSourceResourceBundle(messageSource, Locale.getDefault());
     }
 
     /**
