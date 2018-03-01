@@ -49,12 +49,22 @@ public class UIText {
      * @return Returns the formatted text.
      */
     public String get(Message message, Object... args) {
+        return get(message.getKey(), args);
+    }
 
+    /**
+     * Get the text for the given message.
+     *
+     * @param message Set the message.
+     * @param args    Set the arguments to pass to the message.
+     * @return Returns the formatted text.
+     */
+    public String get(String message, Object... args) {
         try {
-            return messageSource.getMessage(message.getKey(), args);
+            return messageSource.getMessage(message, args);
         } catch (NoSuchMessageException ex) {
             log.error("Message key '" + message + "' not found", ex);
-            return null;
+            return message;
         }
     }
 }
