@@ -89,7 +89,7 @@ public class SpotifySynchronizerConfiguration {
     @Bean
     public ResourceBundleMessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasenames(UIText.DIRECTORY + "splash");
+        messageSource.setBasenames(UIText.DIRECTORY + "splash", UIText.DIRECTORY + "menu");
         return messageSource;
     }
 

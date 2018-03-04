@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
           fx:controller="be.studios.yoep.spotify.synchronizer.views.MainView"
           prefHeight="600.0" prefWidth="800.0">
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+    </rowConstraints>
+
+    <!-- MENU -->
+    <fx:include source="menu_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+
 
 </GridPane>

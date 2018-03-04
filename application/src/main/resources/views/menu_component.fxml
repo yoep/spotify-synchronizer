@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import be.studios.yoep.spotify.synchronizer.ui.Icons?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<ToolBar xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+         fx:controller="be.studios.yoep.spotify.synchronizer.views.MenuComponent" stylesheets="/styles/main.css">
+    <Pane HBox.hgrow="ALWAYS"/>
+    <Button onAction="#openSettingsView" styleClass="icon">
+        <tooltip>
+            <Tooltip text="%settings"/>
+        </tooltip>
+        <Icons fx:constant="COG"/>
+    </Button>
+    <Button onAction="#openHelpView" styleClass="icon">
+        <tooltip>
+            <Tooltip text="%help"/>
+        </tooltip>
+        <Icons fx:constant="HELP"/>
+    </Button>
+</ToolBar>
