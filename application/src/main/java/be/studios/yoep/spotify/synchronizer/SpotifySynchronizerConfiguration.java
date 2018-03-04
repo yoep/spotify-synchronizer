@@ -76,7 +76,6 @@ public class SpotifySynchronizerConfiguration {
                 .deserializerByType(AlbumType.class, new AlbumTypeDeserializer())
                 .serializationInclusion(JsonInclude.Include.NON_EMPTY)
                 .propertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
-//                .featuresToEnable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES)
                 .featuresToEnable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE)
                 .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }

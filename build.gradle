@@ -30,7 +30,6 @@ configure(allprojects) {
     apply plugin: 'propdeps-maven'
     apply plugin: 'propdeps-idea'
     apply plugin: 'propdeps-eclipse'
-    apply plugin: 'application'
     apply plugin: 'org.springframework.boot'
 }
 
@@ -47,6 +46,7 @@ allprojects {
 
     springBoot {
         mainClass = "be.studios.yoep.spotify.synchronizer.Application"
+        executable = true
     }
 
     repositories {

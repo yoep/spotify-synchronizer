@@ -68,7 +68,7 @@ public class Track {
      */
     private String previewUrl;
     /**
-     * 	The number of the track. If an album has several discs, the track number is the number on the specified disc.
+     * The number of the track. If an album has several discs, the track number is the number on the specified disc.
      */
     private Integer trackNumber;
     private String type;

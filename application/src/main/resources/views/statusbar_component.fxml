@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<?import javafx.scene.control.Label?>
+<GridPane styleClass="statusbar" stylesheets="/styles/main.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="be.studios.yoep.spotify.synchronizer.views.StatusbarComponent">
+    <columnConstraints>
+        <ColumnConstraints hgrow="ALWAYS"/>
+        <ColumnConstraints/>
+        <ColumnConstraints maxWidth="100" prefWidth="100"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints prefHeight="25"/>
+    </rowConstraints>
+    <padding>
+        <Insets right="10.0"/>
+    </padding>
+
+    <!-- PROGRESS LABEL -->
+    <Label fx:id="progressLabel" />
+
+    <!-- PROGRESS BAR -->
+    <ProgressBar fx:id="progressBar" progress="0" GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.valignment="CENTER"/>
+</GridPane>

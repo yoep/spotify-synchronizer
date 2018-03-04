@@ -10,13 +10,19 @@
         <ColumnConstraints hgrow="ALWAYS" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints />
-        <RowConstraints />
-        <RowConstraints />
+        <RowConstraints minHeight="30" maxHeight="30" />
+        <RowConstraints maxHeight="Infinity" vgrow="ALWAYS" />
+        <RowConstraints minHeight="25" maxHeight="25" />
     </rowConstraints>
 
     <!-- MENU -->
     <fx:include source="menu_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="0" />
 
+    <!-- CONTENT -->
+    <GridPane GridPane.columnIndex="0" GridPane.rowIndex="1">
 
+    </GridPane>
+
+    <!-- STATUS BAR -->
+    <fx:include source="statusbar_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="2" />
 </GridPane>
