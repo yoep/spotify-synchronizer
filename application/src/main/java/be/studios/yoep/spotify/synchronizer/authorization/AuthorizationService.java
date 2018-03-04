@@ -2,7 +2,7 @@ package be.studios.yoep.spotify.synchronizer.authorization;
 
 import be.studios.yoep.spotify.synchronizer.ui.ViewLoader;
 import be.studios.yoep.spotify.synchronizer.views.LoginView;
-import be.studios.yoep.spotify.synchronizer.views.ViewProperties;
+import be.studios.yoep.spotify.synchronizer.ui.ViewProperties;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;

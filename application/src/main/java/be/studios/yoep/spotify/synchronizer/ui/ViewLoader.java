@@ -1,6 +1,5 @@
 package be.studios.yoep.spotify.synchronizer.ui;
 
-import be.studios.yoep.spotify.synchronizer.views.ViewProperties;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -24,7 +23,7 @@ import java.io.IOException;
 @Log4j2
 @Component
 public class ViewLoader {
-    private static final String VIEW_DIRECTORY = "/views/";
+    public static final String VIEW_DIRECTORY = "/views/";
     private static final String FONT_DIRECTORY = "/fonts/";
     private static final String IMAGE_DIRECTORY = "/images/";
 

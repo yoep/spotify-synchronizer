@@ -1,7 +1,8 @@
 package be.studios.yoep.spotify.synchronizer;
 
 import be.studios.yoep.spotify.synchronizer.ui.ViewLoader;
-import be.studios.yoep.spotify.synchronizer.views.ViewProperties;
+import be.studios.yoep.spotify.synchronizer.ui.ViewProperties;
+import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import org.springframework.boot.Banner;
@@ -14,19 +15,25 @@ import org.springframework.context.ApplicationContext;
 @SpringBootApplication(exclude = {EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class})
 public class SpotifySynchronizer extends Application {
     private static ApplicationContext APPLICATION_CONTEXT;
+    private static String[] ARGUMENTS;
 
     public static void main(String[] args) {
+        SpotifySynchronizer.ARGUMENTS = args;
+        LauncherImpl.launchApplication(SpotifySynchronizer.class, SpotifyPreloader.class, args);
+    }
+
+    @Override
+    public void init() throws Exception {
         SpringApplication application = new SpringApplication(SpotifySynchronizer.class);
         application.setBannerMode(Banner.Mode.OFF);
-        APPLICATION_CONTEXT = application.run(args);
-        launch(args);
+        APPLICATION_CONTEXT = application.run(ARGUMENTS);
     }
 
     @Override
     public void start(Stage primaryStage) {
         ViewLoader loader = APPLICATION_CONTEXT.getBean(ViewLoader.class);
 
-        loader.showPrimary(primaryStage, "splash.fxml", ViewProperties.builder()
+        loader.showPrimary(primaryStage, "main.fxml", ViewProperties.builder()
                 .title("Spotify Synchronizer")
                 .icon("logo.png")
                 .centerOnScreen(true)

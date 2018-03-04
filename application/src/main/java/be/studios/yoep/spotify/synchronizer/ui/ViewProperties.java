@@ -1,4 +1,4 @@
-package be.studios.yoep.spotify.synchronizer.views;
+package be.studios.yoep.spotify.synchronizer.ui;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
