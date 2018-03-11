@@ -3,6 +3,7 @@ package be.studios.yoep.spotify.synchronizer.spotify;
 import be.studios.yoep.spotify.synchronizer.configuration.SpotifyConfiguration;
 import be.studios.yoep.spotify.synchronizer.spotify.api.v1.SavedTrack;
 import be.studios.yoep.spotify.synchronizer.spotify.api.v1.Tracks;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+@Data
 @Service
 public class SpotifyService {
     private final OAuth2RestTemplate spotifyRestTemplate;
@@ -22,6 +24,10 @@ public class SpotifyService {
     public SpotifyService(OAuth2RestTemplate spotifyRestTemplate, SpotifyConfiguration configuration) {
         this.spotifyRestTemplate = spotifyRestTemplate;
         this.configuration = configuration;
+    }
+
+    public int getTotalTracks() {
+        return spotifyRestTemplate.exchange(configuration.getEndpoints().getUserTracks(), HttpMethod.GET, HttpEntity.EMPTY, Tracks.class).getBody().getTotal();
     }
 
     @Async

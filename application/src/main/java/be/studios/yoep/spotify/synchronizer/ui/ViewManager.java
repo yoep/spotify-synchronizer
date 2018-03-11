@@ -1,5 +1,6 @@
 package be.studios.yoep.spotify.synchronizer.ui;
 
+import be.studios.yoep.spotify.synchronizer.SpotifySynchronizer;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -9,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.ToString;
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -107,10 +109,18 @@ public class ViewManager {
 
             if (window.isPrimaryWindow()) {
                 log.debug("Application closing, primary window is closed");
-                Platform.exit();
-                System.exit(0);
+                exitApplication();
+            } else if (this.windows.size() == 0) {
+                log.debug("All windows closed, exiting application");
+                exitApplication();
             }
         };
+    }
+
+    private void exitApplication() {
+        Platform.exit();
+        ((ConfigurableApplicationContext) SpotifySynchronizer.APPLICATION_CONTEXT).close();
+        System.exit(0);
     }
 
     @Value

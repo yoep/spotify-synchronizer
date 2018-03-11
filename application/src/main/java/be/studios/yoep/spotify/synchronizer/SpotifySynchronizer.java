@@ -1,5 +1,6 @@
 package be.studios.yoep.spotify.synchronizer;
 
+import be.studios.yoep.spotify.synchronizer.spotify.SynchronisationService;
 import be.studios.yoep.spotify.synchronizer.ui.ViewLoader;
 import be.studios.yoep.spotify.synchronizer.ui.ViewProperties;
 import com.sun.javafx.application.LauncherImpl;
@@ -14,7 +15,7 @@ import org.springframework.context.ApplicationContext;
 
 @SpringBootApplication(exclude = {EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class})
 public class SpotifySynchronizer extends Application {
-    private static ApplicationContext APPLICATION_CONTEXT;
+    public static ApplicationContext APPLICATION_CONTEXT;
     private static String[] ARGUMENTS;
 
     public static void main(String[] args) {
@@ -23,10 +24,13 @@ public class SpotifySynchronizer extends Application {
     }
 
     @Override
-    public void init() throws Exception {
+    public void init() {
         SpringApplication application = new SpringApplication(SpotifySynchronizer.class);
         application.setBannerMode(Banner.Mode.OFF);
         APPLICATION_CONTEXT = application.run(ARGUMENTS);
+
+        SynchronisationService synchronisationService = APPLICATION_CONTEXT.getBean(SynchronisationService.class);
+        synchronisationService.startSynchronisation();
     }
 
     @Override
