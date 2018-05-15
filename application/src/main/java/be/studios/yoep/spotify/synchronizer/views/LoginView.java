@@ -1,9 +1,14 @@
 package be.studios.yoep.spotify.synchronizer.views;
 
 import be.studios.yoep.spotify.synchronizer.configuration.SpotifyConfiguration;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebErrorEvent;
+import javafx.scene.web.WebEvent;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import lombok.Data;
@@ -41,6 +46,8 @@ public class LoginView implements Initializable {
         engine.setUserAgent("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
         engine.load(url);
         engine.locationProperty().addListener((observable, oldValue, newValue) -> verifyIfRedirectIsCallback(newValue));
+        engine.setOnError(this::handleEngineError);
+        engine.setOnAlert(this::handleEngineAlert);
     }
 
     private void verifyIfRedirectIsCallback(String url) {
@@ -55,5 +62,13 @@ public class LoginView implements Initializable {
     private void closeWindow() {
         Stage stage = (Stage) webview.getScene().getWindow();
         stage.close();
+    }
+
+    private void handleEngineError(WebErrorEvent webErrorEvent) {
+        log.error(webErrorEvent.getMessage(), webErrorEvent.getException());
+    }
+
+    private void handleEngineAlert(WebEvent<String> event) {
+        log.warn(event.toString());
     }
 }
