@@ -38,6 +38,7 @@ public class LoginView implements Initializable {
         Assert.notNull(successCallback, "successCallback has not been configured");
 
         WebEngine engine = webview.getEngine();
+        engine.setUserAgent("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
         engine.load(url);
         engine.locationProperty().addListener((observable, oldValue, newValue) -> verifyIfRedirectIsCallback(newValue));
     }
