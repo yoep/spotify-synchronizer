@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.studios.yoep.spotify.synchronizer.views.SettingsLoggingComponent">
+    <columnConstraints>
+        <ColumnConstraints percentWidth="35" />
+        <ColumnConstraints percentWidth="65" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="30" />
+        <RowConstraints minHeight="30" />
+    </rowConstraints>
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+    </padding>
+
+    <!-- LEVEL -->
+    <Label alignment="CENTER_RIGHT" maxWidth="Infinity" text="%logging_level" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0">
+        <padding>
+            <Insets right="5.0" />
+        </padding>
+    </Label>
+    <ComboBox fx:id="level" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
+
+    <!-- LOG FILE -->
+    <Label alignment="CENTER_RIGHT" maxWidth="Infinity" text="%logging_file" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+        <padding>
+            <Insets right="5.0" />
+        </padding>
+    </Label>
+    <CheckBox fx:id="logfile" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+</GridPane>

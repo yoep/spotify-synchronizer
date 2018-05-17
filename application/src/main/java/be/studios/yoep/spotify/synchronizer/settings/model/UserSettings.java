@@ -15,5 +15,10 @@ import javax.validation.constraints.NotNull;
 public class UserSettings {
     @NotNull
     @Valid
+    @Builder.Default
     private Authentication authentication = new Authentication();
+    @NotNull
+    @Valid
+    @Builder.Default
+    private Logging logging = new Logging();
 }

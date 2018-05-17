@@ -22,7 +22,7 @@
 
         </Tab>
         <Tab text="%settings_logging">
-
+            <fx:include source="settings_logging_component.fxml"/>
         </Tab>
     </TabPane>
 
@@ -38,7 +38,7 @@
             <RowConstraints maxHeight="Infinity" vgrow="ALWAYS"/>
         </rowConstraints>
 
-        <Button maxWidth="Infinity" onAction="#cancel" text="%settings_cancel" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0"/>
+        <Button maxWidth="Infinity" onAction="#close" text="%settings_cancel" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0"/>
         <Button maxWidth="Infinity" onAction="#apply" text="%settings_apply" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0"/>
         <GridPane.margin>
             <Insets bottom="5.0" right="5.0"/>

@@ -1,8 +1,7 @@
 package be.studios.yoep.spotify.synchronizer;
 
-import be.studios.yoep.spotify.synchronizer.spotify.SynchronisationService;
+import be.studios.yoep.spotify.synchronizer.synchronize.SynchronisationService;
 import be.studios.yoep.spotify.synchronizer.ui.ViewLoader;
-import be.studios.yoep.spotify.synchronizer.ui.ViewManager;
 import be.studios.yoep.spotify.synchronizer.ui.ViewProperties;
 import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
@@ -14,12 +13,17 @@ import org.springframework.boot.autoconfigure.web.EmbeddedServletContainerAutoCo
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 
+import java.io.File;
+
 @SpringBootApplication(exclude = {EmbeddedServletContainerAutoConfiguration.class, WebMvcAutoConfiguration.class})
 public class SpotifySynchronizer extends Application {
+    public static final String APP_DIR = System.getProperty("user.home") + File.separator + ".ssynchronizer" + File.separator;
     public static ApplicationContext APPLICATION_CONTEXT;
+
     private static String[] ARGUMENTS;
 
     public static void main(String[] args) {
+        System.setProperty("app.dir", APP_DIR);
         SpotifySynchronizer.ARGUMENTS = args;
         LauncherImpl.launchApplication(SpotifySynchronizer.class, SpotifyPreloader.class, args);
     }

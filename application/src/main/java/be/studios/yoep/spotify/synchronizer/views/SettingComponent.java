@@ -1,8 +1,8 @@
 package be.studios.yoep.spotify.synchronizer.views;
 
-public interface Setting {
+public interface SettingComponent {
     /**
-     * Apply the configured settings.
+     * Applies the settings from the component.
      */
     void apply();
 }

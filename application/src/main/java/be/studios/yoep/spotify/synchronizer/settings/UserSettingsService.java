@@ -1,5 +1,6 @@
 package be.studios.yoep.spotify.synchronizer.settings;
 
+import be.studios.yoep.spotify.synchronizer.SpotifySynchronizer;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,6 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserSettingsService {
-    private static final String HOME_DIR = System.getProperty("user.home");
-    private static final String APP_DIR = HOME_DIR + File.separator + ".ssynchronizer";
-
     private final ObjectMapper objectMapper;
 
     @PostConstruct
@@ -70,7 +68,7 @@ public class UserSettingsService {
     }
 
     private void createApplicationSettingsDirectory() {
-        File appDir = new File(APP_DIR);
+        File appDir = new File(SpotifySynchronizer.APP_DIR);
 
         if (!appDir.exists()) {
             if (!appDir.mkdirs()) {
@@ -80,6 +78,6 @@ public class UserSettingsService {
     }
 
     private File getSettingsFile() {
-        return new File(APP_DIR + File.separator + "settings.json");
+        return new File(SpotifySynchronizer.APP_DIR + "settings.json");
     }
 }

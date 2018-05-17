@@ -12,10 +12,17 @@
         <Console name="Console" target="SYSTEM_OUT" follow="true">
             <PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" />
         </Console>
+        <File name="LogFile" fileName="${sys:app.dir}/logs/synchronizer-${yyyy-MM-dd}.log">
+            <PatternLayout pattern="${sys:FILE_LOG_PATTERN}"/>
+        </File>
+        <Async name="Async">
+            <AppenderRef ref="LogFile"/>
+        </Async>
     </Appenders>
     <Loggers>
         <Root level="info">
             <AppenderRef ref="Console" />
+            <AppenderRef ref="Async" />
         </Root>
         <Logger name="be.studios.yoep.spotify.synchronizer" level="debug" />
         <Logger name="com.fasterxml.jackson" level="trace" />

@@ -26,6 +26,11 @@ public class SpotifyService {
         this.configuration = configuration;
     }
 
+    /**
+     * Get the total number of tracks that the user has on spotify.
+     *
+     * @return Returns the total tracks in spotify.
+     */
     public int getTotalTracks() {
         return spotifyRestTemplate.exchange(configuration.getEndpoints().getUserTracks(), HttpMethod.GET, HttpEntity.EMPTY, Tracks.class).getBody().getTotal();
     }
