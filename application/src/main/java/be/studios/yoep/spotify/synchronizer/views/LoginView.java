@@ -1,9 +1,6 @@
 package be.studios.yoep.spotify.synchronizer.views;
 
 import be.studios.yoep.spotify.synchronizer.configuration.SpotifyConfiguration;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.web.WebEngine;
@@ -18,12 +15,15 @@ import org.springframework.util.Assert;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.function.Consumer;
 
 @Log4j2
 @Data
 @Component
 public class LoginView implements Initializable {
+    private final Timer timer = new Timer();
     private final SpotifyConfiguration configuration;
 
     private String url;
@@ -54,8 +54,8 @@ public class LoginView implements Initializable {
         Assert.notNull(successCallback, "successCallback has not been configured");
 
         if (url.contains(configuration.getEndpoints().getRedirect().toString())) {
-            closeWindow();
             successCallback.accept(url);
+            closeWindow();
         }
     }
 

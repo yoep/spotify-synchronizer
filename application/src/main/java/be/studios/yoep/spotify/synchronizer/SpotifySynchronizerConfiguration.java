@@ -3,6 +3,7 @@ package be.studios.yoep.spotify.synchronizer;
 import be.studios.yoep.spotify.synchronizer.authorization.AuthorizationService;
 import be.studios.yoep.spotify.synchronizer.authorization.SpotifyAccessTokenProvider;
 import be.studios.yoep.spotify.synchronizer.configuration.SpotifyConfiguration;
+import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
 import be.studios.yoep.spotify.synchronizer.spotify.AlbumTypeDeserializer;
 import be.studios.yoep.spotify.synchronizer.spotify.SpotifyHttpMessageConverter;
 import be.studios.yoep.spotify.synchronizer.spotify.api.v1.AlbumType;
@@ -108,10 +109,11 @@ public class SpotifySynchronizerConfiguration {
     @Bean
     public OAuth2RestTemplate spotifyRestTemplate(AuthorizationCodeResourceDetails spotifyAuthorization,
                                                   AuthorizationService authorizationService,
+                                                  UserSettingsService userSettingsService,
                                                   MappingJackson2HttpMessageConverter jackson2HttpMessageConverter) {
         OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(spotifyAuthorization, new DefaultOAuth2ClientContext(new DefaultAccessTokenRequest()));
         oAuth2RestTemplate.setAccessTokenProvider(new AccessTokenProviderChain(asList(
-                new SpotifyAccessTokenProvider(authorizationService),
+                new SpotifyAccessTokenProvider(authorizationService, userSettingsService),
                 new AuthorizationCodeAccessTokenProvider(),
                 new ImplicitAccessTokenProvider(),
                 new ResourceOwnerPasswordAccessTokenProvider(),

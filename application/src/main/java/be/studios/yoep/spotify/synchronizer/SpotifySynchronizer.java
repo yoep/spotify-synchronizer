@@ -2,6 +2,7 @@ package be.studios.yoep.spotify.synchronizer;
 
 import be.studios.yoep.spotify.synchronizer.spotify.SynchronisationService;
 import be.studios.yoep.spotify.synchronizer.ui.ViewLoader;
+import be.studios.yoep.spotify.synchronizer.ui.ViewManager;
 import be.studios.yoep.spotify.synchronizer.ui.ViewProperties;
 import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
