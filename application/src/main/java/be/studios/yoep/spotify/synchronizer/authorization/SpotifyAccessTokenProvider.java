@@ -41,20 +41,25 @@ public class SpotifyAccessTokenProvider extends AuthorizationCodeAccessTokenProv
 
             return optionalAccessToken
                     .map(accessTokenWrapper -> resolveAccessToken(details, accessTokenWrapper))
-                    .orElse(super.obtainAccessToken(details, parameters));
+                    .orElseGet(() -> super.obtainAccessToken(details, parameters));
         } catch (UserRedirectRequiredException ex) {
             authorizationService.startAuthorization(ex);
             SpotifyToken spotifyToken = ofNullable(authorizationService.getAccessTokenWhenAvailable())
                     .orElseThrow(AccessTokenNotAvailable::new);
             return retrieveAccessToken(details, spotifyToken.getAuthorizationCode(), ex.getStateToPreserve().toString());
+        } catch (RefreshTokenMissingException ex) {
+            logger.error(ex);
+            return null;
         }
     }
 
     private OAuth2AccessToken resolveAccessToken(OAuth2ProtectedResourceDetails details, OAuth2AccessTokenWrapper accessTokenWrapper) {
         if (!accessTokenWrapper.isExpired()) {
             return accessTokenWrapper.getToken();
-        } else {
+        } else if (accessTokenWrapper.getToken().getRefreshToken() != null) {
             return retrieveRefreshToken(details, accessTokenWrapper.getToken());
+        } else {
+            throw new RefreshTokenMissingException();
         }
     }
 

@@ -12,7 +12,7 @@ public interface DiscoveryService {
      * Start the discovery service on an asynchronous thread.
      */
     @Async
-    void start();
+    void start() throws RuntimeException;
 
     /**
      * Get the observable of the track list available within the service.

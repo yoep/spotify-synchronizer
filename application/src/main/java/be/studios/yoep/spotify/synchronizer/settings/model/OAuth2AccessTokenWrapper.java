@@ -1,5 +1,6 @@
 package be.studios.yoep.spotify.synchronizer.settings.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +26,8 @@ public class OAuth2AccessTokenWrapper {
      *
      * @return Returns true when expired, else false.
      */
+    @JsonIgnore
     public boolean isExpired() {
-        return expireDate.isAfter(LocalDateTime.now());
+        return expireDate.isBefore(LocalDateTime.now());
     }
 }

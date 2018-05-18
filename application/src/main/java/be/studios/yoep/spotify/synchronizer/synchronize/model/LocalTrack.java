@@ -11,4 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LocalTrack implements MusicTrack {
     private String title;
+    private String artist;
+    private String album;
 }
