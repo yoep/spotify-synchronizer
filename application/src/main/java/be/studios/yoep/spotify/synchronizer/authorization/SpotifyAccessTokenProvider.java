@@ -2,6 +2,7 @@ package be.studios.yoep.spotify.synchronizer.authorization;
 
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
 import be.studios.yoep.spotify.synchronizer.settings.model.Authentication;
+import be.studios.yoep.spotify.synchronizer.settings.model.OAuth2AccessTokenWrapper;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,6 +20,8 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
@@ -34,15 +37,24 @@ public class SpotifyAccessTokenProvider extends AuthorizationCodeAccessTokenProv
     public OAuth2AccessToken obtainAccessToken(OAuth2ProtectedResourceDetails details, AccessTokenRequest parameters)
             throws UserRedirectRequiredException, UserApprovalRequiredException, AccessDeniedException {
         try {
-            Optional<OAuth2AccessToken> accessToken = getAccessTokenFromSettings();
+            Optional<OAuth2AccessTokenWrapper> optionalAccessToken = getAccessTokenFromSettings();
 
-            return accessToken
-                    .orElseGet(() -> super.obtainAccessToken(details, parameters));
+            return optionalAccessToken
+                    .map(accessTokenWrapper -> resolveAccessToken(details, accessTokenWrapper))
+                    .orElse(super.obtainAccessToken(details, parameters));
         } catch (UserRedirectRequiredException ex) {
             authorizationService.startAuthorization(ex);
             SpotifyToken spotifyToken = ofNullable(authorizationService.getAccessTokenWhenAvailable())
                     .orElseThrow(AccessTokenNotAvailable::new);
             return retrieveAccessToken(details, spotifyToken.getAuthorizationCode(), ex.getStateToPreserve().toString());
+        }
+    }
+
+    private OAuth2AccessToken resolveAccessToken(OAuth2ProtectedResourceDetails details, OAuth2AccessTokenWrapper accessTokenWrapper) {
+        if (!accessTokenWrapper.isExpired()) {
+            return accessTokenWrapper.getToken();
+        } else {
+            return retrieveRefreshToken(details, accessTokenWrapper.getToken());
         }
     }
 
@@ -57,16 +69,31 @@ public class SpotifyAccessTokenProvider extends AuthorizationCodeAccessTokenProv
         return oAuth2AccessToken;
     }
 
+    private OAuth2AccessToken retrieveRefreshToken(OAuth2ProtectedResourceDetails resource, OAuth2AccessToken accessToken) {
+        final AccessTokenRequest request = new DefaultAccessTokenRequest();
+
+        OAuth2AccessToken oAuth2AccessToken = retrieveToken(request, resource, getParametersForRefreshTokenRequest(accessToken), new HttpHeaders());
+        saveAccessToken(oAuth2AccessToken);
+        return oAuth2AccessToken;
+    }
+
     private MultiValueMap<String, String> getParametersForTokenRequest(String authorizationCode,
                                                                        String redirectUri) {
-        MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.set("grant_type", "authorization_code");
         form.set("code", authorizationCode);
         form.set("redirect_uri", redirectUri);
         return form;
     }
 
-    private Optional<OAuth2AccessToken> getAccessTokenFromSettings() {
+    private MultiValueMap<String, String> getParametersForRefreshTokenRequest(OAuth2AccessToken accessToken) {
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+        form.set("grant_type", "refresh_token");
+        form.set("refresh_token", accessToken.getRefreshToken().getValue());
+        return form;
+    }
+
+    private Optional<OAuth2AccessTokenWrapper> getAccessTokenFromSettings() {
         return settingsService.getUserSettings()
                 .map(UserSettings::getAuthentication)
                 .map(Authentication::getAccessToken);
@@ -74,9 +101,12 @@ public class SpotifyAccessTokenProvider extends AuthorizationCodeAccessTokenProv
 
     private void saveAccessToken(OAuth2AccessToken oAuth2AccessToken) {
         UserSettings userSettings = settingsService.getUserSettings()
-                .orElse(new UserSettings());
+                .orElse(UserSettings.builder().build());
 
-        userSettings.getAuthentication().setAccessToken(oAuth2AccessToken);
+        userSettings.getAuthentication().setAccessToken(OAuth2AccessTokenWrapper.builder()
+                .expireDate(LocalDateTime.ofInstant(oAuth2AccessToken.getExpiration().toInstant(), ZoneId.systemDefault()))
+                .token(oAuth2AccessToken)
+                .build());
         settingsService.save(userSettings);
     }
 }

@@ -6,9 +6,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import lombok.AllArgsConstructor;
-import lombok.ToString;
-import lombok.Value;
+import lombok.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
@@ -19,11 +17,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
-@Value
+@EqualsAndHashCode
 @ToString
 @Component
 public class ViewManager {
     private final List<Window> windows = new ArrayList<>();
+    @Getter
+    @Setter
+    private ViewManagerPolicy policy = ViewManagerPolicy.CLOSEABLE;
 
     /**
      * Get the total amount of windows which are currently being shown.
@@ -107,12 +108,14 @@ public class ViewManager {
             this.windows.remove(window);
             log.debug("Currently showing " + getTotalWindows() + " window(s)");
 
-            if (window.isPrimaryWindow()) {
-                log.debug("Application closing, primary window is closed");
-                exitApplication();
-            } else if (this.windows.size() == 0) {
-                log.debug("All windows closed, exiting application");
-                exitApplication();
+            if (policy == ViewManagerPolicy.CLOSEABLE) {
+                if (window.isPrimaryWindow()) {
+                    log.debug("Application closing, primary window is closed");
+                    exitApplication();
+                } else if (this.windows.size() == 0) {
+                    log.debug("All windows closed, exiting application");
+                    exitApplication();
+                }
             }
         };
     }

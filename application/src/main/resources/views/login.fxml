@@ -5,12 +5,13 @@
 <GridPane xmlns="http://javafx.com/javafx"
           xmlns:fx="http://javafx.com/fxml"
           fx:controller="be.studios.yoep.spotify.synchronizer.views.LoginView"
-          prefHeight="550.0" prefWidth="400.0">
+          prefHeight="600.0" prefWidth="400.0">
     <columnConstraints>
-        <ColumnConstraints/>
+        <ColumnConstraints maxWidth="Infinity" hgrow="ALWAYS"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints/>
+        <RowConstraints maxHeight="Infinity" vgrow="ALWAYS"/>
     </rowConstraints>
-    <WebView fx:id="webview" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <WebView fx:id="webview"
+             GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
 </GridPane>

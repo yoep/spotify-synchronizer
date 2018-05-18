@@ -4,7 +4,12 @@ import lombok.Getter;
 
 @Getter
 public enum MainMessage implements Message {
-    TITLE_TRACK("title_track");
+    TITLE_TRACK("title_track"),
+    ARTIST_TRACK("artist_track"),
+    ALBUM_TRACK("album_track"),
+    PROGRESSION("progression"),
+    PROGRESSION_FAILED("progression_failed"),
+    SYNCHRONIZING("synchronizing");
 
     private String key;
 

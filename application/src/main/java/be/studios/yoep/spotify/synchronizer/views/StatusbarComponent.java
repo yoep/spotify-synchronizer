@@ -17,12 +17,16 @@ public class StatusbarComponent implements Initializable {
     private final ProgressHandler progressHandler;
 
     @FXML
+    public Label additionalInfoLabel;
+    @FXML
     private Label progressLabel;
     @FXML
     private ProgressBar progressBar;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        progressHandler.init(progressLabel, progressBar);
+        progressHandler.setProgressBar(progressBar);
+        progressHandler.setProgressLabel(progressLabel);
+        progressHandler.setAdditionalInformationLabel(additionalInfoLabel);
     }
 }

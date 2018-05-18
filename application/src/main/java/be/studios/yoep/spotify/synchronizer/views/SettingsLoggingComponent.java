@@ -61,7 +61,8 @@ public class SettingsLoggingComponent implements Initializable, SettingComponent
     }
 
     private void saveUserSettings() {
-        UserSettings userSettings = settingsService.getUserSettings().orElse(new UserSettings());
+        UserSettings userSettings = settingsService.getUserSettings()
+                .orElse(UserSettings.builder().build());
 
         userSettings.setLogging(Logging.builder()
                 .level(Level.valueOf(level.getValue()))

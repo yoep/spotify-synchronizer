@@ -1,7 +1,9 @@
 package be.studios.yoep.spotify.synchronizer;
 
-import be.studios.yoep.spotify.synchronizer.synchronize.SynchronisationService;
+import be.studios.yoep.spotify.synchronizer.spotify.SpotifyService;
 import be.studios.yoep.spotify.synchronizer.ui.ViewLoader;
+import be.studios.yoep.spotify.synchronizer.ui.ViewManager;
+import be.studios.yoep.spotify.synchronizer.ui.ViewManagerPolicy;
 import be.studios.yoep.spotify.synchronizer.ui.ViewProperties;
 import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
@@ -34,18 +36,21 @@ public class SpotifySynchronizer extends Application {
         application.setBannerMode(Banner.Mode.OFF);
         APPLICATION_CONTEXT = application.run(ARGUMENTS);
 
-        SynchronisationService synchronisationService = APPLICATION_CONTEXT.getBean(SynchronisationService.class);
-        synchronisationService.startSynchronisation();
+        SpotifyService spotifyService = APPLICATION_CONTEXT.getBean(SpotifyService.class);
+        spotifyService.getTotalTracks();
     }
 
     @Override
     public void start(Stage primaryStage) {
         ViewLoader loader = APPLICATION_CONTEXT.getBean(ViewLoader.class);
+        ViewManager viewManager = APPLICATION_CONTEXT.getBean(ViewManager.class);
 
         loader.showPrimary(primaryStage, "main.fxml", ViewProperties.builder()
                 .title("Spotify Synchronizer")
                 .icon("logo.png")
                 .centerOnScreen(true)
+                .maximizable(true)
                 .build());
+        viewManager.setPolicy(ViewManagerPolicy.CLOSEABLE);
     }
 }

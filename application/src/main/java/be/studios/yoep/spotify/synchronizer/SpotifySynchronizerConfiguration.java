@@ -3,6 +3,7 @@ package be.studios.yoep.spotify.synchronizer;
 import be.studios.yoep.spotify.synchronizer.authorization.AuthorizationService;
 import be.studios.yoep.spotify.synchronizer.authorization.SpotifyAccessTokenProvider;
 import be.studios.yoep.spotify.synchronizer.common.LoggingLevelDeserializer;
+import be.studios.yoep.spotify.synchronizer.spotify.OAuth2RestTemplateSpotify;
 import be.studios.yoep.spotify.synchronizer.configuration.SpotifyConfiguration;
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
 import be.studios.yoep.spotify.synchronizer.spotify.AlbumTypeDeserializer;
@@ -92,7 +93,7 @@ public class SpotifySynchronizerConfiguration {
     @Bean
     public ResourceBundleMessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasenames(UIText.DIRECTORY + "splash", UIText.DIRECTORY + "menu", UIText.DIRECTORY + "settings");
+        messageSource.setBasenames(UIText.DIRECTORY + "splash", UIText.DIRECTORY + "menu", UIText.DIRECTORY + "settings", UIText.DIRECTORY + "main");
         return messageSource;
     }
 
@@ -114,7 +115,8 @@ public class SpotifySynchronizerConfiguration {
                                                   AuthorizationService authorizationService,
                                                   UserSettingsService userSettingsService,
                                                   MappingJackson2HttpMessageConverter jackson2HttpMessageConverter) {
-        OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplate(spotifyAuthorization, new DefaultOAuth2ClientContext(new DefaultAccessTokenRequest()));
+        OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplateSpotify(spotifyAuthorization,
+                new DefaultOAuth2ClientContext(new DefaultAccessTokenRequest()));
         oAuth2RestTemplate.setAccessTokenProvider(new AccessTokenProviderChain(asList(
                 new SpotifyAccessTokenProvider(authorizationService, userSettingsService),
                 new AuthorizationCodeAccessTokenProvider(),

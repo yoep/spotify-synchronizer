@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
 
 import javax.validation.constraints.NotNull;
 
@@ -15,5 +14,5 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class Authentication {
     @NotNull
-    private OAuth2AccessToken accessToken;
+    private OAuth2AccessTokenWrapper accessToken;
 }
