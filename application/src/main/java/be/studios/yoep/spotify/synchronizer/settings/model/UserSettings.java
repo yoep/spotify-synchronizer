@@ -11,12 +11,13 @@ import javax.validation.constraints.NotNull;
 @Builder
 @AllArgsConstructor
 public class UserSettings {
-    @NotNull
     @Valid
     @Builder.Default
     private Authentication authentication = Authentication.builder().build();
-    @NotNull
     @Valid
     @Builder.Default
     private Logging logging = Logging.builder().build();
+    @Valid
+    @Builder.Default
+    private Synchronize synchronize = Synchronize.builder().build();
 }

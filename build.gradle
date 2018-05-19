@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        springBootVersion = '2.0.2.RELEASE'
+        springBootVersion = '1.5.13.RELEASE'
         name = 'Spotify Synchronizer'
     }
 

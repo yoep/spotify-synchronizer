@@ -2,7 +2,8 @@ package be.studios.yoep.spotify.synchronizer;
 
 import be.studios.yoep.spotify.synchronizer.authorization.AuthorizationService;
 import be.studios.yoep.spotify.synchronizer.authorization.SpotifyAccessTokenProvider;
-import be.studios.yoep.spotify.synchronizer.common.LoggingLevelDeserializer;
+import be.studios.yoep.spotify.synchronizer.common.deserializers.FileDeserializer;
+import be.studios.yoep.spotify.synchronizer.common.deserializers.LoggingLevelDeserializer;
 import be.studios.yoep.spotify.synchronizer.spotify.OAuth2RestTemplateSpotify;
 import be.studios.yoep.spotify.synchronizer.configuration.SpotifyConfiguration;
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import org.apache.logging.log4j.Level;
+import org.apache.tomcat.jni.File;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -79,6 +81,7 @@ public class SpotifySynchronizerConfiguration {
                 .modules(modules)
                 .deserializerByType(AlbumType.class, new AlbumTypeDeserializer())
                 .deserializerByType(Level.class, new LoggingLevelDeserializer())
+                .deserializerByType(File.class, new FileDeserializer())
                 .serializationInclusion(JsonInclude.Include.NON_EMPTY)
                 .propertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
                 .featuresToEnable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE)

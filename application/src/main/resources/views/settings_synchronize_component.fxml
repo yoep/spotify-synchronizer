@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<GridPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="be.studios.yoep.spotify.synchronizer.views.SettingsSynchronizeComponent">
+    <columnConstraints>
+        <ColumnConstraints percentWidth="35"/>
+        <ColumnConstraints percentWidth="65"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="30"/>
+        <RowConstraints minHeight="30"/>
+    </rowConstraints>
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+
+    <!-- LOCAL MUSIC DIRECTORY -->
+    <Label alignment="CENTER_RIGHT" maxWidth="Infinity" text="%settings_local_music_directory"
+           GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0">
+        <padding>
+            <Insets right="5.0"/>
+        </padding>
+    </Label>
+    <GridPane alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity"/>
+            <ColumnConstraints hgrow="NEVER" maxWidth="100" minWidth="100"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints/>
+        </rowConstraints>
+        <GridPane.margin>
+            <Insets bottom="2.5" top="2.5"/>
+        </GridPane.margin>
+
+        <TextField fx:id="directory" editable="false" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <Button maxWidth="Infinity" onAction="#selectDirectory" text="%settings_directory_browse" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"
+                GridPane.rowIndex="0"/>
+    </GridPane>
+</GridPane>

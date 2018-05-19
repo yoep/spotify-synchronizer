@@ -5,14 +5,19 @@ import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Service for handling the user settings.
@@ -22,6 +27,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserSettingsService {
     private final ObjectMapper objectMapper;
+    private final Validator validator;
 
     @PostConstruct
     public void init() {
@@ -58,7 +64,14 @@ public class UserSettingsService {
         if (settingsFile.exists()) {
             try {
                 log.debug("Loading user settings from " + settingsFile.getAbsolutePath());
-                return Optional.of(objectMapper.readValue(settingsFile, UserSettings.class));
+                UserSettings userSettings = objectMapper.readValue(settingsFile, UserSettings.class);
+                Set<ConstraintViolation<UserSettings>> validationResults = validator.validate(userSettings);
+
+                if (CollectionUtils.isEmpty(validationResults)) {
+                    return Optional.of(userSettings);
+                } else {
+                    throw new ConstraintViolationException("User settings are invalid", validationResults);
+                }
             } catch (IOException ex) {
                 throw new SettingsException("Unable to read settings file at " + settingsFile.getAbsolutePath(), ex);
             }

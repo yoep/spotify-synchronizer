@@ -1,7 +1,6 @@
 package be.studios.yoep.spotify.synchronizer.views;
 
 import be.studios.yoep.spotify.synchronizer.common.LoggingService;
-import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
 import be.studios.yoep.spotify.synchronizer.settings.model.Logging;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
 import javafx.fxml.FXML;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SettingsLoggingComponent implements Initializable, SettingComponent {
     private final LoggingService loggingService;
-    private final UserSettingsService settingsService;
 
     @FXML
     private ComboBox<String> level;
@@ -37,7 +35,7 @@ public class SettingsLoggingComponent implements Initializable, SettingComponent
     }
 
     @Override
-    public void apply() {
+    public UserSettings apply(UserSettings currentUserSettings) {
         if (logfile.isSelected()) {
             loggingService.enableLogfile();
         } else {
@@ -46,7 +44,12 @@ public class SettingsLoggingComponent implements Initializable, SettingComponent
 
         loggingService.setLevel(Level.valueOf(level.getValue()));
 
-        saveUserSettings();
+        currentUserSettings.setLogging(Logging.builder()
+                .level(Level.valueOf(level.getValue()))
+                .logfileEnabled(logfile.isSelected())
+                .build());
+
+        return currentUserSettings;
     }
 
     private void initializeLogLevel() {
@@ -58,16 +61,5 @@ public class SettingsLoggingComponent implements Initializable, SettingComponent
 
     private void initializeLogfile() {
         logfile.setSelected(loggingService.isLogfileEnabled());
-    }
-
-    private void saveUserSettings() {
-        UserSettings userSettings = settingsService.getUserSettings()
-                .orElse(UserSettings.builder().build());
-
-        userSettings.setLogging(Logging.builder()
-                .level(Level.valueOf(level.getValue()))
-                .logfileEnabled(logfile.isSelected())
-                .build());
-        settingsService.save(userSettings);
     }
 }

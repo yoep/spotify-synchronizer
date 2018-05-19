@@ -1,4 +1,4 @@
-package be.studios.yoep.spotify.synchronizer.common;
+package be.studios.yoep.spotify.synchronizer.common.deserializers;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

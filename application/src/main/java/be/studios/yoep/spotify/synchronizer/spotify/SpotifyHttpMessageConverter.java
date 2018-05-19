@@ -24,7 +24,7 @@ public class SpotifyHttpMessageConverter extends MappingJackson2HttpMessageConve
         try {
             ByteArrayOutputStream inputStream = new ByteArrayOutputStream(inputMessage.getBody().available());
             IOUtils.copy(inputMessage.getBody(), inputStream);
-            log.debug(inputStream.toString());
+//            log.debug(inputStream.toString());
             return super.read(type, contextClass, new MappingJacksonInputMessage(
                     new ByteArrayInputStream(inputStream.toByteArray()), inputMessage.getHeaders()));
         } catch (Exception e) {

@@ -4,13 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
-
+import java.io.File;
 
 @Data
 @Builder
 @AllArgsConstructor
-public class Authentication {
-    @NotNull
-    private OAuth2AccessTokenWrapper accessToken;
+public class Synchronize {
+    private File localMusicDirectory;
 }
