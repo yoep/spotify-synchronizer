@@ -10,10 +10,15 @@ import javafx.collections.ObservableList;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FileUtils;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.AutoDetectParser;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.Parser;
+import org.apache.tika.parser.mp3.Mp3Parser;
+import org.apache.tika.sax.BodyContentHandler;
 import org.springframework.stereotype.Service;
 
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioSystem;
 import java.io.File;
 
 @Log4j2
@@ -26,6 +31,13 @@ public class LocalMusicDiscovery implements DiscoveryService {
 
     @Override
     public void start() {
+        settingsService.getUserSettingsObservable().addListener((observable, oldValue, newValue) -> {
+            indexLocalFiles();
+        });
+        indexLocalFiles();
+    }
+
+    private void indexLocalFiles() {
         File localMusicDirectory = settingsService.getUserSettings()
                 .map(UserSettings::getSynchronize)
                 .map(Synchronize::getLocalMusicDirectory)
@@ -38,14 +50,20 @@ public class LocalMusicDiscovery implements DiscoveryService {
 
     private void discoverDirectory(File directory) {
         File[] files = directory.listFiles();
+        Parser parser = new Mp3Parser();
 
         if (files != null) {
             for (File file : files) {
                 if (!file.isDirectory()) {
+                    Metadata metadata = new Metadata();
+
                     try {
-                        AudioFileFormat audioFileFormat = AudioSystem.getAudioFileFormat(file);
+                        parser.parse(FileUtils.openInputStream(file), new BodyContentHandler(), metadata, new ParseContext());
 
                         trackList.add(LocalTrack.builder()
+                                .artist(metadata.get("Author"))
+                                .album(metadata.get("xmpDM:album"))
+                                .title(metadata.get("title"))
                                 .build());
                     } catch (Exception ex) {
                         log.error("Unable to read audio file", ex);

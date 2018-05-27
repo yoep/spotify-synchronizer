@@ -4,6 +4,7 @@ import be.studios.yoep.spotify.synchronizer.authorization.AuthorizationService;
 import be.studios.yoep.spotify.synchronizer.authorization.SpotifyAccessTokenProvider;
 import be.studios.yoep.spotify.synchronizer.common.deserializers.FileDeserializer;
 import be.studios.yoep.spotify.synchronizer.common.deserializers.LoggingLevelDeserializer;
+import be.studios.yoep.spotify.synchronizer.common.serializers.FileSerializer;
 import be.studios.yoep.spotify.synchronizer.spotify.OAuth2RestTemplateSpotify;
 import be.studios.yoep.spotify.synchronizer.configuration.SpotifyConfiguration;
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
@@ -82,6 +83,7 @@ public class SpotifySynchronizerConfiguration {
                 .deserializerByType(AlbumType.class, new AlbumTypeDeserializer())
                 .deserializerByType(Level.class, new LoggingLevelDeserializer())
                 .deserializerByType(File.class, new FileDeserializer())
+                .serializerByType(File.class, new FileSerializer())
                 .serializationInclusion(JsonInclude.Include.NON_EMPTY)
                 .propertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
                 .featuresToEnable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE)

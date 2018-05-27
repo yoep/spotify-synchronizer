@@ -49,7 +49,7 @@ public class SpotifyAccessTokenProvider extends AuthorizationCodeAccessTokenProv
             return retrieveAccessToken(details, spotifyToken.getAuthorizationCode(), ex.getStateToPreserve().toString());
         } catch (RefreshTokenMissingException ex) {
             logger.error(ex);
-            return null;
+            return super.obtainAccessToken(details, parameters);
         }
     }
 

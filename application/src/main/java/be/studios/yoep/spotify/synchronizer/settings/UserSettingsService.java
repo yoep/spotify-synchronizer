@@ -3,6 +3,8 @@ package be.studios.yoep.spotify.synchronizer.settings;
 import be.studios.yoep.spotify.synchronizer.SpotifySynchronizer;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.beans.property.SimpleObjectProperty;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
@@ -16,6 +18,7 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Optional;
 import java.util.Set;
 
@@ -26,6 +29,8 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class UserSettingsService {
+    @Getter
+    private final SimpleObjectProperty<UserSettings> userSettingsObservable = new SimpleObjectProperty<>();
     private final ObjectMapper objectMapper;
     private final Validator validator;
 
@@ -46,7 +51,8 @@ public class UserSettingsService {
 
         try {
             log.debug("Saving user settings to " + settingsFile.getAbsolutePath());
-            FileUtils.writeStringToFile(settingsFile, objectMapper.writeValueAsString(settings));
+            FileUtils.writeStringToFile(settingsFile, objectMapper.writeValueAsString(settings), Charset.defaultCharset());
+            userSettingsObservable.set(settings);
         } catch (IOException ex) {
             throw new SettingsException("Unable to write settings to " + settingsFile.getAbsolutePath(), ex);
         }
@@ -59,6 +65,14 @@ public class UserSettingsService {
      * @throws SettingsException Is thrown when the user settings exist but couldn't be read.
      */
     public Optional<UserSettings> getUserSettings() throws SettingsException {
+        if (userSettingsObservable.get() != null) {
+            return Optional.of(userSettingsObservable.get());
+        } else {
+            return loadUserSettingsFromFile();
+        }
+    }
+
+    private Optional<UserSettings> loadUserSettingsFromFile() {
         File settingsFile = getSettingsFile();
 
         if (settingsFile.exists()) {

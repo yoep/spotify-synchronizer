@@ -106,6 +106,7 @@ subprojects {
                 dependency 'com.jayway.restassured:rest-assured:2.9.0'
                 dependency 'com.google.guava:guava:21.0'
                 dependency 'org.apache.commons:commons-lang3:3.4'
+                dependency 'org.objenesis:objenesis:2.6'
             }
         }
     }
