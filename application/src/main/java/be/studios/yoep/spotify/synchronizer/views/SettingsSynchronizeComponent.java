@@ -1,7 +1,7 @@
 package be.studios.yoep.spotify.synchronizer.views;
 
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
-import be.studios.yoep.spotify.synchronizer.settings.model.Synchronize;
+import be.studios.yoep.spotify.synchronizer.settings.model.Synchronization;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
 import be.studios.yoep.spotify.synchronizer.ui.PrimaryWindowNotAvailableException;
 import be.studios.yoep.spotify.synchronizer.ui.ViewManager;
@@ -37,7 +37,7 @@ public class SettingsSynchronizeComponent implements Initializable, SettingCompo
 
     @Override
     public UserSettings apply(UserSettings currentUserSettings) {
-        currentUserSettings.setSynchronize(Synchronize.builder()
+        currentUserSettings.setSynchronization(Synchronization.builder()
                 .localMusicDirectory(selectedFile)
                 .build());
         return currentUserSettings;
@@ -54,8 +54,8 @@ public class SettingsSynchronizeComponent implements Initializable, SettingCompo
 
     private void initializeDirectory() {
         File localMusicDirectory = settingsService.getUserSettings()
-                .map(UserSettings::getSynchronize)
-                .map(Synchronize::getLocalMusicDirectory)
+                .map(UserSettings::getSynchronization)
+                .map(Synchronization::getLocalMusicDirectory)
                 .orElse(null);
 
         if (localMusicDirectory != null) {

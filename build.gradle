@@ -102,7 +102,7 @@ subprojects {
             mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
 
             dependencies {
-                dependency 'org.projectlombok:lombok:1.16.18'
+                dependency 'org.projectlombok:lombok:1.16.20'
                 dependency 'com.jayway.restassured:rest-assured:2.9.0'
                 dependency 'com.google.guava:guava:21.0'
                 dependency 'org.apache.commons:commons-lang3:3.4'

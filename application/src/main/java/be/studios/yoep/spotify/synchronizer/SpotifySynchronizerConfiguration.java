@@ -87,6 +87,8 @@ public class SpotifySynchronizerConfiguration {
                 .serializationInclusion(JsonInclude.Include.NON_EMPTY)
                 .propertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
                 .featuresToEnable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE)
+                .featuresToEnable(DeserializationFeature.FAIL_ON_MISSING_CREATOR_PROPERTIES)
+                .featuresToEnable(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES)
                 .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 

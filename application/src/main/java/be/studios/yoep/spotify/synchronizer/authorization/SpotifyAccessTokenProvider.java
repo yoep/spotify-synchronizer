@@ -108,10 +108,10 @@ public class SpotifyAccessTokenProvider extends AuthorizationCodeAccessTokenProv
         UserSettings userSettings = settingsService.getUserSettings()
                 .orElse(UserSettings.builder().build());
 
-        userSettings.getAuthentication().setAccessToken(OAuth2AccessTokenWrapper.builder()
+        userSettings.setAuthentication(new Authentication(OAuth2AccessTokenWrapper.builder()
                 .expireDate(LocalDateTime.ofInstant(oAuth2AccessToken.getExpiration().toInstant(), ZoneId.systemDefault()))
                 .token(oAuth2AccessToken)
-                .build());
+                .build()));
         settingsService.save(userSettings);
     }
 }

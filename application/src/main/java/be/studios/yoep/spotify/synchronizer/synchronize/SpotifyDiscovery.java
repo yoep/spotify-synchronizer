@@ -38,7 +38,7 @@ public class SpotifyDiscovery implements DiscoveryService {
 
     @Override
     public void start() {
-        log.debug("Starting spotify synchronize");
+        log.debug("Starting spotify synchronization");
 
         try {
             Tracks tracks = spotifyService.getSavedTracks().get();

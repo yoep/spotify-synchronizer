@@ -1,7 +1,7 @@
 package be.studios.yoep.spotify.synchronizer.synchronize;
 
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
-import be.studios.yoep.spotify.synchronizer.settings.model.Synchronize;
+import be.studios.yoep.spotify.synchronizer.settings.model.Synchronization;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.LocalTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.MusicTrack;
@@ -12,14 +12,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.mp3.Mp3Parser;
 import org.apache.tika.sax.BodyContentHandler;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 @Log4j2
 @Data
@@ -37,10 +39,11 @@ public class LocalMusicDiscovery implements DiscoveryService {
         indexLocalFiles();
     }
 
-    private void indexLocalFiles() {
+    @Async
+    public void indexLocalFiles() {
         File localMusicDirectory = settingsService.getUserSettings()
-                .map(UserSettings::getSynchronize)
-                .map(Synchronize::getLocalMusicDirectory)
+                .map(UserSettings::getSynchronization)
+                .map(Synchronization::getLocalMusicDirectory)
                 .orElse(null);
 
         if (localMusicDirectory != null && localMusicDirectory.exists()) {
@@ -51,6 +54,7 @@ public class LocalMusicDiscovery implements DiscoveryService {
     private void discoverDirectory(File directory) {
         File[] files = directory.listFiles();
         Parser parser = new Mp3Parser();
+        List<MusicTrack> musicTracks = new ArrayList<>();
 
         if (files != null) {
             for (File file : files) {
@@ -60,7 +64,7 @@ public class LocalMusicDiscovery implements DiscoveryService {
                     try {
                         parser.parse(FileUtils.openInputStream(file), new BodyContentHandler(), metadata, new ParseContext());
 
-                        trackList.add(LocalTrack.builder()
+                        musicTracks.add(LocalTrack.builder()
                                 .artist(metadata.get("Author"))
                                 .album(metadata.get("xmpDM:album"))
                                 .title(metadata.get("title"))
@@ -72,6 +76,8 @@ public class LocalMusicDiscovery implements DiscoveryService {
                     discoverDirectory(file);
                 }
             }
+
+            trackList.addAll(musicTracks);
         }
     }
 }

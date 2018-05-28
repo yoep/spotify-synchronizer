@@ -3,14 +3,16 @@ package be.studios.yoep.spotify.synchronizer.settings.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
-public class UserSettings {
+public class UserSettings implements Serializable {
     @Valid
     @Builder.Default
     private Authentication authentication = Authentication.builder().build();
@@ -19,5 +21,5 @@ public class UserSettings {
     private Logging logging = Logging.builder().build();
     @Valid
     @Builder.Default
-    private Synchronize synchronize = Synchronize.builder().build();
+    private Synchronization synchronization = Synchronization.builder().build();
 }
