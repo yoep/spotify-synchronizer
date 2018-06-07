@@ -5,6 +5,7 @@ import be.studios.yoep.spotify.synchronizer.settings.model.Synchronization;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.LocalTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.MusicTrack;
+import be.studios.yoep.spotify.synchronizer.tika.Mp3Properties;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Data;
@@ -33,9 +34,7 @@ public class LocalMusicDiscovery implements DiscoveryService {
 
     @Override
     public void start() {
-        settingsService.getUserSettingsObservable().addListener((observable, oldValue, newValue) -> {
-            indexLocalFiles();
-        });
+        settingsService.getUserSettingsObservable().addListener((observable, oldValue, newValue) -> indexLocalFiles());
         indexLocalFiles();
     }
 
@@ -64,10 +63,15 @@ public class LocalMusicDiscovery implements DiscoveryService {
                     try {
                         parser.parse(FileUtils.openInputStream(file), new BodyContentHandler(), metadata, new ParseContext());
 
+                        String artist = metadata.get(Mp3Properties.CREATOR);
+                        String album = metadata.get(Mp3Properties.ALBUM);
+                        String title = metadata.get(Mp3Properties.TITLE);
+
+                        log.debug("Found mp3 with {}, {}, {}", artist, album, title);
                         musicTracks.add(LocalTrack.builder()
-                                .artist(metadata.get("Author"))
-                                .album(metadata.get("xmpDM:album"))
-                                .title(metadata.get("title"))
+                                .artist(artist)
+                                .album(album)
+                                .title(title)
                                 .build());
                     } catch (Exception ex) {
                         log.error("Unable to read audio file", ex);
