@@ -38,8 +38,7 @@ public class LocalMusicDiscovery implements DiscoveryService {
         indexLocalFiles();
     }
 
-    @Async
-    public void indexLocalFiles() {
+    private void indexLocalFiles() {
         File localMusicDirectory = settingsService.getUserSettings()
                 .map(UserSettings::getSynchronization)
                 .map(Synchronization::getLocalMusicDirectory)

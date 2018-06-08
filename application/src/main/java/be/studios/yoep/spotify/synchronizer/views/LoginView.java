@@ -63,7 +63,7 @@ public class LoginView implements Initializable {
         } else if (url.contains("facebook")) {
             setWindowSize(new Rectangle(800, 550));
         } else {
-            setWindowSize(new Rectangle(400, 600));
+            setWindowSize(new Rectangle(400, 650));
         }
     }
 

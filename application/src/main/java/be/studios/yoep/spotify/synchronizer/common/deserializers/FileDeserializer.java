@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class FileDeserializer extends JsonDeserializer<File> {
     @Override
-    public File deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+    public File deserialize(JsonParser jsonParser, DeserializationContext ctxt) throws IOException {
         return new File(jsonParser.getValueAsString());
     }
 }
