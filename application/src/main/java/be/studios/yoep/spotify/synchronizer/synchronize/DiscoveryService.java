@@ -9,10 +9,11 @@ import org.springframework.scheduling.annotation.Async;
  */
 public interface DiscoveryService {
     /**
-     * Start the discovery service on an asynchronous thread.
+     * Verify if this discovery service is finished.
+     *
+     * @return Returns true if the discovery service is done, else false.
      */
-    @Async
-    void start() throws RuntimeException;
+    boolean isFinished();
 
     /**
      * Get the observable of the track list available within the service.
@@ -20,4 +21,17 @@ public interface DiscoveryService {
      * @return Returns the track list of the discovery service.
      */
     ObservableList<MusicTrack> getTrackList();
+
+    /**
+     * Start the discovery service on an asynchronous thread.
+     */
+    @Async
+    void start() throws RuntimeException;
+
+    /**
+     * Is invoked when the synchronisation process if finished.
+     *
+     * @param callback Set the callback function.
+     */
+    void onFinished(Runnable callback);
 }

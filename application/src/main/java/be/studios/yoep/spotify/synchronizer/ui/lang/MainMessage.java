@@ -9,7 +9,8 @@ public enum MainMessage implements Message {
     ALBUM_TRACK("album_track"),
     PROGRESSION("progression"),
     PROGRESSION_FAILED("progression_failed"),
-    SYNCHRONIZING("synchronizing");
+    SYNCHRONIZING("synchronizing"),
+    DONE("done");
 
     private String key;
 

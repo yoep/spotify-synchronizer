@@ -132,6 +132,19 @@ public class ProgressHandler {
     }
 
     /**
+     * Set that the process has been completed.
+     *
+     * @param text Set the text to show.
+     */
+    public void success(String text) {
+        Platform.runLater(() -> {
+            progressBar.setStyle("-fx-accent: green;");
+            progressBar.setProgress(1);
+            progressLabel.setText(text);
+        });
+    }
+
+    /**
      * Set the process additional information text.
      * This text will be shown on the left side of the status bar.
      *

@@ -2,15 +2,11 @@ package be.studios.yoep.spotify.synchronizer;
 
 import be.studios.yoep.spotify.synchronizer.authorization.AuthorizationService;
 import be.studios.yoep.spotify.synchronizer.authorization.SpotifyAccessTokenProvider;
-import be.studios.yoep.spotify.synchronizer.common.deserializers.FileDeserializer;
-import be.studios.yoep.spotify.synchronizer.common.deserializers.LoggingLevelDeserializer;
-import be.studios.yoep.spotify.synchronizer.common.serializers.FileSerializer;
-import be.studios.yoep.spotify.synchronizer.spotify.OAuth2RestTemplateSpotify;
+import be.studios.yoep.spotify.synchronizer.common.SynchronizerModule;
 import be.studios.yoep.spotify.synchronizer.configuration.SpotifyConfiguration;
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
-import be.studios.yoep.spotify.synchronizer.spotify.AlbumTypeDeserializer;
+import be.studios.yoep.spotify.synchronizer.spotify.OAuth2RestTemplateSpotify;
 import be.studios.yoep.spotify.synchronizer.spotify.SpotifyHttpMessageConverter;
-import be.studios.yoep.spotify.synchronizer.spotify.api.v1.AlbumType;
 import be.studios.yoep.spotify.synchronizer.ui.UIText;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -21,8 +17,6 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import org.apache.logging.log4j.Level;
-import org.apache.tomcat.jni.File;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -77,13 +71,14 @@ public class SpotifySynchronizerConfiguration {
     }
 
     @Bean
+    public Module synchronizerModule() {
+        return new SynchronizerModule();
+    }
+
+    @Bean
     public Jackson2ObjectMapperBuilder jackson2ObjectMapperBuilder(List<Module> modules) {
         return new Jackson2ObjectMapperBuilder()
                 .modules(modules)
-                .deserializerByType(AlbumType.class, new AlbumTypeDeserializer())
-                .deserializerByType(Level.class, new LoggingLevelDeserializer())
-                .deserializerByType(File.class, new FileDeserializer())
-                .serializerByType(File.class, new FileSerializer())
                 .serializationInclusion(JsonInclude.Include.NON_EMPTY)
                 .propertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
                 .featuresToEnable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE)

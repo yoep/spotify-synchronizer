@@ -25,6 +25,9 @@ public class SpotifyDiscovery implements DiscoveryService {
     private final ObservableList<MusicTrack> trackList = FXCollections.observableArrayList();
     private final ObservableList<SavedTrack> savedTrackList = FXCollections.observableArrayList();
 
+    private Runnable callback;
+    private boolean finished = true;
+
     @PostConstruct
     public void init() {
         savedTrackList.addListener((ListChangeListener<SavedTrack>) change -> {
@@ -37,8 +40,14 @@ public class SpotifyDiscovery implements DiscoveryService {
     }
 
     @Override
+    public boolean isFinished() {
+        return this.finished;
+    }
+
+    @Override
     public void start() {
         log.debug("Starting spotify synchronization");
+        this.finished = false;
 
         try {
             Tracks tracks = spotifyService.getSavedTracks().get();
@@ -53,8 +62,21 @@ public class SpotifyDiscovery implements DiscoveryService {
             }
 
             log.debug("Done synchronizing spotify");
+            this.finished = true;
+            invokeCallback();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    public void onFinished(Runnable callback) {
+        this.callback = callback;
+    }
+
+    private void invokeCallback() {
+        if (callback != null) {
+            this.callback.run();
         }
     }
 }

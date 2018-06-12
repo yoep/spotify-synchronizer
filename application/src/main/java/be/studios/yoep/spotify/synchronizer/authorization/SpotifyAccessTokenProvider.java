@@ -42,15 +42,20 @@ public class SpotifyAccessTokenProvider extends AuthorizationCodeAccessTokenProv
             return optionalAccessToken
                     .map(accessTokenWrapper -> resolveAccessToken(details, accessTokenWrapper))
                     .orElseGet(() -> super.obtainAccessToken(details, parameters));
-        } catch (UserRedirectRequiredException ex) {
-            authorizationService.startAuthorization(ex);
-            SpotifyToken spotifyToken = ofNullable(authorizationService.getAccessTokenWhenAvailable())
-                    .orElseThrow(AccessTokenNotAvailable::new);
-            return retrieveAccessToken(details, spotifyToken.getAuthorizationCode(), ex.getStateToPreserve().toString());
         } catch (RefreshTokenMissingException ex) {
             logger.error(ex);
-            return super.obtainAccessToken(details, parameters);
+
+            return handleRefreshTokenMissing(details, parameters);
+        } catch (UserRedirectRequiredException ex) {
+            return startUserRedirect(details, ex);
         }
+    }
+
+    private OAuth2AccessToken startUserRedirect(OAuth2ProtectedResourceDetails details, UserRedirectRequiredException ex) {
+        authorizationService.startAuthorization(ex);
+        SpotifyToken spotifyToken = ofNullable(authorizationService.getAccessTokenWhenAvailable())
+                .orElseThrow(AccessTokenNotAvailable::new);
+        return retrieveAccessToken(details, spotifyToken.getAuthorizationCode(), ex.getStateToPreserve().toString());
     }
 
     private OAuth2AccessToken resolveAccessToken(OAuth2ProtectedResourceDetails details, OAuth2AccessTokenWrapper accessTokenWrapper) {
@@ -80,6 +85,14 @@ public class SpotifyAccessTokenProvider extends AuthorizationCodeAccessTokenProv
         OAuth2AccessToken oAuth2AccessToken = retrieveToken(request, resource, getParametersForRefreshTokenRequest(accessToken), new HttpHeaders());
         saveAccessToken(oAuth2AccessToken);
         return oAuth2AccessToken;
+    }
+
+    private OAuth2AccessToken handleRefreshTokenMissing(OAuth2ProtectedResourceDetails details, AccessTokenRequest parameters) {
+        try {
+            return super.obtainAccessToken(details, parameters);
+        } catch (UserRedirectRequiredException userRedirect) {
+            return startUserRedirect(details, userRedirect);
+        }
     }
 
     private MultiValueMap<String, String> getParametersForTokenRequest(String authorizationCode,

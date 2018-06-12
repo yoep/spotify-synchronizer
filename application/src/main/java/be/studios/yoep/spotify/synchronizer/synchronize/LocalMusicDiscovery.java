@@ -17,7 +17,6 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.mp3.Mp3Parser;
 import org.apache.tika.sax.BodyContentHandler;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -32,10 +31,23 @@ public class LocalMusicDiscovery implements DiscoveryService {
     private final UserSettingsService settingsService;
     private final ObservableList<MusicTrack> trackList = FXCollections.observableArrayList();
 
+    private Runnable callback;
+    private boolean finished = true;
+
+    @Override
+    public boolean isFinished() {
+        return this.finished;
+    }
+
     @Override
     public void start() {
-        settingsService.getUserSettingsObservable().addListener((observable, oldValue, newValue) -> indexLocalFiles());
+        this.finished = false;
         indexLocalFiles();
+    }
+
+    @Override
+    public void onFinished(Runnable callback) {
+        this.callback = callback;
     }
 
     private void indexLocalFiles() {
@@ -47,6 +59,9 @@ public class LocalMusicDiscovery implements DiscoveryService {
         if (localMusicDirectory != null && localMusicDirectory.exists()) {
             discoverDirectory(localMusicDirectory);
         }
+
+        this.finished = true;
+        invokeCallback();
     }
 
     private void discoverDirectory(File directory) {
@@ -81,6 +96,12 @@ public class LocalMusicDiscovery implements DiscoveryService {
             }
 
             trackList.addAll(musicTracks);
+        }
+    }
+
+    private void invokeCallback() {
+        if (callback != null) {
+            this.callback.run();
         }
     }
 }
