@@ -22,4 +22,7 @@ public class UserSettings implements Serializable {
     @Valid
     @Builder.Default
     private Synchronization synchronization = Synchronization.builder().build();
+    @Valid
+    @Builder.Default
+    private UserInterface userInterface = UserInterface.builder().build();
 }

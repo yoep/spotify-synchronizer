@@ -3,15 +3,19 @@ package be.studios.yoep.spotify.synchronizer.synchronize;
 import be.studios.yoep.spotify.synchronizer.common.ProgressHandler;
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.MusicTrack;
+import be.studios.yoep.spotify.synchronizer.synchronize.model.SyncTrack;
+import be.studios.yoep.spotify.synchronizer.synchronize.model.SyncTrackImpl;
 import be.studios.yoep.spotify.synchronizer.ui.UIText;
 import be.studios.yoep.spotify.synchronizer.ui.lang.MainMessage;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Data
@@ -23,21 +27,37 @@ public class SynchronisationService {
     private final UserSettingsService settingsService;
     private final ProgressHandler progressHandler;
     private final UIText uiText;
+    private final ObservableList<SyncTrack> tracks = FXCollections.observableArrayList();
 
     /**
      * Initialize the synchronizer and start the synchronisation.
      */
-    public void init(Consumer<ObservableList<MusicTrack>> localTrackConsumer, Consumer<ObservableList<MusicTrack>> spotifyTrackConsumer) {
-        localTrackConsumer.accept(localMusicDiscovery.getTrackList());
-        spotifyTrackConsumer.accept(spotifyDiscovery.getTrackList());
+    public void init() {
+        addListeners();
+        startDiscovery();
+    }
 
+    private void startDiscovery() {
+        progressHandler.setProcess(uiText.get(MainMessage.SYNCHRONIZING));
+        localMusicDiscovery.start();
+        spotifyDiscovery.start();
+    }
+
+    private void addListeners() {
         localMusicDiscovery.onFinished(this::verifyFinishedState);
         spotifyDiscovery.onFinished(this::verifyFinishedState);
 
-        localMusicDiscovery.start();
-        spotifyDiscovery.start();
-        progressHandler.setProcess(uiText.get(MainMessage.SYNCHRONIZING));
+        spotifyDiscovery.getTrackList().addListener((ListChangeListener<MusicTrack>) list -> {
+            if (list.next()) {
+                tracks.addAll(list.getAddedSubList().stream()
+                        .map(e -> SyncTrackImpl.builder()
+                                .spotifyTrack(e)
+                                .build())
+                        .collect(Collectors.toList()));
+            }
+        });
 
+        //register a listener on the user settings
         settingsService.getUserSettingsObservable().addListener((observable, oldValue, newValue) -> {
             progressHandler.setProcess(uiText.get(MainMessage.SYNCHRONIZING));
             localMusicDiscovery.start();

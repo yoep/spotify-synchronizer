@@ -6,7 +6,10 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
@@ -18,13 +21,19 @@ import java.util.List;
 
 @Log4j2
 @EqualsAndHashCode
-@ToString
 @Component
+@RequiredArgsConstructor
 public class ViewManager {
     private final List<Window> windows = new ArrayList<>();
-    @Getter
-    @Setter
     private ViewManagerPolicy policy = ViewManagerPolicy.CLOSEABLE;
+
+    public ViewManagerPolicy getPolicy() {
+        return policy;
+    }
+
+    public void setPolicy(ViewManagerPolicy policy) {
+        this.policy = policy;
+    }
 
     /**
      * Get the total amount of windows which are currently being shown.
