@@ -21,6 +21,14 @@ public interface SyncTrack extends MusicTrack {
     boolean isSynchronized();
 
     /**
+     * Verify if the given {@link MusicTrack} matches the spotify track.
+     *
+     * @param musicTrack Set the {@link MusicTrack} to compare.
+     * @return Returns true if matching, else false.
+     */
+    boolean matches(MusicTrack musicTrack);
+
+    /**
      * Get the found spotify track.
      *
      * @return Returns the found spotify track info.
@@ -33,4 +41,11 @@ public interface SyncTrack extends MusicTrack {
      * @return Returns the found matching local track if found, else empty().
      */
     Optional<MusicTrack> getLocalTrack();
+
+    /**
+     * Set the local track that is matching.
+     *
+     * @param musicTrack Set the local track.
+     */
+    void setLocalTrack(MusicTrack musicTrack);
 }

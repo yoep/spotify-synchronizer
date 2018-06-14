@@ -47,6 +47,18 @@ public class SynchronisationService {
         localMusicDiscovery.onFinished(this::verifyFinishedState);
         spotifyDiscovery.onFinished(this::verifyFinishedState);
 
+        localMusicDiscovery.getTrackList().addListener((ListChangeListener<MusicTrack>) list -> {
+            if (list.next()) {
+                list.getAddedSubList().forEach(track -> {
+                    tracks.stream()
+                            .filter(e -> e.matches(track))
+                            .forEach(e -> e.setLocalTrack(track));
+                });
+                synchronized (tracks) {
+                    tracks.notifyAll();
+                }
+            }
+        });
         spotifyDiscovery.getTrackList().addListener((ListChangeListener<MusicTrack>) list -> {
             if (list.next()) {
                 tracks.addAll(list.getAddedSubList().stream()

@@ -52,7 +52,13 @@ public class UserSettingsService {
         try {
             log.debug("Saving user settings to " + settingsFile.getAbsolutePath());
             FileUtils.writeStringToFile(settingsFile, objectMapper.writeValueAsString(settings), Charset.defaultCharset());
-            userSettingsObservable.set(settings);
+
+            if (!settings.equals(userSettingsObservable.get())) {
+                userSettingsObservable.set(settings);
+                synchronized (userSettingsObservable) {
+                    userSettingsObservable.notifyAll();
+                }
+            }
         } catch (IOException ex) {
             throw new SettingsException("Unable to write settings to " + settingsFile.getAbsolutePath(), ex);
         }

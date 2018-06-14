@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.util.Assert;
 
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
@@ -43,6 +44,14 @@ public class SyncTrackImpl implements SyncTrack {
     @Override
     public boolean isSynchronized() {
         return spotifyTrack.equals(localTrack);
+    }
+
+    @Override
+    public boolean matches(MusicTrack musicTrack) {
+        Assert.notNull(musicTrack, "musicTrack cannot be null");
+
+        return getTitle().trim().toLowerCase().equals(musicTrack.getTitle().trim().toLowerCase()) &&
+                getArtist().trim().toLowerCase().equals(musicTrack.getArtist().trim().toLowerCase());
     }
 
     @Override
