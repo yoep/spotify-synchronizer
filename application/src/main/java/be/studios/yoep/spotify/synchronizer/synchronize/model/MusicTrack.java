@@ -1,9 +1,11 @@
 package be.studios.yoep.spotify.synchronizer.synchronize.model;
 
+import javafx.beans.Observable;
+
 /**
  * Defines the information about a music track which generalizes the info between local and Spotify music tracks.
  */
-public interface MusicTrack {
+public interface MusicTrack extends Observable {
     /**
      * Get the title of the track.
      *

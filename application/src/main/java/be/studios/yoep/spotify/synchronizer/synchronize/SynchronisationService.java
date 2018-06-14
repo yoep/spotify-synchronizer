@@ -7,6 +7,7 @@ import be.studios.yoep.spotify.synchronizer.synchronize.model.SyncTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SyncTrackImpl;
 import be.studios.yoep.spotify.synchronizer.ui.UIText;
 import be.studios.yoep.spotify.synchronizer.ui.lang.MainMessage;
+import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -27,7 +28,7 @@ public class SynchronisationService {
     private final UserSettingsService settingsService;
     private final ProgressHandler progressHandler;
     private final UIText uiText;
-    private final ObservableList<SyncTrack> tracks = FXCollections.observableArrayList();
+    private final ObservableList<SyncTrack> tracks = FXCollections.observableArrayList(param -> new Observable[]{param});
 
     /**
      * Initialize the synchronizer and start the synchronisation.
@@ -54,9 +55,6 @@ public class SynchronisationService {
                             .filter(e -> e.matches(track))
                             .forEach(e -> e.setLocalTrack(track));
                 });
-                synchronized (tracks) {
-                    tracks.notifyAll();
-                }
             }
         });
         spotifyDiscovery.getTrackList().addListener((ListChangeListener<MusicTrack>) list -> {

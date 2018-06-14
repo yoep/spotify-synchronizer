@@ -1,9 +1,6 @@
 package be.studios.yoep.spotify.synchronizer.synchronize.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.util.Assert;
 
 import javax.validation.constraints.NotNull;
@@ -12,11 +9,12 @@ import java.util.Optional;
 /**
  * Implementation of the {@link SyncTrack}.
  */
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SyncTrackImpl implements SyncTrack {
+public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
     @NotNull
     private MusicTrack spotifyTrack;
     private MusicTrack localTrack;
@@ -62,5 +60,10 @@ public class SyncTrackImpl implements SyncTrack {
     @Override
     public Optional<MusicTrack> getLocalTrack() {
         return Optional.ofNullable(localTrack);
+    }
+
+    public void setLocalTrack(MusicTrack localTrack) {
+        this.localTrack = localTrack;
+        listeners.forEach(e -> e.invalidated(this));
     }
 }

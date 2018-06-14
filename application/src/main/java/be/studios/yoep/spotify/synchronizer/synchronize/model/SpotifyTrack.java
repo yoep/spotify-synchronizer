@@ -2,20 +2,33 @@ package be.studios.yoep.spotify.synchronizer.synchronize.model;
 
 import be.studios.yoep.spotify.synchronizer.spotify.api.v1.SavedTrack;
 import be.studios.yoep.spotify.synchronizer.spotify.api.v1.Track;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.util.Assert;
 
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SpotifyTrack implements MusicTrack {
+public class SpotifyTrack extends AbstractMusicTrack {
     private String title;
     private String artist;
     private String album;
+
+    public void setTitle(String title) {
+        this.title = title;
+        listeners.forEach(e -> e.invalidated(this));
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+        listeners.forEach(e -> e.invalidated(this));
+    }
+
+    public void setAlbum(String album) {
+        this.album = album;
+        listeners.forEach(e -> e.invalidated(this));
+    }
 
     /**
      * Convert the given {@link SavedTrack} to a {@link SpotifyTrack} instance.
