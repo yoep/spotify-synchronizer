@@ -3,8 +3,8 @@ package be.studios.yoep.spotify.synchronizer.views;
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
 import be.studios.yoep.spotify.synchronizer.settings.model.Synchronization;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
-import be.studios.yoep.spotify.synchronizer.ui.exceptions.PrimaryWindowNotAvailableException;
 import be.studios.yoep.spotify.synchronizer.ui.ViewManager;
+import be.studios.yoep.spotify.synchronizer.ui.exceptions.PrimaryWindowNotAvailableException;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import static java.util.Optional.ofNullable;
 
 @Log4j2
 @Component
@@ -37,9 +39,12 @@ public class SettingsSynchronizeComponent implements Initializable, SettingCompo
 
     @Override
     public UserSettings apply(UserSettings currentUserSettings) {
-        currentUserSettings.setSynchronization(Synchronization.builder()
-                .localMusicDirectory(selectedFile)
-                .build());
+        Synchronization synchronization = ofNullable(currentUserSettings.getSynchronization())
+                .orElse(Synchronization.builder().build());
+
+        synchronization.setLocalMusicDirectory(selectedFile);
+        currentUserSettings.setSynchronization(synchronization);
+
         return currentUserSettings;
     }
 

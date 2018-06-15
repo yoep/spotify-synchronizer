@@ -1,9 +1,9 @@
 package be.studios.yoep.spotify.synchronizer.settings;
 
 import be.studios.yoep.spotify.synchronizer.SpotifySynchronizer;
+import be.studios.yoep.spotify.synchronizer.common.ObservableWrapper;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.beans.property.SimpleObjectProperty;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -30,7 +30,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserSettingsService {
     @Getter
-    private final SimpleObjectProperty<UserSettings> userSettingsObservable = new SimpleObjectProperty<>();
+    private final ObservableWrapper<UserSettings> userSettingsObservable = new ObservableWrapper<>();
     private final ObjectMapper objectMapper;
     private final Validator validator;
 
@@ -52,13 +52,7 @@ public class UserSettingsService {
         try {
             log.debug("Saving user settings to " + settingsFile.getAbsolutePath());
             FileUtils.writeStringToFile(settingsFile, objectMapper.writeValueAsString(settings), Charset.defaultCharset());
-
-            if (!settings.equals(userSettingsObservable.get())) {
-                userSettingsObservable.set(settings);
-                synchronized (userSettingsObservable) {
-                    userSettingsObservable.notifyAll();
-                }
-            }
+            userSettingsObservable.set(settings);
         } catch (IOException ex) {
             throw new SettingsException("Unable to write settings to " + settingsFile.getAbsolutePath(), ex);
         }
@@ -88,6 +82,7 @@ public class UserSettingsService {
                 Set<ConstraintViolation<UserSettings>> validationResults = validator.validate(userSettings);
 
                 if (CollectionUtils.isEmpty(validationResults)) {
+                    userSettingsObservable.set(userSettings);
                     return Optional.of(userSettings);
                 } else {
                     throw new ConstraintViolationException("User settings are invalid", validationResults);

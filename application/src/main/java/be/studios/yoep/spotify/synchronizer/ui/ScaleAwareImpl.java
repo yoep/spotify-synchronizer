@@ -17,7 +17,7 @@ public abstract class ScaleAwareImpl implements ScaleAware {
 
         Parent root = scene.getRoot();
 
-        root.setScaleY(root.getScaleY() * userInterface.getScale());
-        root.setScaleX(root.getScaleX() * userInterface.getScale());
+//        root.setScaleY(root.getScaleY() * userInterface.getScale());
+//        root.setScaleX(root.getScaleX() * userInterface.getScale());
     }
 }

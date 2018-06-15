@@ -70,7 +70,7 @@ public class SynchronisationService {
         });
 
         //register a listener on the user settings
-        settingsService.getUserSettingsObservable().addListener((observable, oldValue, newValue) -> {
+        settingsService.getUserSettingsObservable().addObserver((o, arg) -> {
             progressHandler.setProcess(uiText.get(MainMessage.SYNCHRONIZING));
             localMusicDiscovery.start();
         });

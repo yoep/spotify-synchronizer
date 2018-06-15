@@ -1,19 +1,23 @@
 package be.studios.yoep.spotify.synchronizer.settings.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.Serializable;
+import java.util.Observable;
 
-@Data
+@EqualsAndHashCode(callSuper = false)
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Synchronization implements Serializable {
+public class Synchronization extends Observable implements Serializable {
     @NotNull
     private File localMusicDirectory;
+
+    public void setLocalMusicDirectory(File localMusicDirectory) {
+        this.localMusicDirectory = localMusicDirectory;
+        this.notifyObservers();
+    }
 }
