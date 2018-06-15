@@ -34,7 +34,11 @@ public class MainView implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         musicList.setItems(synchronisationService.getTracks());
-        synchronisationService.getTracks().addListener((ListChangeListener<SyncTrack>) c -> musicList.refresh());
+        synchronisationService.getTracks().addListener((ListChangeListener<SyncTrack>) c -> {
+            if (c.next() && c.wasUpdated()) {
+                musicList.refresh();
+            }
+        });
 
         initializeColumns();
         synchronisationService.init();
@@ -53,7 +57,8 @@ public class MainView implements Initializable {
         albumColumn.setSortType(TableColumn.SortType.ASCENDING);
 
         musicList.getColumns().addAll(asList(titleColumn, artistColumn, albumColumn));
-        musicList.getSortOrder().addAll(asList(artistColumn, titleColumn));
+        musicList.getSortOrder().addAll(asList(artistColumn, albumColumn));
+        musicList.sort();
     }
 
     private TableColumn<SyncTrack, String> createColumn(String text, Function<SyncTrack, String> fieldMapping) {
@@ -69,8 +74,12 @@ public class MainView implements Initializable {
                 if (track != null) {
                     setText(empty ? null : fieldMapping.apply(track));
 
-                    if (track.isSynchronized()) {
-                        setTextFill(Paint.valueOf("#000000"));
+                    if (track.isLocalTrackAvailable()) {
+                        if (track.isSynchronized()) {
+                            setTextFill(Paint.valueOf("#00be00"));
+                        } else {
+                            setTextFill(Paint.valueOf("#0000be"));
+                        }
                     } else {
                         setTextFill(Paint.valueOf("#be0000"));
                     }
