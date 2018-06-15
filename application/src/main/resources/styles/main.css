@@ -1,9 +1,10 @@
 .root {
+
 }
 
 .icon {
     -fx-font-family: FontAwesome;
-    -fx-font-size: 14px;
+    -fx-font-size: 14em;
     -fx-text-fill: #0c7032;
 }
 

@@ -1,9 +1,13 @@
 package be.studios.yoep.spotify.synchronizer.ui;
 
+import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
+import be.studios.yoep.spotify.synchronizer.settings.model.UserInterface;
+import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
+import be.studios.yoep.spotify.synchronizer.ui.exceptions.PrimaryWindowNotAvailableException;
+import be.studios.yoep.spotify.synchronizer.ui.exceptions.ViewNotFoundException;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Region;
@@ -27,6 +31,7 @@ public class ViewLoader {
     private static final String FONT_DIRECTORY = "/fonts/";
     private static final String IMAGE_DIRECTORY = "/images/";
 
+    private final UserSettingsService userSettingsService;
     private final ApplicationContext applicationContext;
     private final ViewManager viewManager;
     private final UIText uiText;
@@ -34,11 +39,13 @@ public class ViewLoader {
     /**
      * Intialize a new instance of {@link ViewLoader}.
      *
-     * @param applicationContext Set the current application context.
-     * @param viewManager        Set the view manager to store the views in.
-     * @param uiText             Set the UI text manager.
+     * @param userSettingsService Set the user settings service.
+     * @param applicationContext  Set the current application context.
+     * @param viewManager         Set the view manager to store the views in.
+     * @param uiText              Set the UI text manager.
      */
-    public ViewLoader(ApplicationContext applicationContext, ViewManager viewManager, UIText uiText) {
+    public ViewLoader(UserSettingsService userSettingsService, ApplicationContext applicationContext, ViewManager viewManager, UIText uiText) {
+        this.userSettingsService = userSettingsService;
         this.applicationContext = applicationContext;
         this.viewManager = viewManager;
         this.uiText = uiText;
@@ -47,31 +54,6 @@ public class ViewLoader {
     @PostConstruct
     public void init() {
         loadFonts();
-    }
-
-    /**
-     * Load the given view.
-     *
-     * @param view Set the view name to load.
-     * @return Returns the loaded view.
-     * @throws ViewNotFoundException Is thrown when the given view file couldn't be found.
-     */
-    public Parent load(String view) throws ViewNotFoundException {
-        Assert.hasText(view, "view cannot be empty");
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(VIEW_DIRECTORY + view));
-
-        loader.setControllerFactory(applicationContext::getBean);
-        loader.setResources(uiText.getResourceBundle());
-
-        try {
-            return loader.load();
-        } catch (IllegalStateException ex) {
-            throw new ViewNotFoundException(view, ex);
-        } catch (IOException ex) {
-            log.error("View '" + view + "' is invalid", ex);
-        }
-
-        return null;
     }
 
     /**
@@ -117,6 +99,41 @@ public class ViewLoader {
     }
 
     /**
+     * Load the given view.
+     *
+     * @param view Set the view name to load.
+     * @return Returns the loaded view.
+     * @throws ViewNotFoundException Is thrown when the given view file couldn't be found.
+     */
+    private Scene load(String view) throws ViewNotFoundException {
+        Assert.hasText(view, "view cannot be empty");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(VIEW_DIRECTORY + view));
+
+        loader.setControllerFactory(applicationContext::getBean);
+        loader.setResources(uiText.getResourceBundle());
+
+        try {
+            Scene scene = new Scene(loader.load());
+            Object controller = loader.getController();
+
+            if (controller instanceof ScaleAware) {
+                ScaleAware scaleAwareController = (ScaleAware) controller;
+                scaleAwareController.scale(scene, userSettingsService.getUserSettings()
+                        .map(UserSettings::getUserInterface)
+                        .orElse(UserInterface.builder().build()));
+            }
+
+            return scene;
+        } catch (IllegalStateException ex) {
+            throw new ViewNotFoundException(view, ex);
+        } catch (IOException ex) {
+            log.error("View '" + view + "' is invalid", ex);
+        }
+
+        return null;
+    }
+
+    /**
      * Show the given scene filename in the given window with the given properties.
      *
      * @param window     Set the window to show the view in.
@@ -124,7 +141,7 @@ public class ViewLoader {
      * @param properties Set the view properties.
      */
     private void showScene(Stage window, String view, ViewProperties properties) {
-        Scene windowView = loadScene(view);
+        Scene windowView = load(view);
 
         window.setScene(windowView);
         viewManager.addWindowView(window, windowView);
@@ -165,11 +182,6 @@ public class ViewLoader {
 
         window.setX((screenBounds.getWidth() - region.getPrefWidth()) / 2);
         window.setY((screenBounds.getHeight() - region.getPrefHeight()) / 2);
-    }
-
-    private Scene loadScene(String view) {
-        Parent loadedView = load(view);
-        return new Scene(loadedView);
     }
 
     private Image loadWindowIcon(String iconName) {

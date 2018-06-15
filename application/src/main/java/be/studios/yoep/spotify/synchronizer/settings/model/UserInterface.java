@@ -15,4 +15,6 @@ public class UserInterface implements Serializable {
     private boolean maximized;
     private Integer width;
     private Integer height;
+    @Builder.Default
+    private float scale = 1.5f;
 }

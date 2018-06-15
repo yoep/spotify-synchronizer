@@ -13,7 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Logging implements Serializable {
-    @Builder.Default()
+    @Builder.Default
     private Level level = Level.DEBUG;
     @Builder.Default
     private boolean logfileEnabled = true;

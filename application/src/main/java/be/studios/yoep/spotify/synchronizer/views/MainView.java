@@ -2,6 +2,7 @@ package be.studios.yoep.spotify.synchronizer.views;
 
 import be.studios.yoep.spotify.synchronizer.synchronize.SynchronisationService;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SyncTrack;
+import be.studios.yoep.spotify.synchronizer.ui.ScaleAwareImpl;
 import be.studios.yoep.spotify.synchronizer.ui.UIText;
 import be.studios.yoep.spotify.synchronizer.ui.lang.MainMessage;
 import javafx.collections.ListChangeListener;
@@ -24,7 +25,7 @@ import static java.util.Optional.ofNullable;
 
 @Component
 @RequiredArgsConstructor
-public class MainView implements Initializable {
+public class MainView extends ScaleAwareImpl implements Initializable {
     private final SynchronisationService synchronisationService;
     private final UIText uiText;
 

@@ -1,6 +1,9 @@
 package be.studios.yoep.spotify.synchronizer.ui;
 
 import be.studios.yoep.spotify.synchronizer.SpotifySynchronizer;
+import be.studios.yoep.spotify.synchronizer.ui.exceptions.PrimaryWindowAlreadyPresentException;
+import be.studios.yoep.spotify.synchronizer.ui.exceptions.PrimaryWindowNotAvailableException;
+import be.studios.yoep.spotify.synchronizer.ui.exceptions.WindowNotFoundException;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;

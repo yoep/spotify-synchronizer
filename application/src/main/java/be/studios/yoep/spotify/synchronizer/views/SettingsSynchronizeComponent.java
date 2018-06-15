@@ -3,7 +3,7 @@ package be.studios.yoep.spotify.synchronizer.views;
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
 import be.studios.yoep.spotify.synchronizer.settings.model.Synchronization;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
-import be.studios.yoep.spotify.synchronizer.ui.PrimaryWindowNotAvailableException;
+import be.studios.yoep.spotify.synchronizer.ui.exceptions.PrimaryWindowNotAvailableException;
 import be.studios.yoep.spotify.synchronizer.ui.ViewManager;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

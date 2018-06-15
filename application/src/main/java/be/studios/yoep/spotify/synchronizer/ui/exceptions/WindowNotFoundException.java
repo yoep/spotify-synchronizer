@@ -1,4 +1,4 @@
-package be.studios.yoep.spotify.synchronizer.ui;
+package be.studios.yoep.spotify.synchronizer.ui.exceptions;
 
 import lombok.Getter;
 
