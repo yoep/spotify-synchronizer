@@ -6,12 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Observable;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserInterface implements Serializable {
+public class UserInterface extends Observable implements Serializable {
     private boolean maximized;
     private Integer width;
     private Integer height;

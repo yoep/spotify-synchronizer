@@ -28,27 +28,31 @@ public class UserSettings extends Observable implements Observer, Serializable {
 
     public void setAuthentication(Authentication authentication) {
         this.authentication = authentication;
-        this.notifyObservers();
+        processNewVariableInstance(authentication);
     }
 
     public void setLogging(Logging logging) {
         this.logging = logging;
-        this.notifyObservers();
+        processNewVariableInstance(logging);
     }
 
     public void setSynchronization(Synchronization synchronization) {
         this.synchronization = synchronization;
-        this.synchronization.addObserver(this);
-        this.notifyObservers();
+        processNewVariableInstance(synchronization);
     }
 
     public void setUserInterface(UserInterface userInterface) {
         this.userInterface = userInterface;
-        this.notifyObservers();
+        processNewVariableInstance(userInterface);
     }
 
     @Override
     public void update(Observable o, Object arg) {
         this.notifyObservers();
+    }
+
+    private void processNewVariableInstance(Observable observable) {
+        observable.addObserver(this);
+        this.setChanged();
     }
 }
