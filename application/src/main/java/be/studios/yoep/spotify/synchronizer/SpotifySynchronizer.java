@@ -1,10 +1,7 @@
 package be.studios.yoep.spotify.synchronizer;
 
 import be.studios.yoep.spotify.synchronizer.spotify.SpotifyService;
-import be.studios.yoep.spotify.synchronizer.ui.ViewLoader;
-import be.studios.yoep.spotify.synchronizer.ui.ViewManager;
-import be.studios.yoep.spotify.synchronizer.ui.ViewManagerPolicy;
-import be.studios.yoep.spotify.synchronizer.ui.ViewProperties;
+import be.studios.yoep.spotify.synchronizer.ui.*;
 import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
 import javafx.stage.Stage;
@@ -43,7 +40,7 @@ public class SpotifySynchronizer extends Application {
     @Override
     public void start(Stage primaryStage) {
         ViewLoader loader = APPLICATION_CONTEXT.getBean(ViewLoader.class);
-        ViewManager viewManager = APPLICATION_CONTEXT.getBean(ViewManager.class);
+        ViewManager viewManager = APPLICATION_CONTEXT.getBean(ViewManagerImpl.class);
 
         loader.showPrimary(primaryStage, "main.fxml", ViewProperties.builder()
                 .title("Spotify Synchronizer")

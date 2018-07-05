@@ -37,6 +37,11 @@ public class ObservableWrapper<T extends Observable> {
         });
     }
 
+    /**
+     * Add a new observer to the observable value.
+     *
+     * @param observer Set the observer to add.
+     */
     public synchronized void addObserver(Observer observer) {
         observers.add(observer);
 

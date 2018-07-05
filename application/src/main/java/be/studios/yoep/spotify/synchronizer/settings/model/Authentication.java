@@ -17,6 +17,7 @@ public class Authentication extends Observable implements Serializable {
 
     public void setAccessToken(OAuth2AccessTokenWrapper accessToken) {
         this.accessToken = accessToken;
+        this.setChanged();
         this.notifyObservers();
     }
 }

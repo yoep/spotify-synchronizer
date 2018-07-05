@@ -2,7 +2,9 @@ package be.studios.yoep.spotify.synchronizer.common;
 
 import be.studios.yoep.spotify.synchronizer.common.deserializers.FileDeserializer;
 import be.studios.yoep.spotify.synchronizer.common.deserializers.LoggingLevelDeserializer;
+import be.studios.yoep.spotify.synchronizer.common.deserializers.UserSettingsDeserializer;
 import be.studios.yoep.spotify.synchronizer.common.serializers.FileSerializer;
+import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
 import be.studios.yoep.spotify.synchronizer.spotify.AlbumTypeDeserializer;
 import be.studios.yoep.spotify.synchronizer.spotify.api.v1.AlbumType;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -18,6 +20,7 @@ public final class SynchronizerModule extends SimpleModule {
         addDeserializer(AlbumType.class, new AlbumTypeDeserializer());
         addDeserializer(Level.class, new LoggingLevelDeserializer());
         addDeserializer(File.class, new FileDeserializer());
+        addDeserializer(UserSettings.class, new UserSettingsDeserializer());
         addSerializer(File.class, new FileSerializer());
     }
 }

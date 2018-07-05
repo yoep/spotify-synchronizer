@@ -1,8 +1,12 @@
 package be.studios.yoep.spotify.synchronizer.views;
 
+import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
+import be.studios.yoep.spotify.synchronizer.settings.model.UserInterface;
+import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
 import be.studios.yoep.spotify.synchronizer.synchronize.SynchronisationService;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SyncTrack;
 import be.studios.yoep.spotify.synchronizer.ui.ScaleAwareImpl;
+import be.studios.yoep.spotify.synchronizer.ui.SizeAware;
 import be.studios.yoep.spotify.synchronizer.ui.UIText;
 import be.studios.yoep.spotify.synchronizer.ui.lang.MainMessage;
 import javafx.collections.ListChangeListener;
@@ -25,8 +29,9 @@ import static java.util.Optional.ofNullable;
 
 @Component
 @RequiredArgsConstructor
-public class MainView extends ScaleAwareImpl implements Initializable {
+public class MainView extends ScaleAwareImpl implements Initializable, SizeAware {
     private final SynchronisationService synchronisationService;
+    private final UserSettingsService settingsService;
     private final UIText uiText;
 
     @FXML
@@ -43,6 +48,19 @@ public class MainView extends ScaleAwareImpl implements Initializable {
 
         initializeColumns();
         synchronisationService.init();
+    }
+
+    @Override
+    public void onSizeChange(Number width, Number height) {
+        UserSettings userSettings = settingsService.getUserSettings()
+                .orElse(UserSettings.builder().build());
+        UserInterface userInterface = ofNullable(userSettings.getUserInterface())
+                .orElse(UserInterface.builder().build());
+
+        userInterface.setWidth(width.floatValue());
+        userInterface.setHeight(height.floatValue());
+        userSettings.setUserInterface(userInterface);
+        settingsService.save(userSettings);
     }
 
     private void initializeColumns() {
