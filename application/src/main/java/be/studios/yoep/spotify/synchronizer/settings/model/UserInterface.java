@@ -12,8 +12,10 @@ import java.util.Observable;
 @AllArgsConstructor
 public class UserInterface extends Observable implements Serializable {
     private boolean maximized;
-    private Float width;
-    private Float height;
+    @Builder.Default
+    private float width = 800f;
+    @Builder.Default
+    private float height = 600f;
     @Builder.Default
     private float scale = 1.5f;
 }

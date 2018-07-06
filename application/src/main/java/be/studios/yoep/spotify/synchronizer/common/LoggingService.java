@@ -36,11 +36,7 @@ public class LoggingService {
         Optional<UserSettings> userSettingsOptional = settingsService.getUserSettings();
 
         if (userSettingsOptional.isPresent()) {
-            Logging logging = ofNullable(userSettingsOptional.get().getLogging())
-                    .orElse(Logging.builder()
-                            .level(Level.DEBUG)
-                            .logfileEnabled(true)
-                            .build());
+            Logging logging = userSettingsOptional.get().getLogging();
 
             setLevel(logging.getLevel());
 

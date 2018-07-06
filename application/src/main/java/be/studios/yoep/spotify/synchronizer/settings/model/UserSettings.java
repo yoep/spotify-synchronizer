@@ -1,18 +1,27 @@
 package be.studios.yoep.spotify.synchronizer.settings.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Observable;
 
+import static java.util.Optional.ofNullable;
+
 @EqualsAndHashCode(callSuper = false)
-@Getter
 @Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class UserSettings extends Observable implements Serializable {
+    public static final String AUTHENTICATION_PROPERTY = "authentication";
+    public static final String LOGGING_PROPERTY = "logging";
+    public static final String SYNCHRONISATION_PROPERTY = "synchronization";
+    public static final String USER_INTERFACE_PROPERTY = "user_interface";
+
     @Valid
     @Builder.Default
     private Authentication authentication = Authentication.builder().build();
@@ -26,15 +35,10 @@ public class UserSettings extends Observable implements Serializable {
     @Builder.Default
     private UserInterface userInterface = UserInterface.builder().build();
 
-    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
-    public UserSettings(@JsonProperty("authentication") Authentication authentication,
-                        @JsonProperty("logging") Logging logging,
-                        @JsonProperty("synchronization") Synchronization synchronization,
-                        @JsonProperty("userInterface") UserInterface userInterface) {
-        this.authentication = authentication;
-        this.logging = logging;
-        this.synchronization = synchronization;
-        this.userInterface = userInterface;
+    @NotNull
+    public Authentication getAuthentication() {
+        return ofNullable(authentication)
+                .orElse(Authentication.builder().build());
     }
 
     public void setAuthentication(Authentication authentication) {
@@ -42,14 +46,32 @@ public class UserSettings extends Observable implements Serializable {
         processNewVariableInstance(authentication);
     }
 
+    @NotNull
+    public Logging getLogging() {
+        return ofNullable(logging)
+                .orElse(Logging.builder().build());
+    }
+
     public void setLogging(Logging logging) {
         this.logging = logging;
         processNewVariableInstance(logging);
     }
 
+    @NotNull
+    public Synchronization getSynchronization() {
+        return ofNullable(synchronization)
+                .orElse(Synchronization.builder().build());
+    }
+
     public void setSynchronization(Synchronization synchronization) {
         this.synchronization = synchronization;
         processNewVariableInstance(synchronization);
+    }
+
+    @NotNull
+    public UserInterface getUserInterface() {
+        return ofNullable(userInterface)
+                .orElse(UserInterface.builder().build());
     }
 
     public void setUserInterface(UserInterface userInterface) {

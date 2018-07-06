@@ -117,10 +117,10 @@ public class ViewLoader {
             Object controller = loader.getController();
 
             if (controller instanceof ScaleAware) {
-                addWindowScale(scene, (ScaleAware) controller);
+                initWindowScale(scene, (ScaleAware) controller);
             }
             if (controller instanceof SizeAware) {
-                addWindowSizeEvents(scene, (SizeAware) controller);
+                initWindowSize(scene, (SizeAware) controller);
             }
 
             return scene;
@@ -192,13 +192,14 @@ public class ViewLoader {
         Font.loadFont(getClass().getResource(FONT_DIRECTORY + "fontawesome-webfont.ttf").toExternalForm(), 10);
     }
 
-    private void addWindowScale(Scene scene, ScaleAware controller) {
+    private void initWindowScale(Scene scene, ScaleAware controller) {
         controller.scale(scene, userSettingsService.getUserSettings()
                 .map(UserSettings::getUserInterface)
                 .orElse(UserInterface.builder().build()));
     }
 
-    private void addWindowSizeEvents(Scene scene, SizeAware controller) {
+    private void initWindowSize(Scene scene, SizeAware controller) {
+        controller.setInitialSize(scene.getWindow());
         scene.widthProperty().addListener((observable, oldValue, newValue) -> {
             controller.onSizeChange(newValue, scene.getHeight());
         });

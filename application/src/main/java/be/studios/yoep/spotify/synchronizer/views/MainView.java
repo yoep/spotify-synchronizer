@@ -17,6 +17,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.paint.Paint;
+import javafx.stage.Window;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -51,11 +52,18 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
     }
 
     @Override
+    public void setInitialSize(Window window) {
+        UserSettings userSettings = settingsService.getUserSettings()
+                .orElse(UserSettings.builder().build());
+
+
+    }
+
+    @Override
     public void onSizeChange(Number width, Number height) {
         UserSettings userSettings = settingsService.getUserSettings()
                 .orElse(UserSettings.builder().build());
-        UserInterface userInterface = ofNullable(userSettings.getUserInterface())
-                .orElse(UserInterface.builder().build());
+        UserInterface userInterface = userSettings.getUserInterface();
 
         userInterface.setWidth(width.floatValue());
         userInterface.setHeight(height.floatValue());
