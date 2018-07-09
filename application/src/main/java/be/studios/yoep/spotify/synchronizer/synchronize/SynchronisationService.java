@@ -2,6 +2,7 @@ package be.studios.yoep.spotify.synchronizer.synchronize;
 
 import be.studios.yoep.spotify.synchronizer.common.ProgressHandler;
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
+import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.MusicTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SyncTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SyncTrackImpl;
@@ -71,8 +72,12 @@ public class SynchronisationService {
 
         //register a listener on the user settings
         settingsService.getUserSettingsObservable().addObserver((o, arg) -> {
-            progressHandler.setProcess(uiText.get(MainMessage.SYNCHRONIZING));
-            localMusicDiscovery.start();
+            UserSettings userSettings = (UserSettings) o;
+
+            if (userSettings.getSynchronization().hasChanged()) {
+                progressHandler.setProcess(uiText.get(MainMessage.SYNCHRONIZING));
+                localMusicDiscovery.start();
+            }
         });
     }
 

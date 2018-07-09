@@ -45,8 +45,10 @@ public class LocalMusicDiscovery implements DiscoveryService {
 
     @Override
     public void start() {
-        this.finished = false;
-        indexLocalFiles();
+        if (isFinished()) {
+            this.finished = false;
+            indexLocalFiles();
+        }
     }
 
     @Override

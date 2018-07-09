@@ -55,8 +55,10 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
     public void setInitialSize(Window window) {
         UserSettings userSettings = settingsService.getUserSettings()
                 .orElse(UserSettings.builder().build());
+        UserInterface userInterface = userSettings.getUserInterface();
 
-
+        window.setWidth(userInterface.getWidth());
+        window.setHeight(userInterface.getHeight());
     }
 
     @Override

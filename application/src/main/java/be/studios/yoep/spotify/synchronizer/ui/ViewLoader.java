@@ -10,11 +10,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
@@ -105,7 +106,7 @@ public class ViewLoader {
      * @return Returns the loaded view.
      * @throws ViewNotFoundException Is thrown when the given view file couldn't be found.
      */
-    private Scene load(String view) throws ViewNotFoundException {
+    private SceneInfo load(String view) throws ViewNotFoundException {
         Assert.hasText(view, "view cannot be empty");
         FXMLLoader loader = new FXMLLoader(getClass().getResource(VIEW_DIRECTORY + view));
 
@@ -116,14 +117,7 @@ public class ViewLoader {
             Scene scene = new Scene(loader.load());
             Object controller = loader.getController();
 
-            if (controller instanceof ScaleAware) {
-                initWindowScale(scene, (ScaleAware) controller);
-            }
-            if (controller instanceof SizeAware) {
-                initWindowSize(scene, (SizeAware) controller);
-            }
-
-            return scene;
+            return new SceneInfo(scene, controller);
         } catch (IllegalStateException ex) {
             throw new ViewNotFoundException(view, ex);
         } catch (IOException ex) {
@@ -141,22 +135,36 @@ public class ViewLoader {
      * @param properties Set the view properties.
      */
     private void showScene(Stage window, String view, ViewProperties properties) {
-        Scene windowView = load(view);
+        SceneInfo sceneInfo = load(view);
 
-        window.setScene(windowView);
-        viewManager.addWindowView(window, windowView);
+        if (sceneInfo != null) {
+            Scene scene = sceneInfo.getScene();
+            Object controller = sceneInfo.getController();
 
-        setWindowViewProperties(window, windowView, properties);
+            window.setScene(scene);
+            viewManager.addWindowView(window, scene);
 
-        if (properties.isDialog()) {
-            window.initModality(Modality.APPLICATION_MODAL);
-            window.showAndWait();
+            if (controller instanceof ScaleAware) {
+                initWindowScale(scene, (ScaleAware) controller);
+            }
+            if (controller instanceof SizeAware) {
+                initWindowSize(scene, (SizeAware) controller);
+            }
+
+            setWindowViewProperties(window, properties);
+
+            if (properties.isDialog()) {
+                window.initModality(Modality.APPLICATION_MODAL);
+                window.showAndWait();
+            } else {
+                window.show();
+            }
         } else {
-            window.show();
+            log.warn("Unable to show view " + view + " in window " + window);
         }
     }
 
-    private void setWindowViewProperties(Stage window, Scene view, ViewProperties properties) {
+    private void setWindowViewProperties(Stage window, ViewProperties properties) {
         if (!properties.isMaximizable()) {
             window.setResizable(false);
         }
@@ -164,7 +172,7 @@ public class ViewLoader {
             window.getIcons().add(loadWindowIcon(properties.getIcon()));
         }
         if (properties.isCenterOnScreen()) {
-            centerOnScreen(window, view);
+            centerOnScreen(window);
         }
 
         window.setTitle(properties.getTitle());
@@ -174,14 +182,12 @@ public class ViewLoader {
      * Center the given window on the screen.
      *
      * @param window Set the window to center.
-     * @param view   Set the view which will be shown.
      */
-    private void centerOnScreen(Stage window, Scene view) {
+    private void centerOnScreen(Stage window) {
         Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-        Region region = (Region) view.getRoot();
 
-        window.setX((screenBounds.getWidth() - region.getPrefWidth()) / 2);
-        window.setY((screenBounds.getHeight() - region.getPrefHeight()) / 2);
+        window.setX((screenBounds.getWidth() - window.getWidth()) / 2);
+        window.setY((screenBounds.getHeight() - window.getHeight()) / 2);
     }
 
     private Image loadWindowIcon(String iconName) {
@@ -203,5 +209,15 @@ public class ViewLoader {
         scene.widthProperty().addListener((observable, oldValue, newValue) -> {
             controller.onSizeChange(newValue, scene.getHeight());
         });
+        scene.heightProperty().addListener((observable, oldValue, newValue) -> {
+            controller.onSizeChange(scene.getWidth(), newValue);
+        });
+    }
+
+    @Getter
+    @AllArgsConstructor
+    private class SceneInfo {
+        private Scene scene;
+        private Object controller;
     }
 }
