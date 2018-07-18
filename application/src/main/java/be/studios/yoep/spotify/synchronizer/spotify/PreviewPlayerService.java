@@ -12,6 +12,10 @@ public class PreviewPlayerService {
     private MediaPlayer mediaPlayer;
 
     public void play(SpotifyTrack track) {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
+
         Media media = new Media(track.getPreviewUrl());
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setOnError(() -> log.error(mediaPlayer.getError()));

@@ -1,5 +1,6 @@
 package be.studios.yoep.spotify.synchronizer.views;
 
+import be.studios.yoep.spotify.synchronizer.SpotifySynchronizer;
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserInterface;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
@@ -12,13 +13,16 @@ import be.studios.yoep.spotify.synchronizer.ui.SizeAware;
 import be.studios.yoep.spotify.synchronizer.ui.UIText;
 import be.studios.yoep.spotify.synchronizer.ui.lang.MainMessage;
 import be.studios.yoep.spotify.synchronizer.views.components.MusicItemContextMenu;
+import com.sun.deploy.uitoolkit.impl.fx.HostServicesFactory;
 import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.paint.Paint;
 import javafx.stage.Window;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
@@ -28,6 +32,7 @@ import java.util.function.Function;
 import static java.util.Arrays.asList;
 import static java.util.Optional.ofNullable;
 
+@Log4j2
 @Component
 @RequiredArgsConstructor
 public class MainView extends ScaleAwareImpl implements Initializable, SizeAware {
@@ -97,10 +102,29 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
             TableRow<SyncTrack> row = new TableRow<>();
             row.setContextMenu(MusicItemContextMenu.builder()
                     .uiText(uiText)
-                    .onPlayPreview(e -> previewPlayerService.play((SpotifyTrack) this.musicList.getSelectionModel().getSelectedItem().getSpotifyTrack()))
+                    .onPlayPreview(this::onPlayPreview)
+                    .onPlaySpotify(this::onPlaySpotify)
                     .build());
             return row;
         });
+    }
+
+    private void onPlaySpotify(ActionEvent e) {
+        SpotifyTrack spotifyTrack = getCurrentSelectedSpotifyTrack();
+
+        if (spotifyTrack != null) {
+            HostServicesFactory.getInstance(SpotifySynchronizer.APPLICATION_CONTEXT.getBean(SpotifySynchronizer.class))
+                    .showDocument(spotifyTrack.getSpotifyUri());
+        }
+    }
+
+    private void onPlayPreview(ActionEvent e) {
+        previewPlayerService.play(getCurrentSelectedSpotifyTrack());
+    }
+
+    private SpotifyTrack getCurrentSelectedSpotifyTrack() {
+        SyncTrack selectedItem = this.musicList.getSelectionModel().getSelectedItem();
+        return selectedItem != null ? (SpotifyTrack) selectedItem.getSpotifyTrack() : null;
     }
 
     private TableColumn<SyncTrack, String> createColumn(String text, Function<SyncTrack, String> fieldMapping) {

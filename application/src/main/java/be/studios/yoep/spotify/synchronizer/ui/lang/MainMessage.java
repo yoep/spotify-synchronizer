@@ -11,7 +11,8 @@ public enum MainMessage implements Message {
     PROGRESSION_FAILED("progression_failed"),
     SYNCHRONIZING("synchronizing"),
     DONE("done"),
-    PLAY_PREVIEW("play_preview");
+    PLAY_PREVIEW("play_preview"),
+    OPEN_IN_SPOTIFY("open_in_spotify");
 
     private String key;
 

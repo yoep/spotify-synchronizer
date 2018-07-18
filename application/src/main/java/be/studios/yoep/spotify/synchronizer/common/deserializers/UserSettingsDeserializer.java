@@ -34,6 +34,10 @@ public class UserSettingsDeserializer extends JsonDeserializer<UserSettings> {
     private <T> T getChild(String property, Class<T> childType) throws IOException {
         TreeNode propertyNode = node.get(property);
 
-        return codec.treeToValue(propertyNode, childType);
+        if (propertyNode != null) {
+            return codec.treeToValue(propertyNode, childType);
+        } else {
+            return null;
+        }
     }
 }

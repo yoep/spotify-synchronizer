@@ -8,5 +8,7 @@ public class Icons {
     public static final String HELP = "\uf059";
     public static final String COGS = "\uf085";
     public static final String COG = "\uf013";
+    public static final String PLAY = "\uf04b";
+    public static final String SPOTIFY = "\uf1bc";
     //CHECKSTYLE:ON
 }
