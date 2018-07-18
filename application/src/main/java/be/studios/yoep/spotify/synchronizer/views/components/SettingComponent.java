@@ -1,4 +1,4 @@
-package be.studios.yoep.spotify.synchronizer.views;
+package be.studios.yoep.spotify.synchronizer.views.components;
 
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
 

@@ -2,8 +2,8 @@ package be.studios.yoep.spotify.synchronizer.views;
 
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
+import be.studios.yoep.spotify.synchronizer.views.components.SettingComponent;
 import javafx.event.ActionEvent;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;

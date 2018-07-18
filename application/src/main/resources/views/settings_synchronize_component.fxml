@@ -11,7 +11,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
 <GridPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="be.studios.yoep.spotify.synchronizer.views.SettingsSynchronizeComponent">
+          fx:controller="be.studios.yoep.spotify.synchronizer.views.components.SettingsSynchronizeComponent">
     <columnConstraints>
         <ColumnConstraints percentWidth="35"/>
         <ColumnConstraints percentWidth="65"/>

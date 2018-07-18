@@ -10,7 +10,8 @@ public enum MainMessage implements Message {
     PROGRESSION("progression"),
     PROGRESSION_FAILED("progression_failed"),
     SYNCHRONIZING("synchronizing"),
-    DONE("done");
+    DONE("done"),
+    PLAY_PREVIEW("play_preview");
 
     private String key;
 

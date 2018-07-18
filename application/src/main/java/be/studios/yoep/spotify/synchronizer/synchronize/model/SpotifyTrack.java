@@ -14,6 +14,7 @@ public class SpotifyTrack extends AbstractMusicTrack {
     private String title;
     private String artist;
     private String album;
+    private String previewUrl;
 
     public void setTitle(String title) {
         this.title = title;
@@ -43,6 +44,7 @@ public class SpotifyTrack extends AbstractMusicTrack {
                 .title(track.getName())
                 .artist(track.getArtists().get(0).getName())
                 .album(track.getAlbum().getName())
+                .previewUrl(track.getPreviewUrl())
                 .build();
     }
 }

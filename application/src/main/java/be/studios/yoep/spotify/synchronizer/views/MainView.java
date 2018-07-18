@@ -3,19 +3,19 @@ package be.studios.yoep.spotify.synchronizer.views;
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserInterface;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
+import be.studios.yoep.spotify.synchronizer.spotify.PreviewPlayerService;
 import be.studios.yoep.spotify.synchronizer.synchronize.SynchronisationService;
+import be.studios.yoep.spotify.synchronizer.synchronize.model.SpotifyTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SyncTrack;
 import be.studios.yoep.spotify.synchronizer.ui.ScaleAwareImpl;
 import be.studios.yoep.spotify.synchronizer.ui.SizeAware;
 import be.studios.yoep.spotify.synchronizer.ui.UIText;
 import be.studios.yoep.spotify.synchronizer.ui.lang.MainMessage;
+import be.studios.yoep.spotify.synchronizer.views.components.MusicItemContextMenu;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Cell;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.paint.Paint;
 import javafx.stage.Window;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +33,7 @@ import static java.util.Optional.ofNullable;
 public class MainView extends ScaleAwareImpl implements Initializable, SizeAware {
     private final SynchronisationService synchronisationService;
     private final UserSettingsService settingsService;
+    private final PreviewPlayerService previewPlayerService;
     private final UIText uiText;
 
     @FXML
@@ -48,6 +49,7 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
         });
 
         initializeColumns();
+        initializeContextMenu();
         synchronisationService.init();
     }
 
@@ -88,6 +90,17 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
         musicList.getColumns().addAll(asList(titleColumn, artistColumn, albumColumn));
         musicList.getSortOrder().addAll(asList(artistColumn, albumColumn));
         musicList.sort();
+    }
+
+    private void initializeContextMenu() {
+        this.musicList.setRowFactory(param -> {
+            TableRow<SyncTrack> row = new TableRow<>();
+            row.setContextMenu(MusicItemContextMenu.builder()
+                    .uiText(uiText)
+                    .onPlayPreview(e -> previewPlayerService.play((SpotifyTrack) this.musicList.getSelectionModel().getSelectedItem().getSpotifyTrack()))
+                    .build());
+            return row;
+        });
     }
 
     private TableColumn<SyncTrack, String> createColumn(String text, Function<SyncTrack, String> fieldMapping) {
