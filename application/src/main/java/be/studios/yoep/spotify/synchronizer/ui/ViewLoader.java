@@ -14,6 +14,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -205,12 +206,17 @@ public class ViewLoader {
     }
 
     private void initWindowSize(Scene scene, SizeAware controller) {
-        controller.setInitialSize(scene.getWindow());
+        Window window = scene.getWindow();
+        controller.setInitialSize(window);
         scene.widthProperty().addListener((observable, oldValue, newValue) -> {
-            controller.onSizeChange(newValue, scene.getHeight());
+            if (window.isShowing()) {
+                controller.onSizeChange(newValue, scene.getHeight());
+            }
         });
         scene.heightProperty().addListener((observable, oldValue, newValue) -> {
-            controller.onSizeChange(scene.getWidth(), newValue);
+            if (window.isShowing()) {
+                controller.onSizeChange(scene.getWidth(), newValue);
+            }
         });
     }
 

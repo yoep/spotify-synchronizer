@@ -101,7 +101,6 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
         this.musicList.setRowFactory(param -> {
             TableRow<SyncTrack> row = new TableRow<>();
             row.setContextMenu(MusicItemContextMenu.builder()
-                    .uiText(uiText)
                     .onPlayPreview(this::onPlayPreview)
                     .onPlaySpotify(this::onPlaySpotify)
                     .build());
@@ -113,13 +112,21 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
         SpotifyTrack spotifyTrack = getCurrentSelectedSpotifyTrack();
 
         if (spotifyTrack != null) {
+            e.consume();
             HostServicesFactory.getInstance(SpotifySynchronizer.APPLICATION_CONTEXT.getBean(SpotifySynchronizer.class))
                     .showDocument(spotifyTrack.getSpotifyUri());
         }
     }
 
     private void onPlayPreview(ActionEvent e) {
-        previewPlayerService.play(getCurrentSelectedSpotifyTrack());
+        SpotifyTrack spotifyTrack = getCurrentSelectedSpotifyTrack();
+
+        if (spotifyTrack != null) {
+            e.consume();
+            previewPlayerService.play(spotifyTrack);
+        } else {
+            log.warn("Spotify track not available for current selected row " + this.musicList.getSelectionModel().getSelectedItem());
+        }
     }
 
     private SpotifyTrack getCurrentSelectedSpotifyTrack() {

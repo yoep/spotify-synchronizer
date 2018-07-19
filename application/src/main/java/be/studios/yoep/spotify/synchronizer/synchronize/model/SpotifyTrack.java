@@ -3,6 +3,7 @@ package be.studios.yoep.spotify.synchronizer.synchronize.model;
 import be.studios.yoep.spotify.synchronizer.spotify.api.v1.SavedTrack;
 import be.studios.yoep.spotify.synchronizer.spotify.api.v1.Track;
 import lombok.*;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.Assert;
 
 @EqualsAndHashCode(callSuper = false)
@@ -16,6 +17,15 @@ public class SpotifyTrack extends AbstractMusicTrack {
     private String album;
     private String previewUrl;
     private String spotifyUri;
+
+    /**
+     * Get if the preview playback for this track is available.
+     *
+     * @return Returns true when the preview is available, else false.
+     */
+    public boolean isPreviewAvailable() {
+        return StringUtils.isNotEmpty(previewUrl);
+    }
 
     public void setTitle(String title) {
         this.title = title;

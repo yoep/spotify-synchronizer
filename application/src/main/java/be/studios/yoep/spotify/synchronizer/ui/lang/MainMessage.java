@@ -12,6 +12,7 @@ public enum MainMessage implements Message {
     SYNCHRONIZING("synchronizing"),
     DONE("done"),
     PLAY_PREVIEW("play_preview"),
+    PLAY_PREVIEW_UNAVAILABLE("play_preview_unavailable"),
     OPEN_IN_SPOTIFY("open_in_spotify");
 
     private String key;
