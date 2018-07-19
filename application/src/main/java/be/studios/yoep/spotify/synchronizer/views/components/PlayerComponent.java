@@ -1,11 +1,13 @@
 package be.studios.yoep.spotify.synchronizer.views.components;
 
+import be.studios.yoep.spotify.synchronizer.common.PlayerState;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +16,11 @@ import java.util.ResourceBundle;
 
 @Log4j2
 @Component
+@RequiredArgsConstructor
 public class PlayerComponent implements Initializable {
+    private final TimeSliderComponent timeSliderComponent;
+
+    private PlayerState playerState = PlayerState.NOT_LOADED;
     private MediaPlayer mediaPlayer;
 
     @FXML
@@ -45,11 +51,16 @@ public class PlayerComponent implements Initializable {
         }
 
         mediaPlayer = new MediaPlayer(media);
+        timeSliderComponent.setMediaPlayer(mediaPlayer);
         registerMediaPlayerEvents();
     }
 
     public void onPlay() {
         if (mediaPlayer != null) {
+            if (playerState == PlayerState.END_OF_MEDIA) {
+                mediaPlayer.stop();
+            }
+
             mediaPlayer.play();
         }
     }
@@ -70,19 +81,30 @@ public class PlayerComponent implements Initializable {
 
     private void registerMediaPlayerEvents() {
         mediaPlayer.setOnError(() -> {
+            playerState = PlayerState.ERROR;
             log.error(mediaPlayer.getError());
             setPlayerStatus(false);
-            setButtonState(true);
+            setPlayerDisabledState(true);
         });
         mediaPlayer.setOnReady(() -> {
+            playerState = PlayerState.READY;
+            timeSliderComponent.onReady();
             mediaPlayer.play();
             setPlayerStatus(true);
-            setButtonState(false);
+            setPlayerDisabledState(false);
         });
-        mediaPlayer.setOnEndOfMedia(() -> setPlayerStatus(false));
-        mediaPlayer.setOnHalted(() -> setPlayerStatus(false));
-        mediaPlayer.setOnPaused(() -> setPlayerStatus(false));
-        mediaPlayer.setOnPlaying(() -> setPlayerStatus(true));
+        mediaPlayer.setOnEndOfMedia(() -> {
+            playerState = PlayerState.END_OF_MEDIA;
+            setPlayerStatus(false);
+        });
+        mediaPlayer.setOnPaused(() -> {
+            playerState = PlayerState.PAUSED;
+            setPlayerStatus(false);
+        });
+        mediaPlayer.setOnPlaying(() -> {
+            playerState = PlayerState.PLAYING;
+            setPlayerStatus(true);
+        });
     }
 
     private void setPlayerStatus(boolean isPlaying) {
@@ -90,7 +112,9 @@ public class PlayerComponent implements Initializable {
         playerPlay.setVisible(!isPlaying);
     }
 
-    private void setButtonState(boolean disabled) {
+    private void setPlayerDisabledState(boolean disabled) {
+        timeSliderComponent.setPlayerDisabledState(disabled);
+
         playerPlay.setDisable(disabled);
         playerPause.setDisable(disabled);
         playerNext.setDisable(disabled);

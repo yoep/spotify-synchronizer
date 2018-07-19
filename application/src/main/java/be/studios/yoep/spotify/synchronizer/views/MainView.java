@@ -83,7 +83,7 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
     private void initializeColumns() {
         TableColumn<SyncTrack, String> titleColumn = createColumn(uiText.get(MainMessage.TITLE_TRACK), SyncTrack::getTitle);
         TableColumn<SyncTrack, String> artistColumn = createColumn(uiText.get(MainMessage.ARTIST_TRACK), SyncTrack::getArtist);
-        TableColumn<SyncTrack, String> albumColumn = createColumn(uiText.get(MainMessage.ALBUM_TRACK), SyncTrack::getAlbum);
+        TableColumn<SyncTrack, String> albumColumn = createColumn(uiText.get(MainMessage.ALBUM_TRACK), e -> e.getAlbum().getName());
 
         titleColumn.setSortable(true);
         artistColumn.setSortable(true);

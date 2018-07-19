@@ -1,14 +1,12 @@
 package be.studios.yoep.spotify.synchronizer.settings.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.apache.logging.log4j.Level;
 
 import java.io.Serializable;
 import java.util.Observable;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @NoArgsConstructor

@@ -3,6 +3,7 @@ package be.studios.yoep.spotify.synchronizer.synchronize;
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
 import be.studios.yoep.spotify.synchronizer.settings.model.Synchronization;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
+import be.studios.yoep.spotify.synchronizer.synchronize.model.LocalAlbum;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.LocalTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.MusicTrack;
 import be.studios.yoep.spotify.synchronizer.tika.Mp3Properties;
@@ -85,7 +86,9 @@ public class LocalMusicDiscovery implements DiscoveryService {
                             parser.parse(FileUtils.openInputStream(file), new BodyContentHandler(), metadata, new ParseContext());
                             LocalTrack track = LocalTrack.builder()
                                     .artist(metadata.get(Mp3Properties.CREATOR))
-                                    .album(metadata.get(Mp3Properties.ALBUM))
+                                    .album(LocalAlbum.builder()
+                                            .name(metadata.get(Mp3Properties.ALBUM))
+                                            .build())
                                     .title(metadata.get(Mp3Properties.TITLE))
                                     .build();
 

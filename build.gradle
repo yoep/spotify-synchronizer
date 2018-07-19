@@ -45,7 +45,7 @@ allprojects {
     }
 
     springBoot {
-        mainClass = "be.studios.yoep.spotify.synchronizer.Application"
+        mainClass = "be.studios.yoep.spotify.synchronizer.SpotifySynchronizer"
         executable = true
     }
 

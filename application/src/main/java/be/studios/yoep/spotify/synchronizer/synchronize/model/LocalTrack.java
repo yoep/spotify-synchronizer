@@ -10,7 +10,7 @@ import lombok.*;
 public class LocalTrack extends AbstractMusicTrack {
     private String title;
     private String artist;
-    private String album;
+    private Album album;
 
     public void setTitle(String title) {
         this.title = title;
@@ -22,7 +22,7 @@ public class LocalTrack extends AbstractMusicTrack {
         listeners.forEach(e -> e.invalidated(this));
     }
 
-    public void setAlbum(String album) {
+    public void setAlbum(Album album) {
         this.album = album;
         listeners.forEach(e -> e.invalidated(this));
     }

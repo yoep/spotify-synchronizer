@@ -11,14 +11,45 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Album {
+    /**
+     * The type of the album: one of “album”, “single”, or “compilation”.
+     */
     private AlbumType albumType;
+    /**
+     * he artists of the album. Each artist object includes a link in href to more detailed information about the artist.
+     */
     private List<Artist> artists;
+    /**
+     * The markets in which the album is available: ISO 3166-1 alpha-2 country codes. Note that an album is considered available in a market when at least 1
+     * of its tracks is available in that market.
+     */
     private List<String> availableMarkets;
+    /**
+     * Known external URLs for this album.
+     */
     private Map<String, String> externalUrls;
+    /**
+     * A link to the Web API endpoint providing full details of the album.
+     */
     private String href;
+    /**
+     * The [/documentation/web-api/#spotify-uris-and-ids) for the album.
+     */
     private String id;
+    /**
+     * The cover art for the album in various sizes, widest first.
+     */
     private List<Image> images;
+    /**
+     * The name of the album. In case of an album takedown, the value may be an empty string.
+     */
     private String name;
+    /**
+     * The object type: “album”
+     */
     private String type;
+    /**
+     * The Spotify URI for the album.
+     */
     private String uri;
 }

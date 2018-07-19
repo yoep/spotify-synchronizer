@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<?import javafx.geometry.Insets?>
+<GridPane xmlns="http://javafx.com/javafx"  xmlns:fx="http://javafx.com/fxml"
+          fx:controller="be.studios.yoep.spotify.synchronizer.views.components.TimeSliderComponent">
+    <columnConstraints>
+        <ColumnConstraints hgrow="NEVER" maxWidth="50" minWidth="50"/>
+        <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity"/>
+        <ColumnConstraints hgrow="NEVER" maxWidth="50" minWidth="50"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="Infinity" vgrow="ALWAYS"/>
+    </rowConstraints>
+
+    <Text fx:id="currentTime" styleClass="player-time" text="%default_player_time" GridPane.halignment="RIGHT" GridPane.valignment="CENTER"
+          GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <GridPane.margin>
+            <Insets right="5.0"/>
+        </GridPane.margin>
+    </Text>
+    <Slider fx:id="audioTimeSlider" disable="true" styleClass="player-spectrum" GridPane.valignment="CENTER"
+            GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+    <Text fx:id="totalTime" styleClass="player-time" text="%default_player_time" GridPane.halignment="LEFT" GridPane.valignment="CENTER"
+          GridPane.columnIndex="2" GridPane.rowIndex="0">
+        <GridPane.margin>
+            <Insets left="5.0"/>
+        </GridPane.margin>
+    </Text>
+</GridPane>

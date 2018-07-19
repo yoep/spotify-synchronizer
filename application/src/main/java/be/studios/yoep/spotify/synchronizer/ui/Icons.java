@@ -16,5 +16,6 @@ public class Icons {
     public static final String NEXT = "\uf051";
     public static final String SPOTIFY = "\uf1bc";
     public static final String IMAGE = "\uf03e";
+    public static final String COMPACT_DISK = "\uf51f";
     //CHECKSTYLE:ON
 }

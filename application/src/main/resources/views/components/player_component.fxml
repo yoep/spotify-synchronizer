@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import be.studios.yoep.spotify.synchronizer.ui.*?>
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<GridPane xmlns="http://javafx.com/javafx"
-          xmlns:fx="http://javafx.com/fxml" fx:controller="be.studios.yoep.spotify.synchronizer.views.components.PlayerComponent"
-          stylesheets="/styles/main.css" prefWidth="800" prefHeight="100">
+<GridPane prefHeight="75" prefWidth="800" stylesheets="/styles/main.css,/styles/player.css" xmlns="http://javafx.com/javafx/8.0.121"
+          xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.studios.yoep.spotify.synchronizer.views.components.PlayerComponent">
     <columnConstraints>
         <ColumnConstraints maxWidth="75" minWidth="75"/>
-        <ColumnConstraints maxWidth="Infinity" hgrow="ALWAYS"/>
-        <ColumnConstraints minWidth="100" maxWidth="100"/>
+        <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity"/>
+        <ColumnConstraints maxWidth="100" minWidth="100"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints maxHeight="Infinity" vgrow="ALWAYS"/>
@@ -28,14 +27,14 @@
     <!-- PLAYER STATUS -->
     <GridPane GridPane.columnIndex="1" GridPane.rowIndex="0">
         <columnConstraints>
-            <ColumnConstraints maxWidth="Infinity" hgrow="ALWAYS"/>
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity"/>
         </columnConstraints>
         <rowConstraints>
             <RowConstraints maxHeight="Infinity" vgrow="ALWAYS"/>
-            <RowConstraints minHeight="15" vgrow="NEVER"/>
+            <RowConstraints minHeight="25" vgrow="NEVER"/>
         </rowConstraints>
 
-        <GridPane alignment="TOP_CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <GridPane alignment="BOTTOM_CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0">
             <columnConstraints>
                 <ColumnConstraints/>
                 <ColumnConstraints/>
@@ -45,26 +44,39 @@
                 <RowConstraints/>
             </rowConstraints>
 
-            <Label fx:id="playerPrevious" onMouseClicked="#onPrevious" styleClass="icon, icon-large, icon-clickable, player-button"
-                   GridPane.columnIndex="0" GridPane.rowIndex="0"
-                   disable="true">
+            <Label fx:id="playerPrevious" disable="true" onMouseClicked="#onPrevious" styleClass="icon, icon-large, icon-clickable, player-button"
+                   GridPane.columnIndex="0" GridPane.rowIndex="0">
                 <Icons fx:constant="PREVIOUS"/>
+                <tooltip>
+                    <Tooltip text="%previous"/>
+                </tooltip>
             </Label>
-            <Label fx:id="playerPlay" onMouseClicked="#onPlay" styleClass="icon, icon-large, icon-clickable, player-button"
-                   GridPane.columnIndex="1" GridPane.rowIndex="0"
-                   disable="true">
+            <Label fx:id="playerPlay" disable="true" onMouseClicked="#onPlay" styleClass="icon, icon-large, icon-clickable, player-button"
+                   GridPane.columnIndex="1" GridPane.rowIndex="0">
                 <Icons fx:constant="PLAY_CIRCLE"/>
+                <tooltip>
+                    <Tooltip text="%play"/>
+                </tooltip>
             </Label>
-            <Label fx:id="playerPause" onMouseClicked="#onPause" styleClass="icon, icon-large, icon-clickable, player-button"
+            <Label fx:id="playerPause" disable="true" onMouseClicked="#onPause" styleClass="icon, icon-large, icon-clickable, player-button"
                    GridPane.columnIndex="1" GridPane.rowIndex="0">
                 <Icons fx:constant="PAUSE_CIRCLE"/>
+                <tooltip>
+                    <Tooltip text="%pause"/>
+                </tooltip>
             </Label>
-            <Label fx:id="playerNext" onMouseClicked="#onNext" styleClass="icon, icon-large, icon-clickable, player-button"
-                   GridPane.columnIndex="2" GridPane.rowIndex="0"
-                   disable="true">
+            <Label fx:id="playerNext" disable="true" onMouseClicked="#onNext" styleClass="icon, icon-large, icon-clickable, player-button"
+                   GridPane.columnIndex="2" GridPane.rowIndex="0">
                 <Icons fx:constant="NEXT"/>
+                <tooltip>
+                    <Tooltip text="%next"/>
+                </tooltip>
             </Label>
         </GridPane>
+
+        <VBox GridPane.valignment="TOP" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <fx:include source="/views/components/time_slider_component.fxml"/>
+        </VBox>
     </GridPane>
 
     <!-- SYNCHRONIZER STATUS -->

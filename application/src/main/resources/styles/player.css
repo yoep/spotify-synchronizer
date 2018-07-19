@@ -1,0 +1,16 @@
+.player-button {
+    -fx-min-width: 40;
+    -fx-padding: 10 0 10 0;
+}
+
+.player-spectrum {
+    -fx-control-inner-background: #0c7032;
+}
+
+.player-spectrum:disabled {
+    -fx-control-inner-background: gray;
+}
+
+.player-time {
+    -fx-fill: #0c7032;
+}

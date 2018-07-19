@@ -31,9 +31,3 @@
     -fx-text-fill: #12bc53;
     -fx-fill: #12bc53;
 }
-
-.player-button {
-    -fx-min-width: 50;
-    -fx-max-width: 50;
-    -fx-padding: 10 0 10 0;
-}

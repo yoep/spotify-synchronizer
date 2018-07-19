@@ -12,6 +12,7 @@ import org.springframework.http.converter.json.MappingJacksonInputMessage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 
 @Log4j2
 public class SpotifyHttpMessageConverter extends MappingJackson2HttpMessageConverter {
@@ -24,7 +25,7 @@ public class SpotifyHttpMessageConverter extends MappingJackson2HttpMessageConve
         try {
             ByteArrayOutputStream inputStream = new ByteArrayOutputStream(inputMessage.getBody().available());
             IOUtils.copy(inputMessage.getBody(), inputStream);
-//            log.debug(inputStream.toString());
+            log.trace(inputStream.toString(Charset.defaultCharset()));
             return super.read(type, contextClass, new MappingJacksonInputMessage(
                     new ByteArrayInputStream(inputStream.toByteArray()), inputMessage.getHeaders()));
         } catch (Exception e) {

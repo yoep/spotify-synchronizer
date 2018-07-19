@@ -14,7 +14,7 @@ import org.springframework.util.Assert;
 public class SpotifyTrack extends AbstractMusicTrack {
     private String title;
     private String artist;
-    private String album;
+    private Album album;
     private String previewUrl;
     private String spotifyUri;
 
@@ -37,7 +37,7 @@ public class SpotifyTrack extends AbstractMusicTrack {
         listeners.forEach(e -> e.invalidated(this));
     }
 
-    public void setAlbum(String album) {
+    public void setAlbum(Album album) {
         this.album = album;
         listeners.forEach(e -> e.invalidated(this));
     }
@@ -54,7 +54,7 @@ public class SpotifyTrack extends AbstractMusicTrack {
         return SpotifyTrack.builder()
                 .title(track.getName())
                 .artist(track.getArtists().get(0).getName())
-                .album(track.getAlbum().getName())
+                .album(SpotifyAlbum.from(track.getAlbum()))
                 .previewUrl(track.getPreviewUrl())
                 .spotifyUri(track.getUri())
                 .build();

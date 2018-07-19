@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.util.Optional;
 
-import static java.util.Optional.ofNullable;
-
 @Getter
 @Log4j2
 @Service

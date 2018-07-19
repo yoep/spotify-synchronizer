@@ -17,5 +17,5 @@ public class UserInterface extends Observable implements Serializable {
     @Builder.Default
     private float height = 600f;
     @Builder.Default
-    private float scale = 1.5f;
+    private float scale = 1f;
 }

@@ -25,5 +25,5 @@ public interface MusicTrack extends Observable, Comparable<MusicTrack> {
      *
      * @return Returns the title of the album.
      */
-    String getAlbum();
+    Album getAlbum();
 }
