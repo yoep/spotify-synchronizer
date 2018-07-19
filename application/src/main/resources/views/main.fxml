@@ -11,11 +11,11 @@
     <rowConstraints>
         <RowConstraints maxHeight="30" minHeight="30"/>
         <RowConstraints maxHeight="Infinity" vgrow="ALWAYS"/>
-        <RowConstraints maxHeight="25" minHeight="25"/>
+        <RowConstraints maxHeight="75" minHeight="75"/>
     </rowConstraints>
 
     <!-- MENU -->
-    <fx:include source="menu_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <fx:include source="components/menu_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
 
     <!-- CONTENT -->
     <TableView fx:id="musicList" maxWidth="Infinity" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
@@ -27,6 +27,6 @@
         </placeholder>
     </TableView>
 
-    <!-- STATUS BAR -->
-    <fx:include source="statusbar_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+    <!-- PLAYER -->
+    <fx:include source="components/player_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="2" />
 </GridPane>

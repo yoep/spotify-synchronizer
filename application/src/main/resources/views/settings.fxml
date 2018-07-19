@@ -19,10 +19,10 @@
     <TabPane maxWidth="Infinity" maxHeight="Infinity" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"
              tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="0" GridPane.rowIndex="0">
         <Tab text="%settings_sync">
-            <fx:include source="settings_synchronize_component.fxml"/>
+            <fx:include source="components/settings_synchronize_component.fxml"/>
         </Tab>
         <Tab text="%settings_logging">
-            <fx:include source="settings_logging_component.fxml"/>
+            <fx:include source="components/settings_logging_component.fxml"/>
         </Tab>
     </TabPane>
 

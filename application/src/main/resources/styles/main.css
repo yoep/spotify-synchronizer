@@ -12,11 +12,6 @@
     -fx-text-fill: gray;
 }
 
-.statusbar {
-    -fx-border-width: 1 0 0 0;
-    -fx-border-color: lightgray;
-}
-
-.statusbar ProgressBar {
-    -fx-accent: #0c7032;
+.icon-large {
+    -fx-font-size: 3em;
 }

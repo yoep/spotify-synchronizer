@@ -1,13 +1,11 @@
 package be.studios.yoep.spotify.synchronizer.synchronize;
 
-import be.studios.yoep.spotify.synchronizer.common.ProgressHandler;
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.MusicTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SyncTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SyncTrackImpl;
 import be.studios.yoep.spotify.synchronizer.ui.UIText;
-import be.studios.yoep.spotify.synchronizer.ui.lang.MainMessage;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -28,7 +26,6 @@ public class SynchronisationService {
     private final DiscoveryService spotifyDiscovery;
     private final DiscoveryService localMusicDiscovery;
     private final UserSettingsService settingsService;
-    private final ProgressHandler progressHandler;
     private final UIText uiText;
     private final ObservableList<SyncTrack> tracks = FXCollections.observableArrayList(param -> new Observable[]{param});
 
@@ -41,15 +38,11 @@ public class SynchronisationService {
     }
 
     private void startDiscovery() {
-        progressHandler.setProcess(uiText.get(MainMessage.SYNCHRONIZING));
         localMusicDiscovery.start();
         spotifyDiscovery.start();
     }
 
     private void addListeners() {
-        localMusicDiscovery.onFinished(this::verifyFinishedState);
-        spotifyDiscovery.onFinished(this::verifyFinishedState);
-
         localMusicDiscovery.getTrackList().addListener((ListChangeListener<MusicTrack>) list -> {
             if (list.next()) {
                 list.getAddedSubList().forEach(track -> {
@@ -75,15 +68,8 @@ public class SynchronisationService {
             UserSettings userSettings = (UserSettings) o;
 
             if (userSettings.getSynchronization().hasChanged()) {
-                progressHandler.setProcess(uiText.get(MainMessage.SYNCHRONIZING));
                 localMusicDiscovery.start();
             }
         });
-    }
-
-    private void verifyFinishedState() {
-        if (spotifyDiscovery.isFinished() && localMusicDiscovery.isFinished()) {
-            progressHandler.success(uiText.get(MainMessage.DONE));
-        }
     }
 }

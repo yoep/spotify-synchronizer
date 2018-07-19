@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import be.studios.yoep.spotify.synchronizer.ui.Icons?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<GridPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="be.studios.yoep.spotify.synchronizer.views.components.PlayerComponent"
+          stylesheets="/styles/main.css">
+    <columnConstraints>
+        <ColumnConstraints maxWidth="75" minWidth="75"/>
+        <ColumnConstraints maxWidth="Infinity" hgrow="ALWAYS"/>
+        <ColumnConstraints minWidth="100" maxWidth="100"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="Infinity" vgrow="ALWAYS"/>
+    </rowConstraints>
+
+    <!-- Image -->
+    <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <Text styleClass="icon, icon-large">
+            <Icons fx:constant="IMAGE"/>
+        </Text>
+        <ImageView fx:id="image"/>
+    </StackPane>
+
+    <!-- PLAYER STATUS -->
+
+    <!-- SYNCHRONIZER STATUS -->
+
+</GridPane>

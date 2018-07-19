@@ -10,5 +10,6 @@ public class Icons {
     public static final String COG = "\uf013";
     public static final String PLAY = "\uf04b";
     public static final String SPOTIFY = "\uf1bc";
+    public static final String IMAGE = "\uf03e";
     //CHECKSTYLE:ON
 }
