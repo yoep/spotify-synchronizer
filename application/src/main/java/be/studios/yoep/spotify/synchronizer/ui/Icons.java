@@ -9,6 +9,11 @@ public class Icons {
     public static final String COGS = "\uf085";
     public static final String COG = "\uf013";
     public static final String PLAY = "\uf04b";
+    public static final String PLAY_CIRCLE = "\uf144";
+    public static final String PAUSE = "\uf04c";
+    public static final String PAUSE_CIRCLE = "\uf28b";
+    public static final String PREVIOUS = "\uf048";
+    public static final String NEXT = "\uf051";
     public static final String SPOTIFY = "\uf1bc";
     public static final String IMAGE = "\uf03e";
     //CHECKSTYLE:ON

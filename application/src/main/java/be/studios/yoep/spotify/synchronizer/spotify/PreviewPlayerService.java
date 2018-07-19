@@ -1,24 +1,28 @@
 package be.studios.yoep.spotify.synchronizer.spotify;
 
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SpotifyTrack;
+import be.studios.yoep.spotify.synchronizer.views.components.PlayerComponent;
 import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 @Log4j2
 @Service
+@RequiredArgsConstructor
 public class PreviewPlayerService {
-    private MediaPlayer mediaPlayer;
+    private final PlayerComponent playerComponent;
 
+    /**
+     * Play the preview for the given spotify track.
+     * Make sure the {@link SpotifyTrack#getPreviewUrl()} is not empty before calling this method.
+     *
+     * @param track Set the track.
+     */
     public void play(SpotifyTrack track) {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-        }
-
-        Media media = new Media(track.getPreviewUrl());
-        mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.setOnError(() -> log.error(mediaPlayer.getError()));
-        mediaPlayer.setOnReady(() -> mediaPlayer.play());
+        Assert.notNull(track, "track cannot be null");
+        Assert.hasText(track.getPreviewUrl(), "previewUrl cannot be empty");
+        playerComponent.play(new Media(track.getPreviewUrl()));
     }
 }

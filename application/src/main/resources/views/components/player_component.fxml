@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import be.studios.yoep.spotify.synchronizer.ui.Icons?>
+<?import be.studios.yoep.spotify.synchronizer.ui.*?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <GridPane xmlns="http://javafx.com/javafx"
-          xmlns:fx="http://javafx.com/fxml"
-          fx:controller="be.studios.yoep.spotify.synchronizer.views.components.PlayerComponent"
-          stylesheets="/styles/main.css">
+          xmlns:fx="http://javafx.com/fxml" fx:controller="be.studios.yoep.spotify.synchronizer.views.components.PlayerComponent"
+          stylesheets="/styles/main.css" prefWidth="800" prefHeight="100">
     <columnConstraints>
         <ColumnConstraints maxWidth="75" minWidth="75"/>
         <ColumnConstraints maxWidth="Infinity" hgrow="ALWAYS"/>
@@ -26,6 +26,46 @@
     </StackPane>
 
     <!-- PLAYER STATUS -->
+    <GridPane GridPane.columnIndex="1" GridPane.rowIndex="0">
+        <columnConstraints>
+            <ColumnConstraints maxWidth="Infinity" hgrow="ALWAYS"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints maxHeight="Infinity" vgrow="ALWAYS"/>
+            <RowConstraints minHeight="15" vgrow="NEVER"/>
+        </rowConstraints>
+
+        <GridPane alignment="TOP_CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <columnConstraints>
+                <ColumnConstraints/>
+                <ColumnConstraints/>
+                <ColumnConstraints/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints/>
+            </rowConstraints>
+
+            <Label fx:id="playerPrevious" onMouseClicked="#onPrevious" styleClass="icon, icon-large, icon-clickable, player-button"
+                   GridPane.columnIndex="0" GridPane.rowIndex="0"
+                   disable="true">
+                <Icons fx:constant="PREVIOUS"/>
+            </Label>
+            <Label fx:id="playerPlay" onMouseClicked="#onPlay" styleClass="icon, icon-large, icon-clickable, player-button"
+                   GridPane.columnIndex="1" GridPane.rowIndex="0"
+                   disable="true">
+                <Icons fx:constant="PLAY_CIRCLE"/>
+            </Label>
+            <Label fx:id="playerPause" onMouseClicked="#onPause" styleClass="icon, icon-large, icon-clickable, player-button"
+                   GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <Icons fx:constant="PAUSE_CIRCLE"/>
+            </Label>
+            <Label fx:id="playerNext" onMouseClicked="#onNext" styleClass="icon, icon-large, icon-clickable, player-button"
+                   GridPane.columnIndex="2" GridPane.rowIndex="0"
+                   disable="true">
+                <Icons fx:constant="NEXT"/>
+            </Label>
+        </GridPane>
+    </GridPane>
 
     <!-- SYNCHRONIZER STATUS -->
 
