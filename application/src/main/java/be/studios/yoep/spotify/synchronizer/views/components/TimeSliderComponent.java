@@ -7,12 +7,13 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 @Component
-public class TimeSliderComponent implements Initializable {
+public class TimeSliderComponent implements Initializable, MediaPlayerComponent {
     private MediaPlayer mediaPlayer;
 
     @FXML
@@ -38,19 +39,22 @@ public class TimeSliderComponent implements Initializable {
         });
     }
 
-    void onReady() {
+    @Override
+    public void onReady() {
         long duration = (long) mediaPlayer.getTotalDuration().toSeconds();
 
         audioTimeSlider.setMax(mediaPlayer.getTotalDuration().toMillis());
         totalTime.setText(String.format("%02d:%02d", (duration % 3600) / 60, (duration % 60)));
     }
 
-    void setMediaPlayer(MediaPlayer mediaPlayer) {
+    @Override
+    public void setMediaPlayer(MediaPlayer mediaPlayer) {
         this.mediaPlayer = mediaPlayer;
         registerMediaPlayerEvents();
     }
 
-    void setPlayerDisabledState(boolean disabled) {
+    @Override
+    public void setPlayerDisabledState(boolean disabled) {
         audioTimeSlider.setDisable(disabled);
     }
 

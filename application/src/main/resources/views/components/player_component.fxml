@@ -10,7 +10,7 @@
     <columnConstraints>
         <ColumnConstraints maxWidth="75" minWidth="75"/>
         <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity"/>
-        <ColumnConstraints maxWidth="100" minWidth="100"/>
+        <ColumnConstraints maxWidth="125" minWidth="125"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints maxHeight="Infinity" vgrow="ALWAYS"/>
@@ -80,5 +80,20 @@
     </GridPane>
 
     <!-- SYNCHRONIZER STATUS -->
+    <GridPane GridPane.columnIndex="2" GridPane.rowIndex="0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints maxHeight="Infinity" vgrow="ALWAYS"/>
+            <RowConstraints minHeight="25" vgrow="NEVER"/>
+        </rowConstraints>
 
+        <fx:include source="/views/components/synchronize_status_component.fxml"
+                    GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.valignment="BOTTOM" GridPane.halignment="CENTER" />
+
+        <VBox GridPane.valignment="TOP" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <fx:include source="/views/components/volume_component.fxml" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+        </VBox>
+    </GridPane>
 </GridPane>

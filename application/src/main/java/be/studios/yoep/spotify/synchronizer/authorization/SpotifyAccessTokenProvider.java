@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.client.token.AccessTokenProvider;
 import org.springframework.security.oauth2.client.token.AccessTokenRequest;
 import org.springframework.security.oauth2.client.token.DefaultAccessTokenRequest;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
+import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -82,7 +83,9 @@ public class SpotifyAccessTokenProvider extends AuthorizationCodeAccessTokenProv
     private OAuth2AccessToken retrieveRefreshToken(OAuth2ProtectedResourceDetails resource, OAuth2AccessToken accessToken) {
         final AccessTokenRequest request = new DefaultAccessTokenRequest();
 
-        OAuth2AccessToken oAuth2AccessToken = retrieveToken(request, resource, getParametersForRefreshTokenRequest(accessToken), new HttpHeaders());
+        DefaultOAuth2AccessToken oAuth2AccessToken
+                = (DefaultOAuth2AccessToken) retrieveToken(request, resource, getParametersForRefreshTokenRequest(accessToken), new HttpHeaders());
+        oAuth2AccessToken.setRefreshToken(accessToken.getRefreshToken());
         saveAccessToken(oAuth2AccessToken);
         return oAuth2AccessToken;
     }

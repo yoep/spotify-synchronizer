@@ -17,5 +17,8 @@ public class Icons {
     public static final String SPOTIFY = "\uf1bc";
     public static final String IMAGE = "\uf03e";
     public static final String COMPACT_DISK = "\uf51f";
+    public static final String VOLUME_MAX = "\uf028";
+    public static final String VOLUME_LOW = "\uf027";
+    public static final String VOLUME_OFF = "\uf026";
     //CHECKSTYLE:ON
 }

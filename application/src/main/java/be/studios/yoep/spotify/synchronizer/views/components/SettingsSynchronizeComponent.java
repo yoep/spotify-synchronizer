@@ -17,8 +17,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static java.util.Optional.ofNullable;
-
 @Log4j2
 @Component
 @RequiredArgsConstructor
@@ -39,11 +37,9 @@ public class SettingsSynchronizeComponent implements Initializable, SettingCompo
 
     @Override
     public UserSettings apply(UserSettings currentUserSettings) {
-        Synchronization synchronization = ofNullable(currentUserSettings.getSynchronization())
-                .orElse(Synchronization.builder().build());
+        Synchronization synchronization = currentUserSettings.getSynchronization();
 
         synchronization.setLocalMusicDirectory(selectedFile);
-        currentUserSettings.setSynchronization(synchronization);
 
         return currentUserSettings;
     }

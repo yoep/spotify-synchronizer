@@ -1,0 +1,7 @@
+.volume-slider {
+    -fx-control-inner-background: #0c7032;
+}
+
+.volume-slider:disabled {
+    -fx-control-inner-background: gray;
+}

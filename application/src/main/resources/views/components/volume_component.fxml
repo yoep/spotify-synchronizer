@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import be.studios.yoep.spotify.synchronizer.ui.Icons?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+          fx:controller="be.studios.yoep.spotify.synchronizer.views.components.VolumeComponent"
+          stylesheets="/styles/main.css, /styles/volume.css">
+    <columnConstraints>
+        <ColumnConstraints minWidth="20" maxWidth="20"/>
+        <ColumnConstraints />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="20" maxHeight="20"/>
+    </rowConstraints>
+
+    <Text fx:id="volumeIcon" styleClass="icon" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+        <Icons fx:constant="VOLUME_MAX"/>
+    </Text>
+
+    <Slider fx:id="volumeSlider" styleClass="volume-slider" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.valignment="CENTER">
+        <GridPane.margin>
+            <Insets right="5"/>
+        </GridPane.margin>
+    </Slider>
+</GridPane>

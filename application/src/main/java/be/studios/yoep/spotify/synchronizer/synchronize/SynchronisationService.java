@@ -6,6 +6,7 @@ import be.studios.yoep.spotify.synchronizer.synchronize.model.MusicTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SyncTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SyncTrackImpl;
 import be.studios.yoep.spotify.synchronizer.ui.UIText;
+import be.studios.yoep.spotify.synchronizer.views.components.SynchronizeStatusComponent;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -27,6 +28,7 @@ public class SynchronisationService {
     private final DiscoveryService localMusicDiscovery;
     private final UserSettingsService settingsService;
     private final UIText uiText;
+    private final SynchronizeStatusComponent statusComponent;
     private final ObservableList<SyncTrack> tracks = FXCollections.observableArrayList(param -> new Observable[]{param});
 
     /**
@@ -40,6 +42,7 @@ public class SynchronisationService {
     private void startDiscovery() {
         localMusicDiscovery.start();
         spotifyDiscovery.start();
+        statusComponent.setSynchronizing(true);
     }
 
     private void addListeners() {
@@ -62,14 +65,23 @@ public class SynchronisationService {
                 Collections.sort(tracks);
             }
         });
+        localMusicDiscovery.onFinished(this::serviceFinished);
+        spotifyDiscovery.onFinished(this::serviceFinished);
 
         //register a listener on the user settings
         settingsService.getUserSettingsObservable().addObserver((o, arg) -> {
             UserSettings userSettings = (UserSettings) o;
 
             if (userSettings.getSynchronization().hasChanged()) {
+                statusComponent.setSynchronizing(true);
                 localMusicDiscovery.start();
             }
         });
+    }
+
+    private void serviceFinished() {
+        if (localMusicDiscovery.isFinished() && spotifyDiscovery.isFinished()) {
+            statusComponent.setSynchronizing(false);
+        }
     }
 }

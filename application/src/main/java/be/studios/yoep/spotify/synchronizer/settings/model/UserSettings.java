@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Observable;
+import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
@@ -59,8 +60,15 @@ public class UserSettings extends Observable implements Serializable {
 
     @NotNull
     public Synchronization getSynchronization() {
-        return ofNullable(synchronization)
-                .orElse(Synchronization.builder().build());
+        Optional<Synchronization> optionalSynchronization = ofNullable(this.synchronization);
+        Synchronization defaultSynchronization = Synchronization.builder().build();
+
+        if (optionalSynchronization.isPresent()) {
+            return optionalSynchronization.get();
+        }
+
+        this.setSynchronization(defaultSynchronization);
+        return defaultSynchronization;
     }
 
     public void setSynchronization(Synchronization synchronization) {

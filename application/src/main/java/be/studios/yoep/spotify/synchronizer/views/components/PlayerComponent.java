@@ -12,13 +12,14 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 @Log4j2
 @Component
 @RequiredArgsConstructor
 public class PlayerComponent implements Initializable {
-    private final TimeSliderComponent timeSliderComponent;
+    private final List<MediaPlayerComponent> mediaPlayerComponents;
 
     private PlayerState playerState = PlayerState.NOT_LOADED;
     private MediaPlayer mediaPlayer;
@@ -51,7 +52,7 @@ public class PlayerComponent implements Initializable {
         }
 
         mediaPlayer = new MediaPlayer(media);
-        timeSliderComponent.setMediaPlayer(mediaPlayer);
+        mediaPlayerComponents.forEach(e -> e.setMediaPlayer(mediaPlayer));
         registerMediaPlayerEvents();
     }
 
@@ -88,7 +89,7 @@ public class PlayerComponent implements Initializable {
         });
         mediaPlayer.setOnReady(() -> {
             playerState = PlayerState.READY;
-            timeSliderComponent.onReady();
+            mediaPlayerComponents.forEach(MediaPlayerComponent::onReady);
             mediaPlayer.play();
             setPlayerStatus(true);
             setPlayerDisabledState(false);
@@ -113,7 +114,7 @@ public class PlayerComponent implements Initializable {
     }
 
     private void setPlayerDisabledState(boolean disabled) {
-        timeSliderComponent.setPlayerDisabledState(disabled);
+        mediaPlayerComponents.forEach(e -> e.setPlayerDisabledState(disabled));
 
         playerPlay.setDisable(disabled);
         playerPause.setDisable(disabled);
