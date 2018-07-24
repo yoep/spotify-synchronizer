@@ -26,4 +26,12 @@ public interface MusicTrack extends Observable, Comparable<MusicTrack> {
      * @return Returns the title of the album.
      */
     Album getAlbum();
+
+    /**
+     * Verify if the given {@link MusicTrack} matches the spotify track.
+     *
+     * @param musicTrack Set the {@link MusicTrack} to compare.
+     * @return Returns true if matching, else false.
+     */
+    boolean matches(MusicTrack musicTrack);
 }

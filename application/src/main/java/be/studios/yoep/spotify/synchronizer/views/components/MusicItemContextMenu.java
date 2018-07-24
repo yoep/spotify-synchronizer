@@ -1,6 +1,7 @@
 package be.studios.yoep.spotify.synchronizer.views.components;
 
 import be.studios.yoep.spotify.synchronizer.SpotifySynchronizer;
+import be.studios.yoep.spotify.synchronizer.synchronize.model.MusicTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SpotifyTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SyncTrack;
 import be.studios.yoep.spotify.synchronizer.ui.Icons;
@@ -19,6 +20,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @EqualsAndHashCode(callSuper = true)
@@ -26,13 +28,16 @@ import java.util.function.Consumer;
 public class MusicItemContextMenu extends ContextMenu {
     private final UIText uiText;
     private Consumer<ActionEvent> onPlayPreview;
+    private Consumer<ActionEvent> onPlayLocalTrack;
     private Consumer<ActionEvent> onPlaySpotify;
     private MenuItem playPreviewItem;
+    private MenuItem playLocalTrackItem;
 
     @Builder
-    MusicItemContextMenu(Consumer<ActionEvent> onPlayPreview, Consumer<ActionEvent> onPlaySpotify) {
+    MusicItemContextMenu(Consumer<ActionEvent> onPlayPreview, Consumer<ActionEvent> onPlayLocalTrack, Consumer<ActionEvent> onPlaySpotify) {
         this.uiText = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(UIText.class);
         this.onPlayPreview = onPlayPreview;
+        this.onPlayLocalTrack = onPlayLocalTrack;
         this.onPlaySpotify = onPlaySpotify;
 
         initializeItems();
@@ -43,7 +48,9 @@ public class MusicItemContextMenu extends ContextMenu {
         Object item = ((TableRow) anchor).getItem();
 
         if (item instanceof SyncTrack) {
-            SpotifyTrack spotifyTrack = (SpotifyTrack) ((SyncTrack) item).getSpotifyTrack();
+            SyncTrack syncTrack = (SyncTrack) item;
+            SpotifyTrack spotifyTrack = (SpotifyTrack) syncTrack.getSpotifyTrack();
+            Optional<MusicTrack> optionalLocalTrack = syncTrack.getLocalTrack();
 
             if (spotifyTrack.isPreviewAvailable()) {
                 playPreviewItem.setText(uiText.get(MainMessage.PLAY_PREVIEW));
@@ -52,20 +59,37 @@ public class MusicItemContextMenu extends ContextMenu {
                 playPreviewItem.setText(uiText.get(MainMessage.PLAY_PREVIEW_UNAVAILABLE));
                 playPreviewItem.setDisable(true);
             }
+
+            if (optionalLocalTrack.isPresent()) {
+                playLocalTrackItem.setText(uiText.get(MainMessage.PLAY_LOCAL_TRACK));
+                playLocalTrackItem.setDisable(false);
+            } else {
+                playLocalTrackItem.setText(uiText.get(MainMessage.PLAY_LOCAL_TRACK_UNAVAILABLE));
+                playLocalTrackItem.setDisable(true);
+            }
         }
 
         super.show(anchor, screenX, screenY);
     }
 
     private void initializeItems() {
-        playPreviewItem = createMenuItem(Icons.PLAY, MainMessage.PLAY_PREVIEW, this::onLocalPlayPreview);
+        playPreviewItem = createMenuItem(Icons.PLAY, MainMessage.PLAY_PREVIEW, this::onPlayPreview);
+        playLocalTrackItem = createMenuItem(Icons.PLAY, MainMessage.PLAY_LOCAL_TRACK, this::onLocalPlayPreview);
 
         this.getItems().addAll(
                 playPreviewItem,
+                playLocalTrackItem,
                 createMenuItem(Icons.SPOTIFY, MainMessage.OPEN_IN_SPOTIFY, this::onLocalPlaySpotify));
     }
 
     private void onLocalPlayPreview(ActionEvent event) {
+        if (onPlayLocalTrack != null) {
+            event.consume();
+            onPlayLocalTrack.accept(event);
+        }
+    }
+
+    private void onPlayPreview(ActionEvent event) {
         if (onPlayPreview != null) {
             event.consume();
             onPlayPreview.accept(event);

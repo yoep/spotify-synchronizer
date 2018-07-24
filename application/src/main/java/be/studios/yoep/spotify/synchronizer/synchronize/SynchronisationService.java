@@ -60,6 +60,7 @@ public class SynchronisationService {
                 tracks.addAll(list.getAddedSubList().stream()
                         .map(e -> SyncTrackImpl.builder()
                                 .spotifyTrack(e)
+                                .localTrack(searchForBufferedLocalTrack(e))
                                 .build())
                         .collect(Collectors.toList()));
                 Collections.sort(tracks);
@@ -72,11 +73,18 @@ public class SynchronisationService {
         settingsService.getUserSettingsObservable().addObserver((o, arg) -> {
             UserSettings userSettings = (UserSettings) o;
 
-            if (userSettings.getSynchronization().hasChanged()) {
+            if (userSettings.hasChanged() || userSettings.getSynchronization().hasChanged()) {
                 statusComponent.setSynchronizing(true);
                 localMusicDiscovery.start();
             }
         });
+    }
+
+    private MusicTrack searchForBufferedLocalTrack(MusicTrack e) {
+        return localMusicDiscovery.getTrackList().stream()
+                .filter(e::matches)
+                .findFirst()
+                .orElse(null);
     }
 
     private void serviceFinished() {

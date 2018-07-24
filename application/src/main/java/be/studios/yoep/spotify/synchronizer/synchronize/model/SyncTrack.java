@@ -21,14 +21,6 @@ public interface SyncTrack extends MusicTrack {
     boolean isSynchronized();
 
     /**
-     * Verify if the given {@link MusicTrack} matches the spotify track.
-     *
-     * @param musicTrack Set the {@link MusicTrack} to compare.
-     * @return Returns true if matching, else false.
-     */
-    boolean matches(MusicTrack musicTrack);
-
-    /**
      * Get the found spotify track.
      *
      * @return Returns the found spotify track info.

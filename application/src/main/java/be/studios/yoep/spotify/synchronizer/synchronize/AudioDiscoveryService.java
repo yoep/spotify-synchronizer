@@ -43,6 +43,7 @@ public class AudioDiscoveryService {
                         try {
                             parser.parse(FileUtils.openInputStream(file), new BodyContentHandler(), metadata, new ParseContext());
                             LocalTrack track = LocalTrack.builder()
+                                    .file(file)
                                     .artist(metadata.get(Mp3Properties.CREATOR))
                                     .album(LocalAlbum.builder()
                                             .name(metadata.get(Mp3Properties.ALBUM))
