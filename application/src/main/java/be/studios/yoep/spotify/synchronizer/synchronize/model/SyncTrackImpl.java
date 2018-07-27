@@ -34,6 +34,11 @@ public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
     }
 
     @Override
+    public String getUri() {
+        return localTrack != null ? localTrack.getUri() : spotifyTrack.getUri();
+    }
+
+    @Override
     public boolean isLocalTrackAvailable() {
         return localTrack != null;
     }

@@ -1,6 +1,7 @@
 package be.studios.yoep.spotify.synchronizer.views.components;
 
 import be.studios.yoep.spotify.synchronizer.common.PlayerState;
+import be.studios.yoep.spotify.synchronizer.synchronize.model.MusicTrack;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -10,6 +11,7 @@ import javafx.scene.media.MediaPlayer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.net.URL;
 import java.util.List;
@@ -43,15 +45,16 @@ public class PlayerComponent implements Initializable {
     /**
      * Play the given media.
      *
-     * @param media Set the media to play.
+     * @param track Set the music track to play.
      */
-    public void play(Media media) {
+    public void play(MusicTrack track) {
+        Assert.notNull(track, "track cannot be null");
         if (mediaPlayer != null) {
             mediaPlayer.stop();
             mediaPlayer.dispose();
         }
 
-        mediaPlayer = new MediaPlayer(media);
+        mediaPlayer = new MediaPlayer(new Media(track.getUri()));
         mediaPlayerComponents.forEach(e -> e.setMediaPlayer(mediaPlayer));
         registerMediaPlayerEvents();
     }

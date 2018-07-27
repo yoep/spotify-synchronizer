@@ -27,6 +27,11 @@ public class SpotifyTrack extends AbstractMusicTrack {
         return StringUtils.isNotEmpty(previewUrl);
     }
 
+    @Override
+    public String getUri() {
+        return previewUrl;
+    }
+
     public void setTitle(String title) {
         this.title = title;
         listeners.forEach(e -> e.invalidated(this));

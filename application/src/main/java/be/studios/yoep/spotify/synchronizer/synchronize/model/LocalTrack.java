@@ -15,6 +15,11 @@ public class LocalTrack extends AbstractMusicTrack {
     private Album album;
     private File file;
 
+    @Override
+    public String getUri() {
+        return file.toURI().toString();
+    }
+
     public void setTitle(String title) {
         this.title = title;
         listeners.forEach(e -> e.invalidated(this));

@@ -28,6 +28,14 @@ public interface MusicTrack extends Observable, Comparable<MusicTrack> {
     Album getAlbum();
 
     /**
+     * Get the uri to play the track.
+     * This can be from a {@link java.io.File} of {@link java.net.URI}.
+     *
+     * @return Returns the uri to play the track.
+     */
+    String getUri();
+
+    /**
      * Verify if the given {@link MusicTrack} matches the spotify track.
      *
      * @param musicTrack Set the {@link MusicTrack} to compare.
