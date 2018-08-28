@@ -7,7 +7,6 @@ import lombok.Data;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -15,11 +14,11 @@ import java.util.List;
 @AllArgsConstructor
 public class SpotifyAlbum implements Album {
     private String name;
-    private String imageUrl;
+    private String imageUri;
 
     @Override
     public Image getImage() {
-        return new Image(imageUrl);
+        return new Image(imageUri);
     }
 
     @Override
@@ -39,7 +38,7 @@ public class SpotifyAlbum implements Album {
         Assert.notNull(album, "album cannot be null");
         return SpotifyAlbum.builder()
                 .name(album.getName())
-                .imageUrl(getSmallestImage(album.getImages()))
+                .imageUri(getSmallestImage(album.getImages()))
                 .build();
     }
 

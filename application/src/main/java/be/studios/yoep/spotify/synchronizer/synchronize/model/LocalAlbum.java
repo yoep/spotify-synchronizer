@@ -11,7 +11,7 @@ import org.springframework.util.Assert;
 @AllArgsConstructor
 public class LocalAlbum implements Album {
     private String name;
-
+    private String imageUri;
 
     @Override
     public Image getImage() {

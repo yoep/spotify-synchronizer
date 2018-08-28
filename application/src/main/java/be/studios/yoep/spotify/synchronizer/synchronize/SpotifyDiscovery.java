@@ -1,5 +1,7 @@
 package be.studios.yoep.spotify.synchronizer.synchronize;
 
+import be.studios.yoep.spotify.synchronizer.domain.entities.AlbumInfoEntity;
+import be.studios.yoep.spotify.synchronizer.domain.repositories.AlbumRepository;
 import be.studios.yoep.spotify.synchronizer.spotify.SpotifyService;
 import be.studios.yoep.spotify.synchronizer.spotify.api.v1.SavedTrack;
 import be.studios.yoep.spotify.synchronizer.spotify.api.v1.Tracks;
@@ -14,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -22,6 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SpotifyDiscovery implements DiscoveryService {
     private final SpotifyService spotifyService;
+    private final AlbumRepository albumRepository;
     private final ObservableList<MusicTrack> trackList = FXCollections.observableArrayList();
     private final ObservableList<SavedTrack> savedTrackList = FXCollections.observableArrayList();
 
@@ -59,6 +63,7 @@ public class SpotifyDiscovery implements DiscoveryService {
                 Tracks result = spotifyService.getSavedTracks(endpoint).get();
                 savedTrackList.addAll(result.getItems());
                 endpoint = result.getNext();
+                saveToDb(result.getItems());
             }
 
             log.debug("Done synchronizing spotify");
@@ -78,5 +83,18 @@ public class SpotifyDiscovery implements DiscoveryService {
         if (callback != null) {
             this.callback.run();
         }
+    }
+
+    private void saveToDb(List<SavedTrack> items) {
+        items.stream()
+                .map(e -> e.getTrack().getAlbum())
+                .forEach(e -> {
+                    AlbumInfoEntity album = albumRepository.findByName(e.getName())
+                            .orElse(AlbumInfoEntity.builder()
+                                    .name(e.getName())
+                                    .imageUri(e.getUri())
+                                    .build());
+                    albumRepository.save(album);
+                });
     }
 }

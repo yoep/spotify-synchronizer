@@ -1,6 +1,8 @@
 apply from: "$rootDir/gradle/versioning.gradle"
 
 dependencies {
+    compile project(':domain')
+
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
     compile 'com.fasterxml.jackson.core:jackson-databind'

@@ -48,7 +48,7 @@ public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
         return isLocalTrackAvailable() &&
                 spotifyTrack.getTitle().equalsIgnoreCase(localTrack.getTitle()) &&
                 spotifyTrack.getArtist().equalsIgnoreCase(localTrack.getArtist()) &&
-                spotifyTrack.getAlbum().equals(localTrack.getAlbum());
+                spotifyTrack.getAlbum().getName().equals(localTrack.getAlbum().getName());
     }
 
     @Override
