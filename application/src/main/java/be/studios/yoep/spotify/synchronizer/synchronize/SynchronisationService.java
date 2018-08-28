@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,7 @@ public class SynchronisationService {
     private final DiscoveryService spotifyDiscovery;
     private final DiscoveryService localMusicDiscovery;
     private final UserSettingsService settingsService;
+    private final SynchronizeDatabaseService synchronizeDatabaseService;
     private final UIText uiText;
     private final SynchronizeStatusComponent statusComponent;
     private final ObservableList<SyncTrack> tracks = FXCollections.observableArrayList(param -> new Observable[]{param});
@@ -47,7 +49,12 @@ public class SynchronisationService {
     private void addListeners() {
         localMusicDiscovery.getTrackList().addListener((ListChangeListener<MusicTrack>) list -> {
             if (list.next()) {
-                list.getAddedSubList().forEach(track -> {
+                //prevent concurrent exceptions by creating copies
+                ArrayList<? extends MusicTrack> newItemsCopy1 = new ArrayList<>(list.getAddedSubList());
+                ArrayList<? extends MusicTrack> newItemsCopy2 = new ArrayList<>(list.getAddedSubList());
+
+                synchronizeDatabaseService.sync(newItemsCopy1);
+                newItemsCopy2.forEach(track -> {
                     tracks.stream()
                             .filter(e -> e.matches(track))
                             .forEach(e -> e.setLocalTrack(track));
@@ -56,7 +63,12 @@ public class SynchronisationService {
         });
         spotifyDiscovery.getTrackList().addListener((ListChangeListener<MusicTrack>) list -> {
             if (list.next()) {
-                tracks.addAll(list.getAddedSubList().stream()
+                //prevent concurrent exceptions by creating copies
+                ArrayList<? extends MusicTrack> newItemsCopy1 = new ArrayList<>(list.getAddedSubList());
+                ArrayList<? extends MusicTrack> newItemsCopy2 = new ArrayList<>(list.getAddedSubList());
+
+                synchronizeDatabaseService.sync(newItemsCopy1);
+                tracks.addAll(newItemsCopy2.stream()
                         .map(e -> SyncTrackImpl.builder()
                                 .spotifyTrack(e)
                                 .build())

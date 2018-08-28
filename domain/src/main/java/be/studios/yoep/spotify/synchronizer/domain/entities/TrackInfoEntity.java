@@ -26,9 +26,9 @@ public class TrackInfoEntity {
     @Column(nullable = false)
     private String artist;
 
-    @Column(nullable = false)
     private String uri;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TrackType type;
 

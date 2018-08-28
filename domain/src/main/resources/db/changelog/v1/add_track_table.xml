@@ -15,9 +15,7 @@
             <column name="ARTIST" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="URI" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
+            <column name="URI" type="VARCHAR(255)" />
             <column name="TYPE" type="VARCHAR(7)">
                 <constraints nullable="false"/>
             </column>
