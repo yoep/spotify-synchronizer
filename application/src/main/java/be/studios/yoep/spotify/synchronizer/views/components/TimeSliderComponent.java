@@ -30,11 +30,7 @@ public class TimeSliderComponent implements Initializable, MediaPlayerComponent 
             }
         });
         audioTimeSlider.valueChangingProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                mediaPlayer.setMute(true);
-            } else {
-                mediaPlayer.setMute(false);
-            }
+            mediaPlayer.setMute(newValue);
         });
     }
 

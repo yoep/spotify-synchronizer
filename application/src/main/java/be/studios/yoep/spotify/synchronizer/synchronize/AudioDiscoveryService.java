@@ -17,10 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Log4j2
 @Service
@@ -31,42 +31,46 @@ public class AudioDiscoveryService {
     public CompletableFuture<List<MusicTrack>> scanDirectory(File directory) {
         Assert.notNull(directory, "directory cannot be null");
         File[] files = directory.listFiles();
-        Parser parser = new Mp3Parser();
-        List<MusicTrack> musicTracks = new ArrayList<>();
 
-        if (files != null) {
-            for (File file : files) {
-                if (!file.isDirectory()) {
-                    if (isAudioFile(file)) {
-                        Metadata metadata = new Metadata();
-
-                        try {
-                            parser.parse(FileUtils.openInputStream(file), new BodyContentHandler(), metadata, new ParseContext());
-                            LocalTrack track = LocalTrack.builder()
-                                    .file(file)
-                                    .artist(metadata.get(Mp3Properties.CREATOR))
-                                    .album(LocalAlbum.builder()
-                                            .name(metadata.get(Mp3Properties.ALBUM))
-                                            .build())
-                                    .title(metadata.get(Mp3Properties.TITLE))
-                                    .build();
-
-                            if (track.getAlbum() != null && track.getArtist() != null && track.getTitle() != null) {
-                                log.debug("Found mp3 with {}", track);
-                            } else {
-                                log.warn("Missing mp3 metadata for {} file, with data {}", file, track);
-                            }
-
-                            musicTracks.add(track);
-                        } catch (Exception ex) {
-                            log.error("Unable to read audio file", ex);
-                        }
-                    }
-                }
-            }
-        }
+        List<MusicTrack> musicTracks = Optional.ofNullable(files)
+                .map(Arrays::stream)
+                .orElse(Stream.empty())
+                .filter(File::isFile)
+                .filter(this::isAudioFile)
+                .map(this::processAudioFile)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
         return CompletableFuture.completedFuture(musicTracks);
+    }
+
+    private MusicTrack processAudioFile(File file) {
+        Parser parser = new Mp3Parser();
+        Metadata metadata = new Metadata();
+
+        try {
+            parser.parse(FileUtils.openInputStream(file), new BodyContentHandler(), metadata, new ParseContext());
+            LocalTrack track = LocalTrack.builder()
+                    .file(file)
+                    .artist(metadata.get(Mp3Properties.CREATOR))
+                    .album(LocalAlbum.builder()
+                            .name(metadata.get(Mp3Properties.ALBUM))
+                            .build())
+                    .title(metadata.get(Mp3Properties.TITLE))
+                    .build();
+
+            if (track.getAlbum() != null && track.getArtist() != null && track.getTitle() != null) {
+                log.debug("Found mp3 with {}", track);
+            } else {
+                log.warn("Missing mp3 metadata for {} file, with data {}", file, track);
+            }
+
+            return track;
+        } catch (Exception ex) {
+            log.error("Unable to read audio file " + file, ex);
+        }
+
+        return null;
     }
 
     private boolean isAudioFile(File file) {

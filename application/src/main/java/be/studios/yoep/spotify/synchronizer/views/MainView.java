@@ -115,7 +115,7 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
 
         if (syncTrack != null && syncTrack.getLocalTrack().isPresent()) {
             event.consume();
-            mediaPlayerService.play((LocalTrack) syncTrack.getLocalTrack().get());
+            mediaPlayerService.play(syncTrack.getLocalTrack().get());
         }
     }
 
