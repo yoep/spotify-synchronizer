@@ -7,7 +7,6 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 
 import java.net.URL;
 import java.util.ResourceBundle;
