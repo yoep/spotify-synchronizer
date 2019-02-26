@@ -1,5 +1,6 @@
 package be.studios.yoep.spotify.synchronizer.synchronize.model;
 
+import javafx.scene.image.Image;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +11,12 @@ import org.springframework.util.Assert;
 @AllArgsConstructor
 public class LocalAlbum implements Album {
     private String name;
+    private String imageUri;
+
+    @Override
+    public Image getImage() {
+        return null; //TODO: implement
+    }
 
     @Override
     public int compareTo(Album compareTo) {

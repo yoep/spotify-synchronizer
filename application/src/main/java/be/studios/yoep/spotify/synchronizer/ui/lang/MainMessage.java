@@ -13,6 +13,8 @@ public enum MainMessage implements Message {
     DONE("done"),
     PLAY_PREVIEW("play_preview"),
     PLAY_PREVIEW_UNAVAILABLE("play_preview_unavailable"),
+    PLAY_LOCAL_TRACK("play_local_track"),
+    PLAY_LOCAL_TRACK_UNAVAILABLE("play_local_track_unavailable"),
     OPEN_IN_SPOTIFY("open_in_spotify"),
     DONE_SYNCHRONIZING("done_synchronizing");
 

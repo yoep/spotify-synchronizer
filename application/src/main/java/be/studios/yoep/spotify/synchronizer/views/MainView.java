@@ -1,11 +1,12 @@
 package be.studios.yoep.spotify.synchronizer.views;
 
 import be.studios.yoep.spotify.synchronizer.SpotifySynchronizer;
+import be.studios.yoep.spotify.synchronizer.media.MediaPlayerService;
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserInterface;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
-import be.studios.yoep.spotify.synchronizer.spotify.PreviewPlayerService;
 import be.studios.yoep.spotify.synchronizer.synchronize.SynchronisationService;
+import be.studios.yoep.spotify.synchronizer.synchronize.model.LocalTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SpotifyTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SyncTrack;
 import be.studios.yoep.spotify.synchronizer.ui.ScaleAwareImpl;
@@ -38,7 +39,7 @@ import static java.util.Optional.ofNullable;
 public class MainView extends ScaleAwareImpl implements Initializable, SizeAware {
     private final SynchronisationService synchronisationService;
     private final UserSettingsService settingsService;
-    private final PreviewPlayerService previewPlayerService;
+    private final MediaPlayerService mediaPlayerService;
     private final UIText uiText;
 
     @FXML
@@ -102,10 +103,20 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
             TableRow<SyncTrack> row = new TableRow<>();
             row.setContextMenu(MusicItemContextMenu.builder()
                     .onPlayPreview(this::onPlayPreview)
+                    .onPlayLocalTrack(this::onPlayLocalTrack)
                     .onPlaySpotify(this::onPlaySpotify)
                     .build());
             return row;
         });
+    }
+
+    private void onPlayLocalTrack(ActionEvent event) {
+        SyncTrack syncTrack = getSelectedItem();
+
+        if (syncTrack != null && syncTrack.getLocalTrack().isPresent()) {
+            event.consume();
+            mediaPlayerService.play((LocalTrack) syncTrack.getLocalTrack().get());
+        }
     }
 
     private void onPlaySpotify(ActionEvent e) {
@@ -123,14 +134,18 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
 
         if (spotifyTrack != null) {
             e.consume();
-            previewPlayerService.play(spotifyTrack);
+            mediaPlayerService.play(spotifyTrack);
         } else {
-            log.warn("Spotify track not available for current selected row " + this.musicList.getSelectionModel().getSelectedItem());
+            log.warn("Spotify track not available for current selected row " + getSelectedItem());
         }
     }
 
+    private SyncTrack getSelectedItem() {
+        return this.musicList.getSelectionModel().getSelectedItem();
+    }
+
     private SpotifyTrack getCurrentSelectedSpotifyTrack() {
-        SyncTrack selectedItem = this.musicList.getSelectionModel().getSelectedItem();
+        SyncTrack selectedItem = getSelectedItem();
         return selectedItem != null ? (SpotifyTrack) selectedItem.getSpotifyTrack() : null;
     }
 

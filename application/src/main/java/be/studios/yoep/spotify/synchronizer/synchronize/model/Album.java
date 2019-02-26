@@ -1,13 +1,16 @@
 package be.studios.yoep.spotify.synchronizer.synchronize.model;
 
+import be.studios.yoep.spotify.synchronizer.domain.AlbumInfo;
+import javafx.scene.image.Image;
+
 /**
  * Defines the information about a album which generalizes the info between local and Spotify albums.
  */
-public interface Album extends Comparable<Album> {
+public interface Album extends AlbumInfo, Comparable<Album> {
     /**
-     * Get the name of the album.
+     * Get the album artwork.
      *
-     * @return Returns the name of the album.
+     * @return Returns the album artwork as an image.
      */
-    String getName();
+    Image getImage();
 }
