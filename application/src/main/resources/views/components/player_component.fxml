@@ -5,8 +5,10 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<GridPane prefHeight="75" prefWidth="800" stylesheets="/styles/main.css,/styles/player.css" xmlns="http://javafx.com/javafx/8.0.121"
-          xmlns:fx="http://javafx.com/fxml/1" fx:controller="be.studios.yoep.spotify.synchronizer.views.components.PlayerComponent">
+<GridPane prefHeight="75" prefWidth="800" stylesheets="/styles/main.css,/styles/player.css"
+          xmlns="http://javafx.com/javafx/8.0.121"
+          xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="be.studios.yoep.spotify.synchronizer.views.components.PlayerComponent">
     <columnConstraints>
         <ColumnConstraints maxWidth="75" minWidth="75"/>
         <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity"/>
@@ -21,7 +23,7 @@
         <Text styleClass="icon, icon-large">
             <Icons fx:constant="IMAGE"/>
         </Text>
-        <ImageView fx:id="image"/>
+        <ImageView fx:id="image" preserveRatio="true" fitWidth="64"/>
     </StackPane>
 
     <!-- PLAYER STATUS -->
@@ -44,28 +46,32 @@
                 <RowConstraints/>
             </rowConstraints>
 
-            <Label fx:id="playerPrevious" disable="true" onMouseClicked="#onPrevious" styleClass="icon, icon-large, icon-clickable, player-button"
+            <Label fx:id="playerPrevious" disable="true" onMouseClicked="#onPrevious"
+                   styleClass="icon, icon-large, icon-clickable, player-button"
                    GridPane.columnIndex="0" GridPane.rowIndex="0">
                 <Icons fx:constant="PREVIOUS"/>
                 <tooltip>
                     <Tooltip text="%previous"/>
                 </tooltip>
             </Label>
-            <Label fx:id="playerPlay" disable="true" onMouseClicked="#onPlay" styleClass="icon, icon-large, icon-clickable, player-button"
+            <Label fx:id="playerPlay" disable="true" onMouseClicked="#onPlay"
+                   styleClass="icon, icon-large, icon-clickable, player-button"
                    GridPane.columnIndex="1" GridPane.rowIndex="0">
                 <Icons fx:constant="PLAY_CIRCLE"/>
                 <tooltip>
                     <Tooltip text="%play"/>
                 </tooltip>
             </Label>
-            <Label fx:id="playerPause" disable="true" onMouseClicked="#onPause" styleClass="icon, icon-large, icon-clickable, player-button"
+            <Label fx:id="playerPause" disable="true" onMouseClicked="#onPause"
+                   styleClass="icon, icon-large, icon-clickable, player-button"
                    GridPane.columnIndex="1" GridPane.rowIndex="0">
                 <Icons fx:constant="PAUSE_CIRCLE"/>
                 <tooltip>
                     <Tooltip text="%pause"/>
                 </tooltip>
             </Label>
-            <Label fx:id="playerNext" disable="true" onMouseClicked="#onNext" styleClass="icon, icon-large, icon-clickable, player-button"
+            <Label fx:id="playerNext" disable="true" onMouseClicked="#onNext"
+                   styleClass="icon, icon-large, icon-clickable, player-button"
                    GridPane.columnIndex="2" GridPane.rowIndex="0">
                 <Icons fx:constant="NEXT"/>
                 <tooltip>
@@ -90,10 +96,12 @@
         </rowConstraints>
 
         <fx:include source="/views/components/synchronize_status_component.fxml"
-                    GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.valignment="BOTTOM" GridPane.halignment="CENTER" />
+                    GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.valignment="BOTTOM"
+                    GridPane.halignment="CENTER"/>
 
         <VBox GridPane.valignment="TOP" GridPane.columnIndex="0" GridPane.rowIndex="1">
-            <fx:include source="/views/components/volume_component.fxml" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+            <fx:include source="/views/components/volume_component.fxml" GridPane.columnIndex="2"
+                        GridPane.rowIndex="0"/>
         </VBox>
     </GridPane>
 </GridPane>

@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: yoep
+      changes:
+        - createTable:
+            tableName: TRACK
+            columns:
+              - column:
+                  name: ID
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: TITLE
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ARTIST
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: URI
+                  type: VARCHAR(255)
+              - column:
+                  name: TYPE
+                  type: VARCHAR(7)
+              - column:
+                  name: ALBUM_ID
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_TRACK_ALBUM_ID
+                    referencedTableName: ALBUM
+                    referencedColumnNames: ID
+                    nullable: false

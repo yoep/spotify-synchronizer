@@ -3,6 +3,7 @@ package be.studios.yoep.spotify.synchronizer.synchronize.model;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -63,6 +64,8 @@ public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
 
     public void setLocalTrack(MusicTrack localTrack) {
         this.localTrack = localTrack;
-        listeners.forEach(e -> e.invalidated(this));
+        listeners.stream()
+                .filter(Objects::nonNull)
+                .forEach(e -> e.invalidated(this));
     }
 }

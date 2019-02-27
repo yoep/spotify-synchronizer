@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: yoep
+      changes:
+        - createTable:
+            tableName: ALBUM
+            columns:
+              - column:
+                  name: ID
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: NAME
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    uniqueConstraintName: UK_NAME
+              - column:
+                  name: IMAGE_URI
+                  type: VARCHAR(255)
+              - column:
+                  name: IMAGE
+                  type: BLOB

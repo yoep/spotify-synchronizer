@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      relativeToChangelogFile: true
+      file: 01_add_album.yml
+  - include:
+      relativeToChangelogFile: true
+      file: 02_add_track.yml

@@ -12,5 +12,5 @@ public interface Album extends AlbumInfo, Comparable<Album> {
      *
      * @return Returns the album artwork as an image.
      */
-    Image getImage();
+    Image getPlayerImage();
 }

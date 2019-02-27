@@ -14,4 +14,11 @@ public interface AlbumInfo {
      * @return Returns the image of the album uri.
      */
     String getImageUri();
+
+    /**
+     * Get the image byte array.
+     *
+     * @return Returns the image in bytes.
+     */
+    byte[] getImage();
 }

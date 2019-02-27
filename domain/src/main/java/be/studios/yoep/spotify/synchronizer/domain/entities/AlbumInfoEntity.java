@@ -24,4 +24,6 @@ public class AlbumInfoEntity implements AlbumInfo {
     private String name;
 
     private String imageUri;
+
+    private byte[] image;
 }

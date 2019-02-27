@@ -3,7 +3,7 @@ package be.studios.yoep.spotify.synchronizer.synchronize.model;
 import be.studios.yoep.spotify.synchronizer.spotify.api.v1.SavedTrack;
 import be.studios.yoep.spotify.synchronizer.spotify.api.v1.Track;
 import lombok.*;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
 @EqualsAndHashCode(callSuper = false)

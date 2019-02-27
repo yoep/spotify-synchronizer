@@ -4,6 +4,7 @@ import javafx.scene.image.Image;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -17,7 +18,12 @@ public class SpotifyAlbum implements Album {
     private String imageUri;
 
     @Override
-    public Image getImage() {
+    public byte[] getImage() {
+        return new byte[0]; //no-op
+    }
+
+    @Override
+    public Image getPlayerImage() {
         return new Image(imageUri);
     }
 
