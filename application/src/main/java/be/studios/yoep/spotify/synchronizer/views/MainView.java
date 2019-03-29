@@ -1,6 +1,7 @@
 package be.studios.yoep.spotify.synchronizer.views;
 
 import be.studios.yoep.spotify.synchronizer.SpotifySynchronizer;
+import be.studios.yoep.spotify.synchronizer.domain.AlbumInfo;
 import be.studios.yoep.spotify.synchronizer.media.MediaPlayerService;
 import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserInterface;
@@ -19,6 +20,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
@@ -54,7 +58,8 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
         });
 
         initializeColumns();
-        initializeContextMenu();
+        initializeRowFactory();
+        initializePlayerActions();
         synchronisationService.init();
     }
 
@@ -77,35 +82,6 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
         userInterface.setHeight(height.floatValue());
         userInterface.setMaximized(isMaximized);
         userSettings.setUserInterface(userInterface);
-    }
-
-    private void initializeColumns() {
-        TableColumn<SyncTrack, String> titleColumn = createColumn(uiText.get(MainMessage.TITLE_TRACK), SyncTrack::getTitle);
-        TableColumn<SyncTrack, String> artistColumn = createColumn(uiText.get(MainMessage.ARTIST_TRACK), SyncTrack::getArtist);
-        TableColumn<SyncTrack, String> albumColumn = createColumn(uiText.get(MainMessage.ALBUM_TRACK), e -> e.getAlbum().getName());
-
-        titleColumn.setSortable(true);
-        artistColumn.setSortable(true);
-        albumColumn.setSortable(true);
-        titleColumn.setSortType(TableColumn.SortType.ASCENDING);
-        artistColumn.setSortType(TableColumn.SortType.ASCENDING);
-        albumColumn.setSortType(TableColumn.SortType.ASCENDING);
-
-        musicList.getColumns().addAll(asList(titleColumn, artistColumn, albumColumn));
-        musicList.getSortOrder().addAll(asList(artistColumn, albumColumn));
-        musicList.sort();
-    }
-
-    private void initializeContextMenu() {
-        this.musicList.setRowFactory(param -> {
-            TableRow<SyncTrack> row = new TableRow<>();
-            row.setContextMenu(MusicItemContextMenu.builder()
-                    .onPlayPreview(this::onPlayPreview)
-                    .onPlayLocalTrack(this::onPlayLocalTrack)
-                    .onPlaySpotify(this::onPlaySpotify)
-                    .build());
-            return row;
-        });
     }
 
     private void onPlayLocalTrack(ActionEvent event) {
@@ -135,6 +111,17 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
             mediaPlayerService.play(spotifyTrack);
         } else {
             log.warn("Spotify track not available for current selected row " + getSelectedItem());
+        }
+    }
+
+    private void onTrackMouseClick(MouseEvent e) {
+        TableRow<SyncTrack> trackRow = (TableRow<SyncTrack>) e.getSource();
+
+        if (e.getClickCount() == 2 && !trackRow.isEmpty()) {
+            e.consume();
+            SyncTrack track = trackRow.getItem();
+            mediaPlayerService.play(track);
+            musicList.refresh();
         }
     }
 
@@ -171,9 +158,61 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
                     } else {
                         setTextFill(Paint.valueOf("#be0000"));
                     }
+
+                    boolean isTrackBeingPlayed = mediaPlayerService.getCurrentTrack().filter(e -> e == track).isPresent();
+
+                    if (isTrackBeingPlayed) {
+                        setStyle("-fx-background-color: #88ffb9");
+                    } else {
+                        setBackground(Background.EMPTY);
+                    }
                 }
             }
         });
         return column;
+    }
+
+    private void initializeColumns() {
+        TableColumn<SyncTrack, String> titleColumn = createColumn(uiText.get(MainMessage.TITLE_TRACK), SyncTrack::getTitle);
+        TableColumn<SyncTrack, String> artistColumn = createColumn(uiText.get(MainMessage.ARTIST_TRACK), SyncTrack::getArtist);
+        TableColumn<SyncTrack, String> albumColumn = createColumn(uiText.get(MainMessage.ALBUM_TRACK), e -> ofNullable(e.getAlbum())
+                .map(AlbumInfo::getName)
+                .orElse(null));
+
+        titleColumn.setSortable(true);
+        artistColumn.setSortable(true);
+        albumColumn.setSortable(true);
+        titleColumn.setSortType(TableColumn.SortType.ASCENDING);
+        artistColumn.setSortType(TableColumn.SortType.ASCENDING);
+        albumColumn.setSortType(TableColumn.SortType.ASCENDING);
+
+        musicList.getColumns().addAll(asList(titleColumn, artistColumn, albumColumn));
+        musicList.getSortOrder().addAll(asList(artistColumn, albumColumn));
+        musicList.sort();
+    }
+
+    private void initializeRowFactory() {
+        this.musicList.setRowFactory(param -> {
+            TableRow<SyncTrack> row = new TableRow<>();
+            row.setContextMenu(MusicItemContextMenu.builder()
+                    .onPlayPreview(this::onPlayPreview)
+                    .onPlayLocalTrack(this::onPlayLocalTrack)
+                    .onPlaySpotify(this::onPlaySpotify)
+                    .build());
+            row.setOnMouseClicked(this::onTrackMouseClick);
+            return row;
+        });
+    }
+
+    private void initializePlayerActions() {
+        this.mediaPlayerService.setOnNext(track -> {
+            ArrayList<SyncTrack> tracks = new ArrayList<>(this.musicList.getItems());
+            int nextTrackIndex = tracks.indexOf(track) + 1;
+
+            if (nextTrackIndex >= tracks.size())
+                nextTrackIndex = 0;
+
+            this.mediaPlayerService.play(tracks.get(nextTrackIndex));
+        });
     }
 }

@@ -8,14 +8,18 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
 
 @Log4j2
 @Component
@@ -25,6 +29,11 @@ public class PlayerComponent implements Initializable {
 
     private PlayerState playerState = PlayerState.NOT_LOADED;
     private MediaPlayer mediaPlayer;
+    private MusicTrack currentTrack;
+    @Setter
+    private Consumer<MusicTrack> onNext;
+    @Setter
+    private Consumer<MusicTrack> onPrevious;
 
     @FXML
     public ImageView image;
@@ -42,6 +51,10 @@ public class PlayerComponent implements Initializable {
         playerPause.setVisible(false);
     }
 
+    public Optional<MusicTrack> getCurrentTrack() {
+        return Optional.ofNullable(currentTrack);
+    }
+
     /**
      * Play the given media.
      *
@@ -54,6 +67,7 @@ public class PlayerComponent implements Initializable {
             mediaPlayer.dispose();
         }
 
+        currentTrack = track;
         mediaPlayer = new MediaPlayer(new Media(track.getUri()));
         mediaPlayerComponents.forEach(e -> e.setMediaPlayer(mediaPlayer));
         image.setImage(track.getAlbum().getPlayerImage());
@@ -77,11 +91,13 @@ public class PlayerComponent implements Initializable {
     }
 
     public void onPrevious() {
-
+        if (onPrevious != null)
+            onPrevious.accept(currentTrack);
     }
 
     public void onNext() {
-
+        if (onNext != null)
+            onNext.accept(currentTrack);
     }
 
     private void registerMediaPlayerEvents() {

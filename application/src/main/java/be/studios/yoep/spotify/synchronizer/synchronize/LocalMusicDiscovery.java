@@ -13,9 +13,13 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
+
+import static java.util.Optional.ofNullable;
 
 @Log4j2
 @Data
@@ -71,15 +75,13 @@ public class LocalMusicDiscovery implements DiscoveryService {
     private void discoverDirectory(File directory) {
         File[] files = directory.listFiles();
 
-        if (files != null) {
-            discoveryAudioFiles(directory);
+        discoveryAudioFiles(directory);
 
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    discoverDirectory(file);
-                }
-            }
-        }
+        ofNullable(files)
+                .map(Arrays::stream)
+                .orElse(Stream.empty())
+                .filter(File::isDirectory)
+                .forEach(this::discoverDirectory);
     }
 
     private void discoveryAudioFiles(File directory) {
