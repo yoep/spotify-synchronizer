@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -33,6 +34,11 @@ public class UserSettingsService {
         createApplicationSettingsDirectory();
     }
 
+    @PreDestroy
+    public void onDestroy() {
+        save(getUserSettingsOrDefault());
+    }
+
     /**
      * Save the given user settings.
      *
@@ -44,7 +50,7 @@ public class UserSettingsService {
         File settingsFile = getSettingsFile();
 
         try {
-            log.debug("Saving user settings to " + settingsFile.getAbsolutePath());
+            log.info("Saving user settings to " + settingsFile.getAbsolutePath());
             FileUtils.writeStringToFile(settingsFile, objectMapper.writeValueAsString(settings), Charset.defaultCharset());
             userSettingsObservable.set(settings);
         } catch (IOException ex) {
@@ -66,12 +72,26 @@ public class UserSettingsService {
         }
     }
 
+    /**
+     * Get the user settings or the default settings if they don't exist yet.
+     *
+     * @return Returns the user settings.
+     * @throws SettingsException Is thrown when the user settings exist but couldn't be read.
+     */
+    public UserSettings getUserSettingsOrDefault() throws SettingsException {
+        return getUserSettings().orElseGet(() -> {
+            UserSettings defaultSettings = UserSettings.builder().build();
+            userSettingsObservable.set(defaultSettings);
+            return defaultSettings;
+        });
+    }
+
     private Optional<UserSettings> loadUserSettingsFromFile() {
         File settingsFile = getSettingsFile();
 
         if (settingsFile.exists()) {
             try {
-                log.debug("Loading user settings from " + settingsFile.getAbsolutePath());
+                log.info("Loading user settings from " + settingsFile.getAbsolutePath());
 
                 UserSettings userSettings = objectMapper.readValue(settingsFile, UserSettings.class);
                 userSettingsObservable.set(userSettings);

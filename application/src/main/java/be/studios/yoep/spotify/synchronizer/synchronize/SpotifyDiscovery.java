@@ -46,7 +46,7 @@ public class SpotifyDiscovery implements DiscoveryService {
 
     @Override
     public void start() {
-        log.debug("Starting spotify synchronization");
+        log.info("Starting spotify synchronization");
         this.finished = false;
 
         try {
@@ -61,7 +61,7 @@ public class SpotifyDiscovery implements DiscoveryService {
                 endpoint = result.getNext();
             }
 
-            log.debug("Done synchronizing spotify");
+            log.info("Synchronized " + savedTrackList.size() + " spotify tracks");
             this.finished = true;
             invokeCallback();
         } catch (Exception ex) {

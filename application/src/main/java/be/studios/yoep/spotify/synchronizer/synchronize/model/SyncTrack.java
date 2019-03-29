@@ -25,7 +25,7 @@ public interface SyncTrack extends MusicTrack {
      *
      * @return Returns the found spotify track info.
      */
-    MusicTrack getSpotifyTrack();
+    Optional<SpotifyTrack> getSpotifyTrack();
 
     /**
      * Get the local track if available.
@@ -33,6 +33,13 @@ public interface SyncTrack extends MusicTrack {
      * @return Returns the found matching local track if found, else empty().
      */
     Optional<MusicTrack> getLocalTrack();
+
+    /**
+     * Set the spotify track that is matching.
+     *
+     * @param musicTrack Set the spotify track.
+     */
+    void setSpotifyTrack(MusicTrack musicTrack);
 
     /**
      * Set the local track that is matching.

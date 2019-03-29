@@ -49,16 +49,18 @@ public class MusicItemContextMenu extends ContextMenu {
 
         if (item instanceof SyncTrack) {
             SyncTrack syncTrack = (SyncTrack) item;
-            SpotifyTrack spotifyTrack = (SpotifyTrack) syncTrack.getSpotifyTrack();
+            Optional<SpotifyTrack> spotifyTrack = syncTrack.getSpotifyTrack();
             Optional<MusicTrack> optionalLocalTrack = syncTrack.getLocalTrack();
 
-            if (spotifyTrack.isPreviewAvailable()) {
-                playPreviewItem.setText(uiText.get(MainMessage.PLAY_PREVIEW));
-                playPreviewItem.setDisable(false);
-            } else {
-                playPreviewItem.setText(uiText.get(MainMessage.PLAY_PREVIEW_UNAVAILABLE));
-                playPreviewItem.setDisable(true);
-            }
+            spotifyTrack.ifPresent(e -> {
+                if (e.isPreviewAvailable()) {
+                    playPreviewItem.setText(uiText.get(MainMessage.PLAY_PREVIEW));
+                    playPreviewItem.setDisable(false);
+                } else {
+                    playPreviewItem.setText(uiText.get(MainMessage.PLAY_PREVIEW_UNAVAILABLE));
+                    playPreviewItem.setDisable(true);
+                }
+            });
 
             if (optionalLocalTrack.isPresent()) {
                 playLocalTrackItem.setText(uiText.get(MainMessage.PLAY_LOCAL_TRACK));

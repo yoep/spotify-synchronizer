@@ -2,9 +2,11 @@ package be.studios.yoep.spotify.synchronizer.synchronize.model;
 
 import lombok.*;
 
-import javax.validation.constraints.NotNull;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Implementation of the {@link SyncTrack}.
@@ -15,28 +17,27 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
-    @NotNull
     private MusicTrack spotifyTrack;
     private MusicTrack localTrack;
 
     @Override
     public String getTitle() {
-        return spotifyTrack.getTitle();
+        return getProperty(MusicTrack::getTitle);
     }
 
     @Override
     public String getArtist() {
-        return spotifyTrack.getArtist();
+        return getProperty(MusicTrack::getArtist);
     }
 
     @Override
     public Album getAlbum() {
-        return spotifyTrack.getAlbum();
+        return getProperty(MusicTrack::getAlbum);
     }
 
     @Override
     public String getUri() {
-        return localTrack != null ? localTrack.getUri() : spotifyTrack.getUri();
+        return getProperty(MusicTrack::getUri);
     }
 
     @Override
@@ -46,20 +47,27 @@ public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
 
     @Override
     public boolean isSynchronized() {
-        return isLocalTrackAvailable() &&
+        return isLocalTrackAvailable() && spotifyTrack != null &&
                 spotifyTrack.getTitle().equalsIgnoreCase(localTrack.getTitle()) &&
                 spotifyTrack.getArtist().equalsIgnoreCase(localTrack.getArtist()) &&
                 spotifyTrack.getAlbum().getName().equals(localTrack.getAlbum().getName());
     }
 
     @Override
-    public MusicTrack getSpotifyTrack() {
-        return this.spotifyTrack;
+    public Optional<SpotifyTrack> getSpotifyTrack() {
+        return ofNullable((SpotifyTrack) this.spotifyTrack);
     }
 
     @Override
     public Optional<MusicTrack> getLocalTrack() {
-        return Optional.ofNullable(localTrack);
+        return ofNullable(this.localTrack);
+    }
+
+    public void setSpotifyTrack(MusicTrack spotifyTrack) {
+        this.spotifyTrack = spotifyTrack;
+        listeners.stream()
+                .filter(Objects::nonNull)
+                .forEach(e -> e.invalidated(this));
     }
 
     public void setLocalTrack(MusicTrack localTrack) {
@@ -67,5 +75,13 @@ public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
         listeners.stream()
                 .filter(Objects::nonNull)
                 .forEach(e -> e.invalidated(this));
+    }
+
+    private <T> T getProperty(Function<MusicTrack, T> mapProperty) {
+        return ofNullable(spotifyTrack)
+                .map(mapProperty)
+                .orElse(ofNullable(localTrack)
+                        .map(mapProperty)
+                        .orElse(null));
     }
 }

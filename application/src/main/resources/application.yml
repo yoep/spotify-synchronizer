@@ -18,7 +18,6 @@ spring:
 liquibase:
   default-schema: PUBLIC
 
-
 spotify:
   client-id: 0aada2191351445a8e91aa2b0b9747b8
   endpoints:

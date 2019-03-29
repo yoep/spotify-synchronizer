@@ -20,7 +20,7 @@ public class SettingsView {
     private final List<SettingComponent> settingComponents;
 
     public void apply(ActionEvent event) {
-        UserSettings userSettings = settingsService.getUserSettings().orElse(UserSettings.builder().build());
+        UserSettings userSettings = settingsService.getUserSettingsOrDefault();
 
         log.debug("Saving settings");
         for (SettingComponent component : settingComponents) {

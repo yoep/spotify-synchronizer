@@ -6,7 +6,6 @@ import be.studios.yoep.spotify.synchronizer.settings.UserSettingsService;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserInterface;
 import be.studios.yoep.spotify.synchronizer.settings.model.UserSettings;
 import be.studios.yoep.spotify.synchronizer.synchronize.SynchronisationService;
-import be.studios.yoep.spotify.synchronizer.synchronize.model.LocalTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SpotifyTrack;
 import be.studios.yoep.spotify.synchronizer.synchronize.model.SyncTrack;
 import be.studios.yoep.spotify.synchronizer.ui.ScaleAwareImpl;
@@ -21,7 +20,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.paint.Paint;
-import javafx.stage.Window;
+import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
@@ -49,7 +48,7 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
     public void initialize(URL location, ResourceBundle resources) {
         musicList.setItems(synchronisationService.getTracks());
         synchronisationService.getTracks().addListener((ListChangeListener<SyncTrack>) c -> {
-            if (c.next() && c.wasUpdated()) {
+            if (c.next()) {
                 musicList.refresh();
             }
         });
@@ -60,25 +59,24 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
     }
 
     @Override
-    public void setInitialSize(Window window) {
-        UserSettings userSettings = settingsService.getUserSettings()
-                .orElse(UserSettings.builder().build());
+    public void setInitialSize(Stage window) {
+        UserSettings userSettings = settingsService.getUserSettingsOrDefault();
         UserInterface userInterface = userSettings.getUserInterface();
 
         window.setWidth(userInterface.getWidth());
         window.setHeight(userInterface.getHeight());
+        window.setMaximized(userInterface.isMaximized());
     }
 
     @Override
-    public void onSizeChange(Number width, Number height) {
-        UserSettings userSettings = settingsService.getUserSettings()
-                .orElse(UserSettings.builder().build());
+    public void onSizeChange(Number width, Number height, boolean isMaximized) {
+        UserSettings userSettings = settingsService.getUserSettingsOrDefault();
         UserInterface userInterface = userSettings.getUserInterface();
 
         userInterface.setWidth(width.floatValue());
         userInterface.setHeight(height.floatValue());
+        userInterface.setMaximized(isMaximized);
         userSettings.setUserInterface(userInterface);
-        settingsService.save(userSettings);
     }
 
     private void initializeColumns() {
@@ -146,7 +144,9 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
 
     private SpotifyTrack getCurrentSelectedSpotifyTrack() {
         SyncTrack selectedItem = getSelectedItem();
-        return selectedItem != null ? (SpotifyTrack) selectedItem.getSpotifyTrack() : null;
+        return ofNullable(selectedItem)
+                .flatMap(SyncTrack::getSpotifyTrack)
+                .orElse(null);
     }
 
     private TableColumn<SyncTrack, String> createColumn(String text, Function<SyncTrack, String> fieldMapping) {

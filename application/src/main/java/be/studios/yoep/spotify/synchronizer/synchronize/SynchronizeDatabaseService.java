@@ -26,11 +26,7 @@ public class SynchronizeDatabaseService {
 
     @Async
     @Transactional
-    public void sync(List<? extends MusicTrack> musicTracks) {
-        musicTracks.forEach(this::sync);
-    }
-
-    private void sync(MusicTrack musicTrack) {
+    public void sync(MusicTrack musicTrack) {
         Assert.notNull(musicTrack, "musicTrack cannot be null");
         TrackType type = musicTrack instanceof SpotifyTrack ? TrackType.SPOTIFY : TrackType.LOCAL;
 

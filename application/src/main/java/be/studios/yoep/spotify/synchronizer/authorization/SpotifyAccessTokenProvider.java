@@ -121,8 +121,7 @@ public class SpotifyAccessTokenProvider extends AuthorizationCodeAccessTokenProv
     }
 
     private void saveAccessToken(OAuth2AccessToken oAuth2AccessToken) {
-        UserSettings userSettings = settingsService.getUserSettings()
-                .orElse(UserSettings.builder().build());
+        UserSettings userSettings = settingsService.getUserSettingsOrDefault();
 
         userSettings.setAuthentication(new Authentication(OAuth2AccessTokenWrapper.builder()
                 .expireDate(LocalDateTime.ofInstant(oAuth2AccessToken.getExpiration().toInstant(), ZoneId.systemDefault()))
