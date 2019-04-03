@@ -17,7 +17,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.AccessTokenProviderChain;
-import org.springframework.security.oauth2.client.token.DefaultAccessTokenRequest;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsAccessTokenProvider;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeAccessTokenProvider;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
@@ -37,8 +36,9 @@ public class SpotifySynchronizerConfiguration {
     @Bean
     public TaskExecutor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(10);
-        executor.setMaxPoolSize(10);
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(15);
+        executor.setQueueCapacity(100);
         executor.setThreadNamePrefix("ss-background");
         executor.initialize();
         return executor;
@@ -69,8 +69,7 @@ public class SpotifySynchronizerConfiguration {
                                                   AuthorizationService authorizationService,
                                                   UserSettingsService userSettingsService,
                                                   MappingJackson2HttpMessageConverter jackson2HttpMessageConverter) {
-        OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplateSpotify(spotifyAuthorization,
-                new DefaultOAuth2ClientContext(new DefaultAccessTokenRequest()));
+        OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplateSpotify(spotifyAuthorization, new DefaultOAuth2ClientContext());
         oAuth2RestTemplate.setAccessTokenProvider(new AccessTokenProviderChain(asList(
                 new SpotifyAccessTokenProvider(authorizationService, userSettingsService),
                 new AuthorizationCodeAccessTokenProvider(),
