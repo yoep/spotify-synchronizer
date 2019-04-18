@@ -1,8 +1,6 @@
 
-/.idea/
-/.gradle/
-/application/out/
-/application/build/
-/build/
+.idea/
 /application.yml
-spotify-synchronizer.iml
+
+**/target/
+**/*.iml

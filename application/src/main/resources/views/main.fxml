@@ -4,7 +4,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.*?>
 <GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="be.studios.yoep.spotify.synchronizer.views.MainView">
+          fx:controller="org.synchronizer.spotify.views.MainView">
     <columnConstraints>
         <ColumnConstraints hgrow="ALWAYS"/>
     </columnConstraints>

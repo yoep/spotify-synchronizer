@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import be.studios.yoep.spotify.synchronizer.ui.Icons?>
+<?import org.synchronizer.spotify.ui.Icons?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-          fx:controller="be.studios.yoep.spotify.synchronizer.views.components.VolumeComponent"
+          fx:controller="org.synchronizer.spotify.views.components.VolumeComponent"
           stylesheets="/styles/main.css, /styles/volume.css">
     <columnConstraints>
         <ColumnConstraints minWidth="20" maxWidth="20"/>

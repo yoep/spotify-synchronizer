@@ -1,0 +1,37 @@
+package org.synchronizer.spotify.domain.entities;
+
+import org.synchronizer.spotify.domain.TrackType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.util.UUID;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "TRACK")
+public class TrackInfoEntity {
+    @Id
+    @GeneratedValue
+    private UUID id;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    private String artist;
+
+    private String uri;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TrackType type;
+
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    private AlbumInfoEntity album;
+}

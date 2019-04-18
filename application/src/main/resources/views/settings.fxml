@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.*?>
 <GridPane prefHeight="300.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="be.studios.yoep.spotify.synchronizer.views.SettingsView">
+          fx:controller="org.synchronizer.spotify.views.SettingsView">
     <columnConstraints>
         <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity"/>
     </columnConstraints>
@@ -18,6 +18,9 @@
     <!-- CONTENT -->
     <TabPane maxWidth="Infinity" maxHeight="Infinity" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS"
              tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <Tab text="%settings_general">
+            <fx:include source="components/settings_general_component.fxml"/>
+        </Tab>
         <Tab text="%settings_sync">
             <fx:include source="components/settings_synchronize_component.fxml"/>
         </Tab>
