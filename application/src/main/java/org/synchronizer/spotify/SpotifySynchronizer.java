@@ -6,14 +6,13 @@ import javafx.stage.Stage;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.synchronizer.spotify.spotify.SpotifyService;
 import org.synchronizer.spotify.ui.*;
 
 import java.io.File;
 
-@SpringBootApplication(exclude = {WebMvcAutoConfiguration.class})
+@SpringBootApplication
 public class SpotifySynchronizer extends Application {
     public static final String APP_DIR = System.getProperty("user.home") + File.separator + ".ssynchronizer" + File.separator;
     public static ApplicationContext APPLICATION_CONTEXT;

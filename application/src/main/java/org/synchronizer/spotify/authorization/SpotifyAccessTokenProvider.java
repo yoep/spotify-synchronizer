@@ -1,9 +1,5 @@
 package org.synchronizer.spotify.authorization;
 
-import org.synchronizer.spotify.settings.UserSettingsService;
-import org.synchronizer.spotify.settings.model.Authentication;
-import org.synchronizer.spotify.settings.model.OAuth2AccessTokenWrapper;
-import org.synchronizer.spotify.settings.model.UserSettings;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +16,10 @@ import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.synchronizer.spotify.settings.UserSettingsService;
+import org.synchronizer.spotify.settings.model.Authentication;
+import org.synchronizer.spotify.settings.model.OAuth2AccessTokenWrapper;
+import org.synchronizer.spotify.settings.model.UserSettings;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;

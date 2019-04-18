@@ -17,8 +17,10 @@ public class Synchronization extends Observable implements Serializable {
     private File localMusicDirectory;
 
     public void setLocalMusicDirectory(File localMusicDirectory) {
+        if (this.localMusicDirectory != localMusicDirectory)
+            this.setChanged();
+
         this.localMusicDirectory = localMusicDirectory;
-        this.setChanged();
         this.notifyObservers();
     }
 }

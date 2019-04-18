@@ -1,18 +1,19 @@
 package org.synchronizer.spotify.views.components;
 
-import org.synchronizer.spotify.common.PlayerState;
-import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
+import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.synchronizer.spotify.common.PlayerState;
+import org.synchronizer.spotify.synchronize.model.MusicTrack;
 
 import java.net.URL;
 import java.util.List;
@@ -67,10 +68,15 @@ public class PlayerComponent implements Initializable {
         }
 
         currentTrack = track;
-        mediaPlayer = new MediaPlayer(new Media(track.getUri()));
-        mediaPlayerComponents.forEach(e -> e.setMediaPlayer(mediaPlayer));
-        image.setImage(track.getAlbum().getPlayerImage());
-        registerMediaPlayerEvents();
+
+        try {
+            mediaPlayer = new MediaPlayer(new Media(track.getUri()));
+            mediaPlayerComponents.forEach(e -> e.setMediaPlayer(mediaPlayer));
+            image.setImage(track.getAlbum().getPlayerImage());
+            registerMediaPlayerEvents();
+        } catch (MediaException ex) {
+            log.error(ex.getMessage(), ex);
+        }
     }
 
     public void onPlay() {
@@ -102,7 +108,7 @@ public class PlayerComponent implements Initializable {
     private void registerMediaPlayerEvents() {
         mediaPlayer.setOnError(() -> {
             playerState = PlayerState.ERROR;
-            log.error(mediaPlayer.getError());
+            log.error(mediaPlayer.getError().getMessage(), mediaPlayer.getError());
             setPlayerStatus(false);
             setPlayerDisabledState(true);
         });

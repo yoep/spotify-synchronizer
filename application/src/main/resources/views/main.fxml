@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.*?>
-<GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+<GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="org.synchronizer.spotify.views.MainView">
     <columnConstraints>
         <ColumnConstraints hgrow="ALWAYS"/>
@@ -18,15 +17,11 @@
     <fx:include source="components/menu_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
 
     <!-- CONTENT -->
-    <TableView fx:id="musicList" maxWidth="Infinity" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
-        <columnResizePolicy>
-            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
-        </columnResizePolicy>
-        <placeholder>
-            <Label text="%no_music_found"/>
-        </placeholder>
-    </TableView>
+    <ScrollPane hbarPolicy="NEVER" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+        <VBox fx:id="trackOverview">
+        </VBox>
+    </ScrollPane>
 
     <!-- PLAYER -->
-    <fx:include source="components/player_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+    <fx:include source="components/player_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
 </GridPane>

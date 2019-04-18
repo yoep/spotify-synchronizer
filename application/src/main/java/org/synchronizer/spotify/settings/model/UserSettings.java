@@ -90,5 +90,6 @@ public class UserSettings extends Observable implements Serializable {
     private void processNewVariableInstance(Observable observable) {
         observable.addObserver((obs, arg) -> this.notifyObservers(arg));
         this.setChanged();
+        this.notifyObservers();
     }
 }

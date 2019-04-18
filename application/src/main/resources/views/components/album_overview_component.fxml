@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<?import org.synchronizer.spotify.ui.Icons?>
+<GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="/styles/album_overview.css,/styles/main.css">
+    <columnConstraints>
+        <ColumnConstraints minWidth="100"/>
+        <ColumnConstraints maxWidth="Infinity"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="100"/>
+    </rowConstraints>
+    <padding>
+        <Insets bottom="5" left="10" right="10" top="5"/>
+    </padding>
+
+    <!-- Image -->
+    <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <Text styleClass="icon, icon-large">
+            <Icons fx:constant="IMAGE"/>
+        </Text>
+        <ImageView fx:id="albumImage" preserveRatio="true" fitWidth="150"/>
+    </StackPane>
+
+    <GridPane GridPane.columnIndex="1" GridPane.rowIndex="0">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="100" minWidth="100"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="30"/>
+            <RowConstraints/>
+        </rowConstraints>
+        <padding>
+            <Insets left="10"/>
+        </padding>
+
+        <Label fx:id="albumTitle" GridPane.columnIndex="0" GridPane.rowIndex="0"
+               styleClass="album_title" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS"/>
+
+        <VBox fx:id="trackOverview" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+    </GridPane>
+</GridPane>

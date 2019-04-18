@@ -1,5 +1,6 @@
 package org.synchronizer.spotify.ui;
 
+import javafx.scene.layout.Pane;
 import org.synchronizer.spotify.settings.UserSettingsService;
 import org.synchronizer.spotify.settings.model.UserInterface;
 import org.synchronizer.spotify.settings.model.UserSettings;
@@ -29,6 +30,7 @@ import java.io.IOException;
 @Component
 public class ViewLoader {
     public static final String VIEW_DIRECTORY = "/views/";
+    private static final String COMPONENT_DIRECTORY = VIEW_DIRECTORY + "/components/";
     private static final String FONT_DIRECTORY = "/fonts/";
     private static final String IMAGE_DIRECTORY = "/images/";
 
@@ -97,6 +99,22 @@ public class ViewLoader {
         Assert.hasText(view, "view cannot be empty");
         Assert.notNull(properties, "properties cannot be null");
         Platform.runLater(() -> showScene(new Stage(), view, properties));
+    }
+
+    public Pane loadComponent(String componentView, Object controller) {
+        Assert.hasText(componentView, "componentView cannot be empty");
+        Assert.notNull(controller, "controller cannot be null");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(COMPONENT_DIRECTORY + componentView));
+
+        loader.setController(controller);
+        loader.setResources(uiText.getResourceBundle());
+
+        try {
+            return loader.load();
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
     }
 
     /**

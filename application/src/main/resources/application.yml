@@ -1,8 +1,6 @@
 spring:
   application:
     name: Spotify Synchronizer
-  main:
-    web-environment: false
   datasource:
     url: jdbc:h2:file:~/.ssynchronizer/sync;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;AUTO_SERVER=TRUE
     username: sa

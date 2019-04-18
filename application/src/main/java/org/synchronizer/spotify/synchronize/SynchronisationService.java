@@ -1,13 +1,5 @@
 package org.synchronizer.spotify.synchronize;
 
-import org.synchronizer.spotify.settings.UserSettingsService;
-import org.synchronizer.spotify.settings.model.UserSettings;
-import org.synchronizer.spotify.synchronize.model.LocalTrack;
-import org.synchronizer.spotify.synchronize.model.MusicTrack;
-import org.synchronizer.spotify.synchronize.model.SyncTrack;
-import org.synchronizer.spotify.synchronize.model.SyncTrackImpl;
-import org.synchronizer.spotify.ui.UIText;
-import org.synchronizer.spotify.views.components.SynchronizeStatusComponent;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -16,6 +8,14 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.synchronizer.spotify.settings.UserSettingsService;
+import org.synchronizer.spotify.settings.model.UserSettings;
+import org.synchronizer.spotify.synchronize.model.LocalTrack;
+import org.synchronizer.spotify.synchronize.model.MusicTrack;
+import org.synchronizer.spotify.synchronize.model.SyncTrack;
+import org.synchronizer.spotify.synchronize.model.SyncTrackImpl;
+import org.synchronizer.spotify.ui.UIText;
+import org.synchronizer.spotify.views.components.SynchronizeStatusComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,17 +79,16 @@ public class SynchronisationService {
                     SyncTrack syncTrack = new ArrayList<>(tracks).stream()
                             .filter(e -> e.matches(newTrack))
                             .findFirst()
-                            .orElseGet(() -> {
-                                SyncTrackImpl track = new SyncTrackImpl();
-                                tracks.add(track);
-                                return track;
-                            });
+                            .orElseGet(SyncTrackImpl::new);
 
                     if (newTrack instanceof LocalTrack) {
                         syncTrack.setLocalTrack(newTrack);
                     } else {
                         syncTrack.setSpotifyTrack(newTrack);
                     }
+
+                    if (!tracks.contains(syncTrack))
+                        tracks.add(syncTrack);
 
                     synchronizeDatabaseService.sync(newTrack);
                 } catch (Exception ex) {

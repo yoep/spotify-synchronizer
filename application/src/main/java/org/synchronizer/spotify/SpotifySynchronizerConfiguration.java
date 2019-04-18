@@ -1,11 +1,5 @@
 package org.synchronizer.spotify;
 
-import org.synchronizer.spotify.authorization.AuthorizationService;
-import org.synchronizer.spotify.authorization.SpotifyAccessTokenProvider;
-import org.synchronizer.spotify.configuration.SpotifyConfiguration;
-import org.synchronizer.spotify.settings.UserSettingsService;
-import org.synchronizer.spotify.spotify.OAuth2RestTemplateSpotify;
-import org.synchronizer.spotify.ui.UIText;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -22,7 +16,12 @@ import org.springframework.security.oauth2.client.token.grant.code.Authorization
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.client.token.grant.implicit.ImplicitAccessTokenProvider;
 import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordAccessTokenProvider;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
+import org.synchronizer.spotify.authorization.AuthorizationService;
+import org.synchronizer.spotify.authorization.SpotifyAccessTokenProvider;
+import org.synchronizer.spotify.configuration.SpotifyConfiguration;
+import org.synchronizer.spotify.settings.UserSettingsService;
+import org.synchronizer.spotify.spotify.OAuth2RestTemplateSpotify;
+import org.synchronizer.spotify.ui.UIText;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +30,6 @@ import static java.util.Arrays.asList;
 
 @Configuration
 @EnableAsync
-@EnableOAuth2Client
 public class SpotifySynchronizerConfiguration {
     @Bean
     public TaskExecutor threadPoolTaskExecutor() {

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="/styles/album_overview.css">
+    <columnConstraints>
+        <ColumnConstraints minWidth="20"/>
+        <ColumnConstraints/>
+        <ColumnConstraints/>
+        <ColumnConstraints/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="20"/>
+    </rowConstraints>
+
+    <!-- Title & Artist -->
+    <GridPane GridPane.columnIndex="1" GridPane.rowIndex="0">
+        <columnConstraints>
+            <ColumnConstraints/>
+            <ColumnConstraints/>
+            <ColumnConstraints/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints/>
+        </rowConstraints>
+
+        <Label fx:id="title" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+
+        <Label text=" - " GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+        <Label fx:id="artist" GridPane.columnIndex="2" GridPane.rowIndex="0"
+               styleClass="artist"/>
+    </GridPane>
+</GridPane>
