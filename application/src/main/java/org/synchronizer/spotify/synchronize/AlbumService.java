@@ -17,12 +17,14 @@ public class AlbumService {
         AlbumInfoEntity entity = albumRepository.findByName(album.getName())
                 .orElse(AlbumInfoEntity.builder()
                         .name(album.getName())
-                        .imageUri(album.getImageUri())
+                        .lowResImageUri(album.getLowResImageUri())
+                        .highResImageUri(album.getHighResImageUri())
                         .image(album.getImage())
                         .build());
 
         entity.setImage(album.getImage());
-        entity.setImageUri(album.getImageUri());
+        entity.setLowResImageUri(album.getLowResImageUri());
+        entity.setHighResImageUri(album.getHighResImageUri());
 
         return albumRepository.save(entity);
     }

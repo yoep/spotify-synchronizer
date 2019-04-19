@@ -23,7 +23,9 @@ public class AlbumInfoEntity implements AlbumInfo {
     @Column(nullable = false)
     private String name;
 
-    private String imageUri;
+    private String lowResImageUri;
+
+    private String highResImageUri;
 
     private byte[] image;
 }

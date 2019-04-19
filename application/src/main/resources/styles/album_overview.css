@@ -6,6 +6,11 @@
     -fx-border-color: #3C4A3E;
 }
 
+.album_border {
+    -fx-border-width: 2 2 2 2;
+    -fx-border-color: #3C4A3E;
+}
+
 .artist {
     -fx-text-fill: rgba(12, 110, 48, 0.69);
 }

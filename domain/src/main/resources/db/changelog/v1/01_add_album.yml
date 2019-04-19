@@ -19,7 +19,10 @@ databaseChangeLog:
                     unique: true
                     uniqueConstraintName: UK_NAME
               - column:
-                  name: IMAGE_URI
+                  name: LOW_RES_IMAGE_URI
+                  type: VARCHAR(255)
+              - column:
+                  name: HIGH_RES_IMAGE_URI
                   type: VARCHAR(255)
               - column:
                   name: IMAGE

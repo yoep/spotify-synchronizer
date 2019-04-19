@@ -1,8 +1,5 @@
 package org.synchronizer.spotify.common;
 
-import org.synchronizer.spotify.settings.UserSettingsService;
-import org.synchronizer.spotify.settings.model.Logging;
-import org.synchronizer.spotify.settings.model.UserSettings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -12,6 +9,9 @@ import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.springframework.stereotype.Service;
+import org.synchronizer.spotify.settings.UserSettingsService;
+import org.synchronizer.spotify.settings.model.Logging;
+import org.synchronizer.spotify.settings.model.UserSettings;
 
 import javax.annotation.PostConstruct;
 import java.util.Optional;
@@ -33,8 +33,8 @@ public class LoggingService {
         this.appender = coreLogger.getAppenders().get(LOG_APPENDER_NAME);
         Optional<UserSettings> userSettingsOptional = settingsService.getUserSettings();
 
-        if (userSettingsOptional.isPresent()) {
-            Logging logging = userSettingsOptional.get().getLogging();
+        userSettingsOptional.ifPresent(userSettings -> {
+            Logging logging = userSettings.getLogging();
 
             setLevel(logging.getLevel());
 
@@ -43,7 +43,7 @@ public class LoggingService {
             } else {
                 disableLogfile();
             }
-        }
+        });
     }
 
     /**

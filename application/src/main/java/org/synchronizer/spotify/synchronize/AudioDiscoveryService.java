@@ -1,8 +1,5 @@
 package org.synchronizer.spotify.synchronize;
 
-import org.synchronizer.spotify.synchronize.model.LocalAlbum;
-import org.synchronizer.spotify.synchronize.model.LocalTrack;
-import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
@@ -11,16 +8,22 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.synchronizer.spotify.synchronize.model.LocalAlbum;
+import org.synchronizer.spotify.synchronize.model.LocalTrack;
+import org.synchronizer.spotify.synchronize.model.MusicTrack;
 
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Log4j2
 @Service
 public class AudioDiscoveryService {
+    private static final Pattern TRACK_NUMBER_PATTERN = Pattern.compile("([0-9]+)/([0-9]*)");
     private static final List<String> extensions = Collections.singletonList("mp3");
 
     @Async
@@ -74,6 +77,7 @@ public class AudioDiscoveryService {
                         .name(metadata.getAlbum())
                         .build())
                 .title(metadata.getTitle())
+                .trackNumber(getTrackNumberV1(metadata))
                 .build();
     }
 
@@ -87,10 +91,26 @@ public class AudioDiscoveryService {
                         .image(metadata.getAlbumImage())
                         .build())
                 .title(metadata.getTitle())
+                .trackNumber(getTrackNumberV2(metadata))
                 .build();
     }
 
     private boolean isAudioFile(File file) {
         return extensions.indexOf(FilenameUtils.getExtension(file.getName()).toLowerCase()) != -1;
+    }
+
+    private static Integer getTrackNumberV1(ID3v1 metadata) {
+        return Optional.ofNullable(metadata.getTrack())
+                .map(Integer::parseInt)
+                .orElse(null);
+    }
+
+    private static Integer getTrackNumberV2(ID3v2 metadata) {
+        return Optional.ofNullable(metadata.getTrack())
+                .map(TRACK_NUMBER_PATTERN::matcher)
+                .filter(Matcher::matches)
+                .map(e -> e.group(1))
+                .map(Integer::parseInt)
+                .orElse(null);
     }
 }

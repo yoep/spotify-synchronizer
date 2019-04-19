@@ -22,4 +22,11 @@ public interface TrackInfo {
      * @return Returns the uri to play the track.
      */
     String getUri();
+
+    /**
+     * Get the number of the track in the album.
+     *
+     * @return Returns the track number of available, else null.
+     */
+    Integer getTrackNumber();
 }

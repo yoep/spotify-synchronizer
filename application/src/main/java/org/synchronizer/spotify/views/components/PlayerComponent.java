@@ -72,7 +72,7 @@ public class PlayerComponent implements Initializable {
         try {
             mediaPlayer = new MediaPlayer(new Media(track.getUri()));
             mediaPlayerComponents.forEach(e -> e.setMediaPlayer(mediaPlayer));
-            image.setImage(track.getAlbum().getPlayerImage());
+            image.setImage(track.getAlbum().getLowResImage());
             registerMediaPlayerEvents();
         } catch (MediaException ex) {
             log.error(ex.getMessage(), ex);

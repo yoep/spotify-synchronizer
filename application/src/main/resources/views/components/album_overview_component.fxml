@@ -12,7 +12,7 @@
         <ColumnConstraints maxWidth="Infinity"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="100"/>
+        <RowConstraints minHeight="150"/>
     </rowConstraints>
     <padding>
         <Insets bottom="5" left="10" right="10" top="5"/>
@@ -20,9 +20,11 @@
 
     <!-- Image -->
     <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0">
-        <Text styleClass="icon, icon-large">
-            <Icons fx:constant="IMAGE"/>
-        </Text>
+        <HBox fx:id="noAlbum" styleClass="album_border" maxHeight="150" minHeight="150" maxWidth="150" alignment="CENTER">
+            <Text styleClass="icon-solid, icon-xxlarge">
+                <Icons fx:constant="COMPACT_DISK"/>
+            </Text>
+        </HBox>
         <ImageView fx:id="albumImage" preserveRatio="true" fitWidth="150"/>
     </StackPane>
 
@@ -41,6 +43,6 @@
         <Label fx:id="albumTitle" GridPane.columnIndex="0" GridPane.rowIndex="0"
                styleClass="album_title" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS"/>
 
-        <VBox fx:id="trackOverview" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <VBox fx:id="trackOverview" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
     </GridPane>
 </GridPane>

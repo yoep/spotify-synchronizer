@@ -20,5 +20,6 @@ public class Icons {
     public static final String VOLUME_MAX = "\uf028";
     public static final String VOLUME_LOW = "\uf027";
     public static final String VOLUME_OFF = "\uf026";
+    public static final String BAN = "\uf05e";
     //CHECKSTYLE:ON
 }

@@ -14,6 +14,7 @@ public class LocalTrack extends AbstractMusicTrack {
     private String artist;
     private Album album;
     private File file;
+    private Integer trackNumber;
 
     @Override
     public String getUri() {
@@ -32,6 +33,11 @@ public class LocalTrack extends AbstractMusicTrack {
 
     public void setAlbum(Album album) {
         this.album = album;
+        listeners.forEach(e -> e.invalidated(this));
+    }
+
+    public void setTrackNumber(Integer trackNumber) {
+        this.trackNumber = trackNumber;
         listeners.forEach(e -> e.invalidated(this));
     }
 }

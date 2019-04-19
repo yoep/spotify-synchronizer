@@ -9,6 +9,20 @@
     -fx-fill: #0c7032;
 }
 
+.icon-regular {
+    -fx-font-family: "Font Awesome 5 Free Regular";
+    -fx-font-size: 1em;
+    -fx-text-fill: #0c7032;
+    -fx-fill: #0c7032;
+}
+
+.icon-solid {
+    -fx-font-family: "Font Awesome 5 Free Solid";
+    -fx-font-size: 1em;
+    -fx-text-fill: #0c7032;
+    -fx-fill: #0c7032;
+}
+
 .icon:disabled {
     -fx-text-fill: gray;
     -fx-fill: gray;

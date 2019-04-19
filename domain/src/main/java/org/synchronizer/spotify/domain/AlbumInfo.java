@@ -9,11 +9,18 @@ public interface AlbumInfo {
     String getName();
 
     /**
-     * Get the uri of the album image.
+     * Get the low res image uri of the album artwork.
      *
      * @return Returns the image of the album uri.
      */
-    String getImageUri();
+    String getLowResImageUri();
+
+    /**
+     * Get the high res image uri of the album artwork.
+     *
+     * @return Returns the image of the album uri.
+     */
+    String getHighResImageUri();
 
     /**
      * Get the image byte array.

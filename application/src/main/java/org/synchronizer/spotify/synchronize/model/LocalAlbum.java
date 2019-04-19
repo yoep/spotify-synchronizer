@@ -19,12 +19,22 @@ public class LocalAlbum implements Album {
     private byte[] image;
 
     @Override
-    public String getImageUri() {
+    public String getLowResImageUri() {
         return null; //no-op
     }
 
     @Override
-    public Image getPlayerImage() {
+    public String getHighResImageUri() {
+        return null; //no-op
+    }
+
+    @Override
+    public Image getLowResImage() {
+        return getHighResImage();
+    }
+
+    @Override
+    public Image getHighResImage() {
         return Optional.ofNullable(image)
                 .map(ByteArrayInputStream::new)
                 .map(Image::new)

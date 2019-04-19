@@ -8,9 +8,16 @@ import javafx.scene.image.Image;
  */
 public interface Album extends AlbumInfo, Comparable<Album> {
     /**
-     * Get the album artwork.
+     * Get the lowest resolution album artwork.
      *
-     * @return Returns the album artwork as an image.
+     * @return Returns the album artwork as a low resolution image.
      */
-    Image getPlayerImage();
+    Image getLowResImage();
+
+    /**
+     * Get the highest resolution album artwork.
+     *
+     * @return Returns the album artwork as a high resolution image.
+     */
+    Image getHighResImage();
 }

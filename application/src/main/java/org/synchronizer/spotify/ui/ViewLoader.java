@@ -214,6 +214,8 @@ public class ViewLoader {
 
     private void loadFonts() {
         Font.loadFont(getClass().getResource(FONT_DIRECTORY + "fontawesome-webfont.ttf").toExternalForm(), 10);
+        Font.loadFont(getClass().getResource(FONT_DIRECTORY + "fontawesome-regular.ttf").toExternalForm(), 10);
+        Font.loadFont(getClass().getResource(FONT_DIRECTORY + "fontawesome-solid.ttf").toExternalForm(), 10);
     }
 
     private void initWindowScale(Scene scene, ScaleAware controller) {

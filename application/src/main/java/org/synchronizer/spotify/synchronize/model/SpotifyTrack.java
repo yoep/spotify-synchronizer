@@ -17,6 +17,7 @@ public class SpotifyTrack extends AbstractMusicTrack {
     private Album album;
     private String previewUrl;
     private String spotifyUri;
+    private Integer trackNumber;
 
     /**
      * Get if the preview playback for this track is available.
@@ -47,6 +48,11 @@ public class SpotifyTrack extends AbstractMusicTrack {
         listeners.forEach(e -> e.invalidated(this));
     }
 
+    public void setTrackNumber(Integer trackNumber) {
+        this.trackNumber = trackNumber;
+        listeners.forEach(e -> e.invalidated(this));
+    }
+
     /**
      * Convert the given {@link SavedTrack} to a {@link SpotifyTrack} instance.
      *
@@ -62,6 +68,7 @@ public class SpotifyTrack extends AbstractMusicTrack {
                 .album(SpotifyAlbum.from(track.getAlbum()))
                 .previewUrl(track.getPreviewUrl())
                 .spotifyUri(track.getUri())
+                .trackNumber(track.getTrackNumber())
                 .build();
     }
 }

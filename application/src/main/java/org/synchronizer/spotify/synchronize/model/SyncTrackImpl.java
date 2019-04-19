@@ -41,6 +41,11 @@ public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
     }
 
     @Override
+    public Integer getTrackNumber() {
+        return getProperty(MusicTrack::getTrackNumber);
+    }
+
+    @Override
     public boolean isLocalTrackAvailable() {
         return localTrack != null;
     }
