@@ -35,7 +35,7 @@ public class SettingsLoggingComponent implements Initializable, SettingComponent
     }
 
     @Override
-    public UserSettings apply(UserSettings currentUserSettings) {
+    public void apply(UserSettings currentUserSettings) {
         if (logfile.isSelected()) {
             loggingService.enableLogfile();
         } else {
@@ -48,15 +48,13 @@ public class SettingsLoggingComponent implements Initializable, SettingComponent
                 .level(Level.valueOf(level.getValue()))
                 .logfileEnabled(logfile.isSelected())
                 .build());
-
-        return currentUserSettings;
     }
 
     private void initializeLogLevel() {
         level.getItems().addAll(Arrays.stream(Level.values())
                 .map(Level::toString)
                 .collect(Collectors.toList()));
-        level.getSelectionModel().select(log.getLevel().toString());
+        level.setValue(loggingService.getLevel().toString());
     }
 
     private void initializeLogfile() {

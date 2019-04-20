@@ -16,7 +16,7 @@ import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.synchronizer.spotify.settings.UserSettingsService;
+import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.Authentication;
 import org.synchronizer.spotify.settings.model.OAuth2AccessTokenWrapper;
 import org.synchronizer.spotify.settings.model.UserSettings;
@@ -32,7 +32,7 @@ import static java.util.Optional.ofNullable;
 @RequiredArgsConstructor
 public class SpotifyAccessTokenProvider extends AuthorizationCodeAccessTokenProvider implements AccessTokenProvider {
     private final AuthorizationService authorizationService;
-    private final UserSettingsService settingsService;
+    private final SettingsService settingsService;
 
     @Override
     public OAuth2AccessToken obtainAccessToken(OAuth2ProtectedResourceDetails details, AccessTokenRequest parameters)

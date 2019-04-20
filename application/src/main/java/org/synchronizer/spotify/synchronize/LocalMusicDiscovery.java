@@ -1,6 +1,6 @@
 package org.synchronizer.spotify.synchronize;
 
-import org.synchronizer.spotify.settings.UserSettingsService;
+import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.Synchronization;
 import org.synchronizer.spotify.settings.model.UserSettings;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
@@ -28,7 +28,7 @@ import static java.util.Optional.ofNullable;
 public class LocalMusicDiscovery implements DiscoveryService {
     private static final List<String> extensions = Collections.singletonList("mp3");
 
-    private final UserSettingsService settingsService;
+    private final SettingsService settingsService;
     private final AudioDiscoveryService audioDiscoveryService;
     private final ObservableList<MusicTrack> trackList = FXCollections.observableArrayList();
     private final List<CompletableFuture<List<MusicTrack>>> asyncDiscoveries = new ArrayList<>();

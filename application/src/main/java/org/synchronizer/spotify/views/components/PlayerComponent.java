@@ -7,8 +7,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
@@ -16,6 +16,7 @@ import org.synchronizer.spotify.common.PlayerState;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -25,15 +26,15 @@ import java.util.function.Consumer;
 @Component
 @RequiredArgsConstructor
 public class PlayerComponent implements Initializable {
+    private final List<Consumer<MusicTrack>> onNextListeners = new ArrayList<>();
+    private final List<Consumer<MusicTrack>> onPreviousListeners = new ArrayList<>();
     private final List<MediaPlayerComponent> mediaPlayerComponents;
 
+    @Getter
     private PlayerState playerState = PlayerState.NOT_LOADED;
     private MediaPlayer mediaPlayer;
     private MusicTrack currentTrack;
-    @Setter
-    private Consumer<MusicTrack> onNext;
-    @Setter
-    private Consumer<MusicTrack> onPrevious;
+    private Runnable onTrackChange;
 
     @FXML
     public ImageView image;
@@ -77,6 +78,9 @@ public class PlayerComponent implements Initializable {
         } catch (MediaException ex) {
             log.error(ex.getMessage(), ex);
         }
+
+        if (onTrackChange != null)
+            onTrackChange.run();
     }
 
     public void onPlay() {
@@ -96,13 +100,19 @@ public class PlayerComponent implements Initializable {
     }
 
     public void onPrevious() {
-        if (onPrevious != null)
-            onPrevious.accept(currentTrack);
+        onPreviousListeners.forEach(e -> e.accept(currentTrack));
     }
 
     public void onNext() {
-        if (onNext != null)
-            onNext.accept(currentTrack);
+        onNextListeners.forEach(e -> e.accept(currentTrack));
+    }
+
+    public void setOnNext(Consumer<MusicTrack> onNext) {
+        onNextListeners.add(onNext);
+    }
+
+    public void setOnPrevious(Consumer<MusicTrack> onPrevious) {
+        onPreviousListeners.add(onPrevious);
     }
 
     private void registerMediaPlayerEvents() {
@@ -145,5 +155,9 @@ public class PlayerComponent implements Initializable {
         playerPause.setDisable(disabled);
         playerNext.setDisable(disabled);
         playerPrevious.setDisable(disabled);
+    }
+
+    public void setOnTrackChange(Runnable onTrackChange) {
+        this.onTrackChange = onTrackChange;
     }
 }

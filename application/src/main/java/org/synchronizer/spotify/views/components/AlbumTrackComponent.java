@@ -11,6 +11,7 @@ import org.synchronizer.spotify.SpotifySynchronizer;
 import org.synchronizer.spotify.media.MediaPlayerService;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
+import org.synchronizer.spotify.ui.Icons;
 
 import java.net.URL;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import java.util.ResourceBundle;
 public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrackComponent> {
     private final SyncTrack syncTrack;
     private final MediaPlayerService mediaPlayerService;
+    private boolean activeInMediaPlayer;
 
     @FXML
     private GridPane trackRow;
@@ -27,6 +29,8 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     private Text trackNumber;
     @FXML
     private Text playTrackIcon;
+    @FXML
+    private Text playPauseIcon;
     @FXML
     private Text playbackUnavailableIcon;
     @FXML
@@ -46,8 +50,10 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         artist.setText(syncTrack.getArtist());
 
         playTrackIcon.setVisible(false);
+        playPauseIcon.setVisible(false);
         playbackUnavailableIcon.setVisible(false);
-        playTrackIcon.setOnMouseClicked(event -> playTrack());
+        playTrackIcon.setOnMouseClicked(event -> play());
+        playPauseIcon.setOnMouseClicked(event -> playPauseTrack());
         trackRow.setOnMouseEntered(event -> updatePlayTrackVisibilityState(true));
         trackRow.setOnMouseExited(event -> updatePlayTrackVisibilityState(false));
     }
@@ -60,12 +66,47 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         return this.syncTrack.getTrackNumber().compareTo(compareTo.getSyncTrack().getTrackNumber());
     }
 
-    private void playTrack() {
-        if (isPlaybackAvailable())
+    /**
+     * Play this track.
+     */
+    public void play() {
+        if (isPlaybackAvailable()) {
             mediaPlayerService.play(getMusicTrackWithAvailablePlayback());
+            mediaPlayerService.addOnTrackChangeListener(() -> setPlaybackState(false));
+
+            setPlaybackState(true);
+        }
+    }
+
+    private void playPauseTrack() {
+        switch (mediaPlayerService.getCurrentPlayerState()) {
+            case PLAYING:
+                mediaPlayerService.pause();
+                playPauseIcon.setText(Icons.PLAY);
+                break;
+            case PAUSED:
+                mediaPlayerService.play();
+                playPauseIcon.setText(Icons.PAUSE);
+                break;
+            default:
+                //no-op
+                break;
+        }
+    }
+
+    private void setPlaybackState(boolean activeInMediaPlayer) {
+        this.activeInMediaPlayer = activeInMediaPlayer;
+        this.playPauseIcon.setVisible(activeInMediaPlayer);
+        this.trackNumber.setVisible(!activeInMediaPlayer);
+
+        if (activeInMediaPlayer)
+            this.playTrackIcon.setVisible(false);
     }
 
     private void updatePlayTrackVisibilityState(boolean isMouseHovering) {
+        if (activeInMediaPlayer)
+            return;
+
         boolean playbackAvailable = isPlaybackAvailable();
 
         playTrackIcon.setVisible(isMouseHovering && playbackAvailable);

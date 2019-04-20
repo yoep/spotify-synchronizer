@@ -10,7 +10,7 @@ import javafx.scene.control.ChoiceBox;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.synchronizer.spotify.settings.UserSettingsService;
+import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.UserInterface;
 import org.synchronizer.spotify.settings.model.UserSettings;
 
@@ -30,7 +30,7 @@ public class SettingsGeneralComponent implements Initializable, SettingComponent
             new ScaleItem("200%", 2.0f)
     );
 
-    private final UserSettingsService userSettingsService;
+    private final SettingsService settingsService;
 
     @FXML
     private ChoiceBox<ScaleItem> uiScale;
@@ -41,16 +41,14 @@ public class SettingsGeneralComponent implements Initializable, SettingComponent
     }
 
     @Override
-    public UserSettings apply(UserSettings currentUserSettings) {
+    public void apply(UserSettings currentUserSettings) {
         UserInterface userInterface = currentUserSettings.getUserInterface();
 
         userInterface.setScale(uiScale.getSelectionModel().getSelectedItem().getScale().getValue());
-
-        return currentUserSettings;
     }
 
     private void initializeUIScale() {
-        UserInterface userInterface = userSettingsService.getUserSettingsOrDefault().getUserInterface();
+        UserInterface userInterface = settingsService.getUserSettingsOrDefault().getUserInterface();
 
         uiScale.getItems().addAll(SCALE_ITEMS);
         uiScale.setValue(SCALE_ITEMS.stream()

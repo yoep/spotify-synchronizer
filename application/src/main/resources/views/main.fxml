@@ -5,7 +5,7 @@
 <GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1"
           fx:controller="org.synchronizer.spotify.views.MainView">
     <columnConstraints>
-        <ColumnConstraints hgrow="ALWAYS"/>
+        <ColumnConstraints maxWidth="Infinity" hgrow="ALWAYS"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints maxHeight="30" minHeight="30"/>
@@ -17,7 +17,8 @@
     <fx:include source="components/menu_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
 
     <!-- CONTENT -->
-    <AlbumOverviewBox fx:id="trackOverview" hbarPolicy="NEVER" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"/>
+    <AlbumOverviewBox fx:id="trackOverview" hbarPolicy="NEVER" GridPane.columnIndex="0" GridPane.rowIndex="1" maxWidth="Infinity"
+                      fitToWidth="true"/>
 
     <!-- PLAYER -->
     <fx:include source="components/player_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="2"/>

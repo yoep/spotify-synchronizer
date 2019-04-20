@@ -5,8 +5,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import lombok.ToString;
 import org.synchronizer.spotify.SpotifySynchronizer;
 import org.synchronizer.spotify.synchronize.model.Album;
@@ -31,7 +31,7 @@ public class AlbumOverviewComponent implements Initializable {
     @FXML
     private HBox noAlbum;
     @FXML
-    private VBox trackOverview;
+    private FlowPane trackOverview;
 
     public AlbumOverviewComponent(AlbumOverview albumOverview) {
         this.albumOverview = albumOverview;
@@ -49,9 +49,11 @@ public class AlbumOverviewComponent implements Initializable {
         albumOverview.getTracks().forEach(this::createNewAlbumTrackComponent);
         albumOverview.addListener(c -> {
             while (c.next()) {
-                List<? extends SyncTrack> syncTracks = c.getAddedSubList();
+                List<? extends SyncTrack> syncTracks = new ArrayList<>(c.getAddedSubList());
 
-                syncTracks.forEach(this::createNewAlbumTrackComponent);
+                syncTracks.stream()
+                        .filter(e -> albumTracks.stream().noneMatch(albumTrackComponent -> albumTrackComponent.getSyncTrack().equals(e)))
+                        .forEach(this::createNewAlbumTrackComponent);
             }
         });
     }

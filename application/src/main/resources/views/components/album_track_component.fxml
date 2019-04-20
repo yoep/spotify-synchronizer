@@ -7,10 +7,9 @@
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="/styles/album_overview.css, /styles/main.css"
           fx:id="trackRow">
     <columnConstraints>
-        <ColumnConstraints minWidth="20" maxWidth="20"/>
-        <ColumnConstraints/>
-        <ColumnConstraints/>
-        <ColumnConstraints/>
+        <ColumnConstraints prefWidth="20"/>
+        <ColumnConstraints prefWidth="250"/>
+        <ColumnConstraints prefWidth="20"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="20"/>
@@ -22,6 +21,9 @@
         <Text fx:id="trackNumber"/>
         <Text fx:id="playTrackIcon" styleClass="icon, icon-clickable">
             <Icons fx:constant="PLAY_CIRCLE"/>
+        </Text>
+        <Text fx:id="playPauseIcon" styleClass="icon, icon-clickable">
+            <Icons fx:constant="PAUSE"/>
         </Text>
         <Text fx:id="playbackUnavailableIcon" styleClass="icon" disable="true">
             <Icons fx:constant="BAN"/>

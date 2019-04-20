@@ -1,19 +1,13 @@
 package org.synchronizer.spotify.settings.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Observable;
-import java.util.Optional;
-
-import static java.util.Optional.ofNullable;
 
 @EqualsAndHashCode(callSuper = false)
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,60 +30,35 @@ public class UserSettings extends Observable implements Serializable {
     @Builder.Default
     private UserInterface userInterface = UserInterface.builder().build();
 
-    @NotNull
-    public Authentication getAuthentication() {
-        return ofNullable(authentication)
-                .orElse(Authentication.builder().build());
-    }
-
     public void setAuthentication(Authentication authentication) {
-        this.authentication = authentication;
-        processNewVariableInstance(authentication);
-    }
+        if (this.authentication != authentication)
+            this.setChanged();
 
-    @NotNull
-    public Logging getLogging() {
-        return ofNullable(logging)
-                .orElse(Logging.builder().build());
+        this.authentication = authentication;
+        this.notifyObservers();
     }
 
     public void setLogging(Logging logging) {
+        if (this.logging != logging)
+            this.setChanged();
+
         this.logging = logging;
-        processNewVariableInstance(logging);
-    }
-
-    @NotNull
-    public Synchronization getSynchronization() {
-        Optional<Synchronization> optionalSynchronization = ofNullable(this.synchronization);
-        Synchronization defaultSynchronization = Synchronization.builder().build();
-
-        if (optionalSynchronization.isPresent()) {
-            return optionalSynchronization.get();
-        }
-
-        this.setSynchronization(defaultSynchronization);
-        return defaultSynchronization;
+        this.notifyObservers();
     }
 
     public void setSynchronization(Synchronization synchronization) {
-        this.synchronization = synchronization;
-        processNewVariableInstance(synchronization);
-    }
+        if (this.synchronization != synchronization)
+            this.setChanged();
 
-    @NotNull
-    public UserInterface getUserInterface() {
-        return ofNullable(userInterface)
-                .orElse(UserInterface.builder().build());
+        this.synchronization = synchronization;
+        this.notifyObservers();
     }
 
     public void setUserInterface(UserInterface userInterface) {
-        this.userInterface = userInterface;
-        processNewVariableInstance(userInterface);
-    }
+        if (this.userInterface != userInterface)
+            this.setChanged();
 
-    private void processNewVariableInstance(Observable observable) {
-        observable.addObserver((obs, arg) -> this.notifyObservers(arg));
-        this.setChanged();
+        this.userInterface = userInterface;
         this.notifyObservers();
     }
 }

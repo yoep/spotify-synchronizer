@@ -4,7 +4,9 @@ import org.synchronizer.spotify.settings.model.UserSettings;
 
 public interface SettingComponent {
     /**
-     * Applies the settings from the component.
+     * Apply the configured settings to the given user settings.
+     *
+     * @param userSettings The current user settings to apply the configuration to.
      */
-    UserSettings apply(UserSettings currentUserSettings);
+    void apply(UserSettings userSettings);
 }

@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-import org.synchronizer.spotify.settings.UserSettingsService;
+import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.UserInterface;
 import org.synchronizer.spotify.settings.model.UserSettings;
 import org.synchronizer.spotify.synchronize.SynchronisationService;
@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
 @RequiredArgsConstructor
 public class MainView extends ScaleAwareImpl implements Initializable, SizeAware {
     private final SynchronisationService synchronisationService;
-    private final UserSettingsService settingsService;
+    private final SettingsService settingsService;
 
     @FXML
     private AlbumOverviewBox trackOverview;

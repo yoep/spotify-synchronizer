@@ -9,12 +9,11 @@ import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.springframework.stereotype.Service;
-import org.synchronizer.spotify.settings.UserSettingsService;
+import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.Logging;
 import org.synchronizer.spotify.settings.model.UserSettings;
 
 import javax.annotation.PostConstruct;
-import java.util.Optional;
 
 @Getter
 @Log4j2
@@ -23,27 +22,19 @@ import java.util.Optional;
 public class LoggingService {
     private static final String LOG_APPENDER_NAME = "Async";
 
-    private final UserSettingsService settingsService;
+    private final SettingsService settingsService;
     private final Logger coreLogger = (Logger) LogManager.getRootLogger();
 
     private Appender appender;
+    private Level level;
 
     @PostConstruct
     public void init() {
         this.appender = coreLogger.getAppenders().get(LOG_APPENDER_NAME);
-        Optional<UserSettings> userSettingsOptional = settingsService.getUserSettings();
+        UserSettings userSettings = settingsService.getUserSettingsOrDefault();
 
-        userSettingsOptional.ifPresent(userSettings -> {
-            Logging logging = userSettings.getLogging();
-
-            setLevel(logging.getLevel());
-
-            if (logging.isLogfileEnabled()) {
-                enableLogfile();
-            } else {
-                disableLogfile();
-            }
-        });
+        updateLogger(userSettings);
+        userSettings.getLogging().addObserver((o, arg) -> updateLogger(settingsService.getUserSettingsOrDefault()));
     }
 
     /**
@@ -82,6 +73,19 @@ public class LoggingService {
      * @param level Set the log level.
      */
     public void setLevel(Level level) {
-        Configurator.setLevel("be.studios.yoep.spotify.synchronizer", level);
+        this.level = level;
+        Configurator.setLevel("org.synchronizer.spotify", level);
+    }
+
+    private void updateLogger(UserSettings userSettings) {
+        Logging logging = userSettings.getLogging();
+
+        setLevel(logging.getLevel());
+
+        if (logging.isLogfileEnabled()) {
+            enableLogfile();
+        } else {
+            disableLogfile();
+        }
     }
 }

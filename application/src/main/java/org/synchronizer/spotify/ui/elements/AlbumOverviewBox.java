@@ -5,6 +5,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import org.springframework.context.ApplicationContext;
 import org.synchronizer.spotify.SpotifySynchronizer;
 import org.synchronizer.spotify.ui.ViewLoader;
 import org.synchronizer.spotify.views.components.AlbumOverviewComponent;
@@ -23,7 +24,14 @@ public class AlbumOverviewBox extends ScrollPane {
     private boolean updating;
 
     public AlbumOverviewBox() {
-        this.viewLoader = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(ViewLoader.class);
+        ApplicationContext applicationContext = SpotifySynchronizer.APPLICATION_CONTEXT;
+
+        if (applicationContext == null) {
+            this.viewLoader = null;
+            return;
+        }
+
+        this.viewLoader = applicationContext.getBean(ViewLoader.class);
         this.setContent(vBox);
         this.setOnScroll(this::onScroll);
     }

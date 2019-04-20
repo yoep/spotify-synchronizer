@@ -1,7 +1,7 @@
 package org.synchronizer.spotify.ui;
 
 import javafx.scene.layout.Pane;
-import org.synchronizer.spotify.settings.UserSettingsService;
+import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.UserInterface;
 import org.synchronizer.spotify.settings.model.UserSettings;
 import org.synchronizer.spotify.ui.exceptions.PrimaryWindowNotAvailableException;
@@ -34,7 +34,7 @@ public class ViewLoader {
     private static final String FONT_DIRECTORY = "/fonts/";
     private static final String IMAGE_DIRECTORY = "/images/";
 
-    private final UserSettingsService userSettingsService;
+    private final SettingsService settingsService;
     private final ApplicationContext applicationContext;
     private final ViewManager viewManager;
     private final UIText uiText;
@@ -42,13 +42,13 @@ public class ViewLoader {
     /**
      * Intialize a new instance of {@link ViewLoader}.
      *
-     * @param userSettingsService Set the user settings service.
+     * @param settingsService Set the user settings service.
      * @param applicationContext  Set the current application context.
      * @param viewManager         Set the view manager to store the views in.
      * @param uiText              Set the UI text manager.
      */
-    public ViewLoader(UserSettingsService userSettingsService, ApplicationContext applicationContext, ViewManager viewManager, UIText uiText) {
-        this.userSettingsService = userSettingsService;
+    public ViewLoader(SettingsService settingsService, ApplicationContext applicationContext, ViewManager viewManager, UIText uiText) {
+        this.settingsService = settingsService;
         this.applicationContext = applicationContext;
         this.viewManager = viewManager;
         this.uiText = uiText;
@@ -219,7 +219,7 @@ public class ViewLoader {
     }
 
     private void initWindowScale(Scene scene, ScaleAware controller) {
-        controller.scale(scene, userSettingsService.getUserSettings()
+        controller.scale(scene, settingsService.getUserSettings()
                 .map(UserSettings::getUserInterface)
                 .orElse(UserInterface.builder().build()));
     }

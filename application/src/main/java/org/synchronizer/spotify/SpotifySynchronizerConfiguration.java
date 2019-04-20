@@ -19,7 +19,7 @@ import org.springframework.security.oauth2.client.token.grant.password.ResourceO
 import org.synchronizer.spotify.authorization.AuthorizationService;
 import org.synchronizer.spotify.authorization.SpotifyAccessTokenProvider;
 import org.synchronizer.spotify.configuration.SpotifyConfiguration;
-import org.synchronizer.spotify.settings.UserSettingsService;
+import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.spotify.OAuth2RestTemplateSpotify;
 import org.synchronizer.spotify.ui.UIText;
 
@@ -35,8 +35,8 @@ public class SpotifySynchronizerConfiguration {
     public TaskExecutor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(5);
-        executor.setMaxPoolSize(15);
-        executor.setQueueCapacity(100);
+        executor.setMaxPoolSize(25);
+        executor.setQueueCapacity(500);
         executor.setThreadNamePrefix("ss-background");
         executor.initialize();
         return executor;
@@ -65,11 +65,11 @@ public class SpotifySynchronizerConfiguration {
     @Bean
     public OAuth2RestTemplate spotifyRestTemplate(AuthorizationCodeResourceDetails spotifyAuthorization,
                                                   AuthorizationService authorizationService,
-                                                  UserSettingsService userSettingsService,
+                                                  SettingsService settingsService,
                                                   MappingJackson2HttpMessageConverter jackson2HttpMessageConverter) {
         OAuth2RestTemplate oAuth2RestTemplate = new OAuth2RestTemplateSpotify(spotifyAuthorization, new DefaultOAuth2ClientContext());
         oAuth2RestTemplate.setAccessTokenProvider(new AccessTokenProviderChain(asList(
-                new SpotifyAccessTokenProvider(authorizationService, userSettingsService),
+                new SpotifyAccessTokenProvider(authorizationService, settingsService),
                 new AuthorizationCodeAccessTokenProvider(),
                 new ImplicitAccessTokenProvider(),
                 new ResourceOwnerPasswordAccessTokenProvider(),

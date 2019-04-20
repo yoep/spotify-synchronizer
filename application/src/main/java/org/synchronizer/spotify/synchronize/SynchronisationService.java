@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-import org.synchronizer.spotify.settings.UserSettingsService;
+import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.UserSettings;
 import org.synchronizer.spotify.synchronize.model.LocalTrack;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
@@ -20,6 +20,8 @@ import org.synchronizer.spotify.views.components.SynchronizeStatusComponent;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 @Log4j2
 @Data
 @Service
@@ -27,7 +29,7 @@ import java.util.List;
 public class SynchronisationService {
     private final DiscoveryService spotifyDiscovery;
     private final DiscoveryService localMusicDiscovery;
-    private final UserSettingsService settingsService;
+    private final SettingsService settingsService;
     private final SynchronizeDatabaseService synchronizeDatabaseService;
     private final UIText uiText;
     private final SynchronizeStatusComponent statusComponent;
@@ -73,13 +75,21 @@ public class SynchronisationService {
     private void synchronizeList(ListChangeListener.Change<? extends MusicTrack> changeList) {
         while (changeList.next()) {
             List<? extends MusicTrack> addedTracks = new ArrayList<>(changeList.getAddedSubList());
+            List<SyncTrack> newSyncTracks = new ArrayList<>();
 
             for (MusicTrack newTrack : addedTracks) {
                 try {
-                    SyncTrack syncTrack = new ArrayList<>(tracks).stream()
+                    ArrayList<SyncTrack> allTracks = new ArrayList<>(tracks);
+                    allTracks.addAll(newSyncTracks);
+
+                    SyncTrack syncTrack = allTracks.stream()
                             .filter(e -> e.matches(newTrack))
                             .findFirst()
-                            .orElseGet(SyncTrackImpl::new);
+                            .orElseGet(() -> {
+                                SyncTrackImpl track = new SyncTrackImpl();
+                                newSyncTracks.add(track);
+                                return track;
+                            });
 
                     if (newTrack instanceof LocalTrack) {
                         syncTrack.setLocalTrack(newTrack);
@@ -87,14 +97,13 @@ public class SynchronisationService {
                         syncTrack.setSpotifyTrack(newTrack);
                     }
 
-                    if (!tracks.contains(syncTrack))
-                        tracks.add(syncTrack);
-
                     synchronizeDatabaseService.sync(newTrack);
                 } catch (Exception ex) {
                     log.error(ex.getMessage(), ex);
                 }
             }
+
+            tracks.addAll(newSyncTracks);
         }
     }
 }

@@ -28,6 +28,8 @@ databaseChangeLog:
               - column:
                   name: TYPE
                   type: VARCHAR(7)
+                  constraints:
+                    nullable: false
               - column:
                   name: ALBUM_ID
                   type: UUID
@@ -36,3 +38,7 @@ databaseChangeLog:
                     referencedTableName: ALBUM
                     referencedColumnNames: ID
                     nullable: false
+        - addUniqueConstraint:
+            tableName: TRACK
+            columnNames: TITLE, ARTIST, TYPE
+            constraintName: UQ_TRACK

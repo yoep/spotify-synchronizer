@@ -1,11 +1,12 @@
 package org.synchronizer.spotify.media;
 
-import org.synchronizer.spotify.synchronize.model.MusicTrack;
-import org.synchronizer.spotify.views.components.PlayerComponent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.synchronizer.spotify.common.PlayerState;
+import org.synchronizer.spotify.synchronize.model.MusicTrack;
+import org.synchronizer.spotify.views.components.PlayerComponent;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -29,6 +30,20 @@ public class MediaPlayerService {
     }
 
     /**
+     * Resume/play the current played track.
+     */
+    public void play() {
+        playerComponent.onPlay();
+    }
+
+    /**
+     * Pause the current played track.
+     */
+    public void pause() {
+        playerComponent.onPause();
+    }
+
+    /**
      * Get the current track that is being played.
      *
      * @return Returns the current track of the player.
@@ -38,20 +53,38 @@ public class MediaPlayerService {
     }
 
     /**
-     * Set the action to execute when the on next button is pressed.
+     * Get the current state of the player.
      *
-     * @param onNext The on next action to execute.
+     * @return Returns the current player state.
      */
-    public void setOnNext(Consumer<MusicTrack> onNext) {
+    public PlayerState getCurrentPlayerState() {
+        return playerComponent.getPlayerState();
+    }
+
+    /**
+     * Add a listener which is invoked when the on next is clicked.
+     *
+     * @param onNext The listener to subscribe.
+     */
+    public void addOnNextListener(Consumer<MusicTrack> onNext) {
         playerComponent.setOnNext(onNext);
     }
 
     /**
-     * Set the action to execute when the on previous button is pressed.
+     * Add a listener which is invoked when the on previous is clicked.
      *
-     * @param onPrevious The on previous action to execute.
+     * @param onPrevious The listener to subscribe.
      */
-    public void setOnPrevious(Consumer<MusicTrack> onPrevious) {
+    public void addOnPreviousListener(Consumer<MusicTrack> onPrevious) {
         playerComponent.setOnPrevious(onPrevious);
+    }
+
+    /**
+     * Add a listener which is invoked when the track is being changed.
+     *
+     * @param onTrackChange The listener to subscribe.
+     */
+    public void addOnTrackChangeListener(Runnable onTrackChange) {
+        playerComponent.setOnTrackChange(onTrackChange);
     }
 }

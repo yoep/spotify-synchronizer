@@ -24,7 +24,7 @@ import java.util.Optional;
 @Log4j2
 @Service
 @RequiredArgsConstructor
-public class UserSettingsService {
+public class SettingsService {
     @Getter
     private final ObservableWrapper<UserSettings> userSettingsObservable = new ObservableWrapper<>();
     private final ObjectMapper objectMapper;

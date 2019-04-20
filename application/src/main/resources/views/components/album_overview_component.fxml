@@ -9,7 +9,7 @@
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="/styles/album_overview.css,/styles/main.css">
     <columnConstraints>
         <ColumnConstraints minWidth="100"/>
-        <ColumnConstraints maxWidth="Infinity"/>
+        <ColumnConstraints maxWidth="Infinity" hgrow="ALWAYS"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="150"/>
@@ -30,7 +30,7 @@
 
     <GridPane GridPane.columnIndex="1" GridPane.rowIndex="0">
         <columnConstraints>
-            <ColumnConstraints percentWidth="100" minWidth="100"/>
+            <ColumnConstraints percentWidth="100" hgrow="ALWAYS"/>
         </columnConstraints>
         <rowConstraints>
             <RowConstraints minHeight="30"/>
@@ -43,6 +43,7 @@
         <Label fx:id="albumTitle" GridPane.columnIndex="0" GridPane.rowIndex="0"
                styleClass="album_title" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS"/>
 
-        <VBox fx:id="trackOverview" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+        <FlowPane fx:id="trackOverview" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.hgrow="ALWAYS"
+                  hgap="10"/>
     </GridPane>
 </GridPane>

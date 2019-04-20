@@ -1,52 +1,45 @@
 package org.synchronizer.spotify.synchronize;
 
-import org.synchronizer.spotify.domain.TrackType;
-import org.synchronizer.spotify.domain.entities.AlbumInfoEntity;
-import org.synchronizer.spotify.domain.entities.TrackInfoEntity;
-import org.synchronizer.spotify.domain.repositories.TrackRepository;
-import org.synchronizer.spotify.synchronize.model.Album;
-import org.synchronizer.spotify.synchronize.model.MusicTrack;
-import org.synchronizer.spotify.synchronize.model.SpotifyTrack;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.synchronizer.spotify.synchronize.model.MusicTrack;
 
-import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 
 @Log4j2
 @Service
 @RequiredArgsConstructor
 public class SynchronizeDatabaseService {
-    private final TrackRepository trackRepository;
-    private final AlbumService albumService;
+    private final TrackService trackService;
+    private final TaskExecutor taskExecutor;
+    private final List<MusicTrack> tracksToSync = new ArrayList<>();
+    private boolean syncTaskRunning;
 
-    @Async
-    @Transactional
     public void sync(MusicTrack musicTrack) {
         Assert.notNull(musicTrack, "musicTrack cannot be null");
-        TrackType type = musicTrack instanceof SpotifyTrack ? TrackType.SPOTIFY : TrackType.LOCAL;
+        tracksToSync.add(musicTrack);
 
-        try {
-            boolean trackExists = trackRepository.findByTitleAndArtistAndType(musicTrack.getTitle(), musicTrack.getArtist(), type).isPresent();
-
-            if (!trackExists) {
-                trackRepository.save(TrackInfoEntity.builder()
-                        .title(musicTrack.getTitle())
-                        .artist(musicTrack.getArtist())
-                        .uri(musicTrack.getUri())
-                        .type(type)
-                        .album(getAlbum(musicTrack.getAlbum()))
-                        .build());
-            }
-        } catch (DataRetrievalFailureException ex) {
-            log.error("Failed to sync " + musicTrack, ex);
+        if (!syncTaskRunning) {
+            startSyncTask();
         }
     }
 
-    private AlbumInfoEntity getAlbum(Album album) {
-        return albumService.synchronizeAlbum(album);
+    private void startSyncTask() {
+        syncTaskRunning = true;
+
+        taskExecutor.execute(() -> {
+            while (tracksToSync.size() > 0) {
+                MusicTrack musicTrack = tracksToSync.get(0);
+
+                trackService.synchronizeTrack(musicTrack);
+                tracksToSync.remove(musicTrack);
+            }
+
+            syncTaskRunning = false;
+        });
     }
 }

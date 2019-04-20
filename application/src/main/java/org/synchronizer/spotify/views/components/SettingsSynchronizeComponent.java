@@ -1,6 +1,6 @@
 package org.synchronizer.spotify.views.components;
 
-import org.synchronizer.spotify.settings.UserSettingsService;
+import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.Synchronization;
 import org.synchronizer.spotify.settings.model.UserSettings;
 import org.synchronizer.spotify.ui.ViewManager;
@@ -21,7 +21,7 @@ import java.util.ResourceBundle;
 @Component
 @RequiredArgsConstructor
 public class SettingsSynchronizeComponent implements Initializable, SettingComponent {
-    private final UserSettingsService settingsService;
+    private final SettingsService settingsService;
     private final ViewManager viewManager;
     private final DirectoryChooser directoryChooser = new DirectoryChooser();
 
@@ -36,12 +36,10 @@ public class SettingsSynchronizeComponent implements Initializable, SettingCompo
     }
 
     @Override
-    public UserSettings apply(UserSettings currentUserSettings) {
+    public void apply(UserSettings currentUserSettings) {
         Synchronization synchronization = currentUserSettings.getSynchronization();
 
         synchronization.setLocalMusicDirectory(selectedFile);
-
-        return currentUserSettings;
     }
 
     public void selectDirectory() throws PrimaryWindowNotAvailableException {
