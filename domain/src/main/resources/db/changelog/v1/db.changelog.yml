@@ -5,3 +5,6 @@ databaseChangeLog:
   - include:
       relativeToChangelogFile: true
       file: 02_add_track.yml
+  - include:
+      relativeToChangelogFile: true
+      file: 03_add_sync_track.yml

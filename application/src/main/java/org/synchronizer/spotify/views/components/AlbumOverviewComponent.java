@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
 import org.synchronizer.spotify.SpotifySynchronizer;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
@@ -15,8 +16,11 @@ import org.synchronizer.spotify.ui.ViewLoader;
 import org.synchronizer.spotify.views.model.AlbumOverview;
 
 import java.net.URL;
-import java.util.*;
+import java.util.ResourceBundle;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
+@Log4j2
 @ToString
 public class AlbumOverviewComponent implements Initializable {
     private final AlbumOverview albumOverview;
@@ -43,19 +47,28 @@ public class AlbumOverviewComponent implements Initializable {
         Album album = albumOverview.getAlbum();
 
         albumTitle.setText(album.getName());
-        albumImage.setImage(album.getHighResImage());
-        noAlbum.setVisible(album.getHighResImage() == null);
+        updateAlbumArtwork(album);
 
         albumOverview.getTracks().forEach(this::createNewAlbumTrackComponent);
-        albumOverview.addListener(c -> {
-            while (c.next()) {
-                List<? extends SyncTrack> syncTracks = new ArrayList<>(c.getAddedSubList());
-
-                syncTracks.stream()
-                        .filter(e -> albumTracks.stream().noneMatch(albumTrackComponent -> albumTrackComponent.getSyncTrack().equals(e)))
-                        .forEach(this::createNewAlbumTrackComponent);
+        albumOverview.addObserver((o, args) -> {
+            if (noAlbum.isVisible()) {
+                albumOverview.getTracks().stream()
+                        .filter(e -> e.getAlbum().getHighResImage() != null)
+                        .findFirst()
+                        .map(SyncTrack::getAlbum)
+                        .ifPresent(this::updateAlbumArtwork);
             }
+
+            albumOverview.getTracks().stream()
+                    .filter(e -> albumTracks.stream().noneMatch(albumTrackComponent -> albumTrackComponent.getSyncTrack().equals(e)))
+                    .forEach(this::createNewAlbumTrackComponent);
         });
+    }
+
+    private void updateAlbumArtwork(Album album) {
+        log.debug("Updating album artwork for " + album);
+        albumImage.setImage(album.getHighResImage());
+        noAlbum.setVisible(album.getHighResImage() == null);
     }
 
     private void createNewAlbumTrackComponent(SyncTrack syncTrack) {

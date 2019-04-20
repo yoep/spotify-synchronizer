@@ -16,7 +16,9 @@ public enum MainMessage implements Message {
     PLAY_LOCAL_TRACK("play_local_track"),
     PLAY_LOCAL_TRACK_UNAVAILABLE("play_local_track_unavailable"),
     OPEN_IN_SPOTIFY("open_in_spotify"),
-    DONE_SYNCHRONIZING("done_synchronizing");
+    DONE_SYNCHRONIZING("done_synchronizing"),
+    SYNCHRONIZED("synchronized"),
+    METADATA_OUT_OF_SYNC("metadata_out_of_sync");
 
     private String key;
 

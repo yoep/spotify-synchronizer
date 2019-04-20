@@ -18,7 +18,7 @@ public interface SyncTrack extends MusicTrack {
      *
      * @return Returns true if the local track is in sync, else false.
      */
-    boolean isSynchronized();
+    boolean isMetaDataSynchronized();
 
     /**
      * Get the found spotify track.

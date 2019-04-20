@@ -48,4 +48,11 @@
         <Label fx:id="artist" GridPane.columnIndex="2" GridPane.rowIndex="0"
                styleClass="artist"/>
     </GridPane>
+
+    <!-- Sync status -->
+    <StackPane GridPane.columnIndex="2" GridPane.rowIndex="0">
+        <Text fx:id="syncStatusIcon" styleClass="icon">
+            <Icons fx:constant="CROSS" />
+        </Text>
+    </StackPane>
 </GridPane>

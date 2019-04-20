@@ -1,19 +1,18 @@
 package org.synchronizer.spotify.views.model;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
+@EqualsAndHashCode(callSuper = false)
 @Data
-public class AlbumOverview implements Comparable<AlbumOverview> {
+public class AlbumOverview extends Observable implements Comparable<AlbumOverview> {
     private final Album album;
-    private final ObservableList<SyncTrack> tracks = FXCollections.observableArrayList();
+    private final List<SyncTrack> tracks = new ArrayList<>();
     private boolean rendering;
 
     public AlbumOverview(Album album) {
@@ -25,11 +24,20 @@ public class AlbumOverview implements Comparable<AlbumOverview> {
     }
 
     public void addTracks(SyncTrack... tracks) {
-        this.tracks.addAll(tracks);
-    }
+        List<SyncTrack> newTracks = Arrays.stream(tracks)
+                .filter(e -> !this.tracks.contains(e))
+                .collect(Collectors.toList());
 
-    public void addListener(ListChangeListener<SyncTrack> listener) {
-        this.tracks.addListener(listener);
+        if (newTracks.size() > 0)
+            this.setChanged();
+
+        this.tracks.addAll(newTracks);
+        this.notifyObservers();
+
+        newTracks.forEach(e -> e.addListener(observable -> {
+            this.setChanged();
+            this.notifyObservers();
+        }));
     }
 
     @Override

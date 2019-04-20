@@ -1,7 +1,7 @@
 package org.synchronizer.spotify.synchronize.model;
 
-import org.synchronizer.spotify.domain.TrackInfo;
 import javafx.beans.Observable;
+import org.synchronizer.spotify.domain.TrackInfo;
 
 /**
  * Defines the information about a music track which generalizes the info between local and Spotify music tracks.

@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.synchronizer.spotify.settings.SettingsService;
-import org.synchronizer.spotify.settings.model.UserSettings;
 import org.synchronizer.spotify.synchronize.model.LocalTrack;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
@@ -19,8 +18,6 @@ import org.synchronizer.spotify.views.components.SynchronizeStatusComponent;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.Arrays.asList;
 
 @Log4j2
 @Data
@@ -55,11 +52,8 @@ public class SynchronisationService {
         localMusicDiscovery.onFinished(this::serviceFinished);
         spotifyDiscovery.onFinished(this::serviceFinished);
 
-        //register a listener on the user settings
-        settingsService.getUserSettingsObservable().addObserver((o, arg) -> {
-            UserSettings userSettings = (UserSettings) o;
-
-            if ((userSettings.hasChanged() || userSettings.getSynchronization().hasChanged()) && spotifyDiscovery.isFinished()) {
+        settingsService.getUserSettingsOrDefault().getSynchronization().addObserver((o, arg) -> {
+            if (spotifyDiscovery.isFinished()) {
                 statusComponent.setSynchronizing(true);
                 localMusicDiscovery.start();
             }

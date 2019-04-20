@@ -3,15 +3,17 @@ package org.synchronizer.spotify.views.components;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.synchronizer.spotify.SpotifySynchronizer;
 import org.synchronizer.spotify.media.MediaPlayerService;
-import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.ui.Icons;
+import org.synchronizer.spotify.ui.UIText;
+import org.synchronizer.spotify.ui.lang.MainMessage;
 
 import java.net.URL;
 import java.util.Optional;
@@ -21,6 +23,7 @@ import java.util.ResourceBundle;
 public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrackComponent> {
     private final SyncTrack syncTrack;
     private final MediaPlayerService mediaPlayerService;
+    private final UIText uiText;
     private boolean activeInMediaPlayer;
 
     @FXML
@@ -37,10 +40,13 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     private Label title;
     @FXML
     private Label artist;
+    @FXML
+    private Text syncStatusIcon;
 
     public AlbumTrackComponent(SyncTrack syncTrack) {
         this.syncTrack = syncTrack;
         this.mediaPlayerService = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(MediaPlayerService.class);
+        this.uiText = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(UIText.class);
     }
 
     @Override
@@ -56,6 +62,9 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         playPauseIcon.setOnMouseClicked(event -> playPauseTrack());
         trackRow.setOnMouseEntered(event -> updatePlayTrackVisibilityState(true));
         trackRow.setOnMouseExited(event -> updatePlayTrackVisibilityState(false));
+
+        updateSyncState();
+        syncTrack.addListener(observable -> updateSyncState());
     }
 
     @Override
@@ -63,7 +72,15 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         if (compareTo == null)
             return 1;
 
-        return this.syncTrack.getTrackNumber().compareTo(compareTo.getSyncTrack().getTrackNumber());
+        Integer trackNumber = this.syncTrack.getTrackNumber();
+        Integer compareToTrackNumber = compareTo.getSyncTrack().getTrackNumber();
+
+        if (trackNumber == null && compareToTrackNumber == null)
+            return 0;
+        if (trackNumber == null)
+            return -1;
+
+        return trackNumber.compareTo(compareToTrackNumber);
     }
 
     /**
@@ -71,7 +88,7 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
      */
     public void play() {
         if (isPlaybackAvailable()) {
-            mediaPlayerService.play(getMusicTrackWithAvailablePlayback());
+            mediaPlayerService.play(syncTrack);
             mediaPlayerService.addOnTrackChangeListener(() -> setPlaybackState(false));
 
             setPlaybackState(true);
@@ -114,6 +131,19 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         trackNumber.setVisible(!isMouseHovering);
     }
 
+    private void updateSyncState() {
+        if (syncTrack.isLocalTrackAvailable() && syncTrack.isMetaDataSynchronized()) {
+            syncStatusIcon.setText(Icons.CHECK_MARK);
+            Tooltip tooltip = new Tooltip(uiText.get(MainMessage.SYNCHRONIZED));
+            Tooltip.install(syncStatusIcon, tooltip);
+        }
+        if(syncTrack.isLocalTrackAvailable() && !syncTrack.isMetaDataSynchronized()) {
+            syncStatusIcon.setText(Icons.EXCLAMATION);
+            Tooltip tooltip = new Tooltip(uiText.get(MainMessage.METADATA_OUT_OF_SYNC));
+            Tooltip.install(syncStatusIcon, tooltip);
+        }
+    }
+
     private String getTrackNumber() {
         return Optional.ofNullable(syncTrack.getTrackNumber())
                 .map(String::valueOf)
@@ -121,14 +151,6 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     }
 
     private boolean isPlaybackAvailable() {
-        return getMusicTrackWithAvailablePlayback() != null;
-    }
-
-    private MusicTrack getMusicTrackWithAvailablePlayback() {
-        return syncTrack.getLocalTrack()
-                .filter(e -> StringUtils.isNotEmpty(e.getUri()))
-                .orElse(syncTrack.getSpotifyTrack()
-                        .filter(e -> StringUtils.isNotEmpty(e.getUri()))
-                        .orElse(null));
+        return StringUtils.isNotEmpty(syncTrack.getUri());
     }
 }

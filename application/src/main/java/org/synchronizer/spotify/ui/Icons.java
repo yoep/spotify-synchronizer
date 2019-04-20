@@ -21,5 +21,8 @@ public class Icons {
     public static final String VOLUME_LOW = "\uf027";
     public static final String VOLUME_OFF = "\uf026";
     public static final String BAN = "\uf05e";
+    public static final String CROSS = "\uf00d";
+    public static final String CHECK_MARK = "\uf00c";
+    public static final String EXCLAMATION = "\uf12a";
     //CHECKSTYLE:ON
 }

@@ -2,6 +2,7 @@ package org.synchronizer.spotify.synchronize.model;
 
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -51,7 +52,7 @@ public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
     }
 
     @Override
-    public boolean isSynchronized() {
+    public boolean isMetaDataSynchronized() {
         return isLocalTrackAvailable() && spotifyTrack != null &&
                 spotifyTrack.getTitle().equalsIgnoreCase(localTrack.getTitle()) &&
                 spotifyTrack.getArtist().equalsIgnoreCase(localTrack.getArtist()) &&
@@ -70,14 +71,14 @@ public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
 
     public void setSpotifyTrack(MusicTrack spotifyTrack) {
         this.spotifyTrack = spotifyTrack;
-        listeners.stream()
+        new ArrayList<>(listeners).stream()
                 .filter(Objects::nonNull)
                 .forEach(e -> e.invalidated(this));
     }
 
     public void setLocalTrack(MusicTrack localTrack) {
         this.localTrack = localTrack;
-        listeners.stream()
+        new ArrayList<>(listeners).stream()
                 .filter(Objects::nonNull)
                 .forEach(e -> e.invalidated(this));
     }

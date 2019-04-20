@@ -5,6 +5,7 @@ import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -101,6 +102,7 @@ public class AudioDiscoveryService {
 
     private static Integer getTrackNumberV1(ID3v1 metadata) {
         return Optional.ofNullable(metadata.getTrack())
+                .filter(StringUtils::isNotEmpty)
                 .map(Integer::parseInt)
                 .orElse(null);
     }

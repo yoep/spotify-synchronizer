@@ -1,0 +1,30 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: yoep
+      changes:
+        - createTable:
+            tableName: SYNC_TRACK
+            columns:
+              - column:
+                  name: ID
+                  type: UUID
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: SPOTIFY_TRACK
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_SPOTIFY_TRACK_ID
+                    referencedTableName: TRACK
+                    referencedColumnNames: ID
+                    nullable: false
+              - column:
+                  name: LOCAL_TRACK
+                  type: UUID
+                  constraints:
+                    foreignKeyName: FK_LOCAL_TRACK_ID
+                    referencedTableName: TRACK
+                    referencedColumnNames: ID
+                    nullable: false
