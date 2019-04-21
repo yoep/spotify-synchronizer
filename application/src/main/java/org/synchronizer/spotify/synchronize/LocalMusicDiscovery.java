@@ -1,5 +1,6 @@
 package org.synchronizer.spotify.synchronize;
 
+import org.springframework.core.task.TaskExecutor;
 import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.Synchronization;
 import org.synchronizer.spotify.settings.model.UserSettings;
@@ -29,7 +30,8 @@ public class LocalMusicDiscovery implements DiscoveryService {
     private static final List<String> extensions = Collections.singletonList("mp3");
 
     private final SettingsService settingsService;
-    private final AudioDiscoveryService audioDiscoveryService;
+    private final AudioService audioService;
+    private final TaskExecutor taskExecutor;
     private final ObservableList<MusicTrack> trackList = FXCollections.observableArrayList();
     private final List<CompletableFuture<List<MusicTrack>>> asyncDiscoveries = new ArrayList<>();
 
@@ -86,13 +88,13 @@ public class LocalMusicDiscovery implements DiscoveryService {
 
     private void discoveryAudioFiles(File directory) {
         log.debug("Scanning for audio in " + directory.getAbsolutePath());
-        CompletableFuture<List<MusicTrack>> scanCompletableFuture = audioDiscoveryService.scanDirectory(directory);
+        CompletableFuture<List<MusicTrack>> scanCompletableFuture = audioService.scanDirectory(directory);
         asyncDiscoveries.add(scanCompletableFuture);
         scanCompletableFuture.thenAccept(trackList::addAll);
     }
 
     private void onAsyncDiscoveryCompletion(Runnable onCompletion) {
-        new Thread(() -> {
+        taskExecutor.execute(() -> {
             //check if all completable futures have been completed
             //we don't wan't to chain all the completable futures with CompletableFuture.allOf as we want the results of each individual discovery to be visible
             //immediately in the overview list
@@ -106,7 +108,7 @@ public class LocalMusicDiscovery implements DiscoveryService {
             }
 
             onCompletion.run();
-        }, "LocalMusicDiscovery-CompletionThread").start();
+        });
     }
 
     private void invokeCallback() {

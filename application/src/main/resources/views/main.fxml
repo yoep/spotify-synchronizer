@@ -18,7 +18,7 @@
 
     <!-- CONTENT -->
     <AlbumOverviewBox fx:id="trackOverview" hbarPolicy="NEVER" GridPane.columnIndex="0" GridPane.rowIndex="1" maxWidth="Infinity"
-                      fitToWidth="true"/>
+                      fitToWidth="true" focusTraversable="true"/>
 
     <!-- PLAYER -->
     <fx:include source="components/player_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="2"/>

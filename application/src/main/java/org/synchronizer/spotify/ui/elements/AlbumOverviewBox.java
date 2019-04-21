@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class AlbumOverviewBox extends ScrollPane {
-    private static final int INITIAL_RENDER = 5;
+    private static final int BOX_MIN_HEIGHT = 100;
     private static final int ADDITIONAL_RENDER = 8;
 
     private final VBox vBox = new VBox();
@@ -57,13 +57,14 @@ public class AlbumOverviewBox extends ScrollPane {
 
     private void updateRendering() {
         int totalRenderedItems = vBox.getChildren().size();
+        long initialRender = calculateInitialRender();
 
-        if (totalRenderedItems < INITIAL_RENDER)
-            renderAdditionalAlbumOverviews(INITIAL_RENDER - totalRenderedItems);
+        if (totalRenderedItems < initialRender)
+            renderAdditionalAlbumOverviews(initialRender - totalRenderedItems);
 
     }
 
-    private void renderAdditionalAlbumOverviews(int totalAdditionalItems) {
+    private void renderAdditionalAlbumOverviews(long totalAdditionalItems) {
         updating = true;
         List<Map.Entry<AlbumOverview, Pane>> renderAlbumOverviews = albumOverviews.entrySet().stream()
                 .filter(e -> !e.getKey().isRendering())
@@ -78,5 +79,9 @@ public class AlbumOverviewBox extends ScrollPane {
                 .map(Map.Entry::getKey)
                 .forEach(e -> e.setRendering(true));
         updating = false;
+    }
+
+    private long calculateInitialRender() {
+        return Math.round(this.getHeight() / BOX_MIN_HEIGHT);
     }
 }

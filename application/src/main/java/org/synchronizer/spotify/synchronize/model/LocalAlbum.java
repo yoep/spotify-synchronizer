@@ -16,6 +16,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class LocalAlbum implements Album {
     private String name;
+    private String imageMimeType;
     private byte[] image;
 
     @Override

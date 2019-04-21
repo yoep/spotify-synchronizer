@@ -84,9 +84,9 @@ public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
     }
 
     private <T> T getProperty(Function<MusicTrack, T> mapProperty) {
-        return ofNullable(spotifyTrack)
+        return ofNullable(localTrack)
                 .map(mapProperty)
-                .orElse(ofNullable(localTrack)
+                .orElse(ofNullable(spotifyTrack)
                         .map(mapProperty)
                         .orElse(null));
     }

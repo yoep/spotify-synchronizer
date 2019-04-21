@@ -28,4 +28,11 @@ public interface AlbumInfo {
      * @return Returns the image in bytes.
      */
     byte[] getImage();
+
+    /**
+     * Get the mime type of the image.
+     *
+     * @return Returns the mime type of the image if an image is present, else null.
+     */
+    String getImageMimeType();
 }

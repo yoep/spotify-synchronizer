@@ -13,6 +13,7 @@ import org.synchronizer.spotify.SpotifySynchronizer;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.ui.ViewLoader;
+import org.synchronizer.spotify.utils.CollectionUtils;
 import org.synchronizer.spotify.views.model.AlbumOverview;
 
 import java.net.URL;
@@ -59,8 +60,8 @@ public class AlbumOverviewComponent implements Initializable {
                         .ifPresent(this::updateAlbumArtwork);
             }
 
-            albumOverview.getTracks().stream()
-                    .filter(e -> albumTracks.stream().noneMatch(albumTrackComponent -> albumTrackComponent.getSyncTrack().equals(e)))
+            CollectionUtils.copy(albumOverview.getTracks()).stream()
+                    .filter(e -> CollectionUtils.copy(albumTracks).stream().noneMatch(albumTrackComponent -> albumTrackComponent.getSyncTrack().equals(e)))
                     .forEach(this::createNewAlbumTrackComponent);
         });
     }

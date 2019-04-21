@@ -19,13 +19,13 @@
     <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS" GridPane.hgrow="ALWAYS"
                alignment="CENTER_LEFT" GridPane.fillWidth="true" GridPane.fillHeight="true">
         <Text fx:id="trackNumber"/>
-        <Text fx:id="playTrackIcon" styleClass="icon, icon-clickable">
+        <Text fx:id="playTrackIcon" styleClass="icon, icon-clickable" visible="false">
             <Icons fx:constant="PLAY_CIRCLE"/>
         </Text>
-        <Text fx:id="playPauseIcon" styleClass="icon, icon-clickable">
+        <Text fx:id="playPauseIcon" styleClass="icon, icon-clickable" visible="false">
             <Icons fx:constant="PAUSE"/>
         </Text>
-        <Text fx:id="playbackUnavailableIcon" styleClass="icon" disable="true">
+        <Text fx:id="playbackUnavailableIcon" styleClass="icon" disable="true" visible="false">
             <Icons fx:constant="BAN"/>
         </Text>
     </StackPane>

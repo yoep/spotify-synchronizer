@@ -3,47 +3,51 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Text?>
 <?import org.synchronizer.spotify.ui.Icons?>
-<GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="/styles/album_overview.css,/styles/main.css">
+
+<GridPane stylesheets="/styles/album_overview.css,/styles/main.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
-        <ColumnConstraints minWidth="100"/>
-        <ColumnConstraints maxWidth="Infinity" hgrow="ALWAYS"/>
+        <ColumnConstraints minWidth="100" />
+        <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="150"/>
+        <RowConstraints minHeight="150" />
     </rowConstraints>
     <padding>
-        <Insets bottom="5" left="10" right="10" top="5"/>
+        <Insets bottom="5" left="10" right="10" top="5" />
     </padding>
 
     <!-- Image -->
     <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0">
-        <HBox fx:id="noAlbum" styleClass="album_border" maxHeight="150" minHeight="150" maxWidth="150" alignment="CENTER">
+        <HBox fx:id="noAlbum" alignment="CENTER" maxHeight="150" maxWidth="150" minHeight="150" styleClass="album_border">
             <Text styleClass="icon-solid, icon-xxlarge">
-                <Icons fx:constant="COMPACT_DISK"/>
+                <Icons fx:constant="COMPACT_DISK" />
             </Text>
         </HBox>
-        <ImageView fx:id="albumImage" preserveRatio="true" fitWidth="150"/>
+        <ImageView fx:id="albumImage" fitWidth="150" preserveRatio="true" />
     </StackPane>
 
     <GridPane GridPane.columnIndex="1" GridPane.rowIndex="0">
         <columnConstraints>
-            <ColumnConstraints percentWidth="100" hgrow="ALWAYS"/>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="100" />
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints minHeight="30"/>
-            <RowConstraints/>
+            <RowConstraints minHeight="30" />
+            <RowConstraints />
         </rowConstraints>
         <padding>
-            <Insets left="10"/>
+            <Insets left="10" />
         </padding>
 
-        <Label fx:id="albumTitle" GridPane.columnIndex="0" GridPane.rowIndex="0"
-               styleClass="album_title" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS"/>
+        <Label fx:id="albumTitle" styleClass="album_title" GridPane.columnIndex="0" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" />
 
-        <FlowPane fx:id="trackOverview" GridPane.columnIndex="0" GridPane.rowIndex="1" GridPane.hgrow="ALWAYS"
-                  hgap="10"/>
+        <FlowPane fx:id="trackOverview" hgap="10" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
     </GridPane>
 </GridPane>

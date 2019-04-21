@@ -9,13 +9,17 @@ import javafx.scene.text.Text;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.synchronizer.spotify.SpotifySynchronizer;
+import org.synchronizer.spotify.common.PlayerState;
 import org.synchronizer.spotify.media.MediaPlayerService;
+import org.synchronizer.spotify.media.PlayerStateChangeListener;
+import org.synchronizer.spotify.media.TrackChangeListener;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
 import org.synchronizer.spotify.ui.lang.MainMessage;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -24,7 +28,10 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     private final SyncTrack syncTrack;
     private final MediaPlayerService mediaPlayerService;
     private final UIText uiText;
+
     private boolean activeInMediaPlayer;
+    private TrackChangeListener trackChangeListener;
+    private PlayerStateChangeListener playerStateChangeListener;
 
     @FXML
     private GridPane trackRow;
@@ -55,55 +62,63 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         title.setText(syncTrack.getTitle());
         artist.setText(syncTrack.getArtist());
 
-        playTrackIcon.setVisible(false);
-        playPauseIcon.setVisible(false);
-        playbackUnavailableIcon.setVisible(false);
-        playTrackIcon.setOnMouseClicked(event -> play());
-        playPauseIcon.setOnMouseClicked(event -> playPauseTrack());
-        trackRow.setOnMouseEntered(event -> updatePlayTrackVisibilityState(true));
-        trackRow.setOnMouseExited(event -> updatePlayTrackVisibilityState(false));
-
         updateSyncState();
         syncTrack.addListener(observable -> updateSyncState());
+
+        initializeEvents();
+        initializeListeners();
     }
 
     @Override
     public int compareTo(AlbumTrackComponent compareTo) {
-        if (compareTo == null)
-            return 1;
-
         Integer trackNumber = this.syncTrack.getTrackNumber();
         Integer compareToTrackNumber = compareTo.getSyncTrack().getTrackNumber();
 
-        if (trackNumber == null && compareToTrackNumber == null)
-            return 0;
-        if (trackNumber == null)
+        if (trackNumber == null && compareToTrackNumber != null)
             return -1;
+        if (trackNumber != null && compareToTrackNumber == null)
+            return 1;
 
-        return trackNumber.compareTo(compareToTrackNumber);
+        return Objects.compare(trackNumber, compareToTrackNumber, Integer::compareTo);
     }
 
-    /**
-     * Play this track.
-     */
-    public void play() {
+    private void initializeListeners() {
+        trackChangeListener = (oldTrack, newTrack) -> setPlaybackState(false);
+        playerStateChangeListener = (oldState, newState) -> updatePlayPauseIcon(newState);
+    }
+
+    private void initializeEvents() {
+        playTrackIcon.setOnMouseClicked(event -> play());
+        playPauseIcon.setOnMouseClicked(event -> playPauseTrack());
+        trackRow.setOnMouseEntered(event -> updatePlayTrackVisibilityState(true));
+        trackRow.setOnMouseExited(event -> updatePlayTrackVisibilityState(false));
+    }
+
+    private void play() {
         if (isPlaybackAvailable()) {
             mediaPlayerService.play(syncTrack);
-            mediaPlayerService.addOnTrackChangeListener(() -> setPlaybackState(false));
+            subscribeListenersToMediaPlayer();
 
             setPlaybackState(true);
         }
     }
 
     private void playPauseTrack() {
-        switch (mediaPlayerService.getCurrentPlayerState()) {
+        if (mediaPlayerService.getCurrentPlayerState() == PlayerState.PAUSED) {
+            mediaPlayerService.play();
+        } else {
+            mediaPlayerService.pause();
+        }
+    }
+
+    private void updatePlayPauseIcon(PlayerState playerState) {
+        switch (playerState) {
             case PLAYING:
-                mediaPlayerService.pause();
-                playPauseIcon.setText(Icons.PLAY);
+                playPauseIcon.setText(Icons.PAUSE);
                 break;
             case PAUSED:
-                mediaPlayerService.play();
-                playPauseIcon.setText(Icons.PAUSE);
+            case END_OF_MEDIA:
+                playPauseIcon.setText(Icons.PLAY);
                 break;
             default:
                 //no-op
@@ -116,8 +131,11 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         this.playPauseIcon.setVisible(activeInMediaPlayer);
         this.trackNumber.setVisible(!activeInMediaPlayer);
 
-        if (activeInMediaPlayer)
+        if (activeInMediaPlayer) {
             this.playTrackIcon.setVisible(false);
+        } else {
+            unsubscribeListenersToMediaPlayer();
+        }
     }
 
     private void updatePlayTrackVisibilityState(boolean isMouseHovering) {
@@ -137,7 +155,7 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
             Tooltip tooltip = new Tooltip(uiText.get(MainMessage.SYNCHRONIZED));
             Tooltip.install(syncStatusIcon, tooltip);
         }
-        if(syncTrack.isLocalTrackAvailable() && !syncTrack.isMetaDataSynchronized()) {
+        if (syncTrack.isLocalTrackAvailable() && !syncTrack.isMetaDataSynchronized()) {
             syncStatusIcon.setText(Icons.EXCLAMATION);
             Tooltip tooltip = new Tooltip(uiText.get(MainMessage.METADATA_OUT_OF_SYNC));
             Tooltip.install(syncStatusIcon, tooltip);
@@ -152,5 +170,15 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
 
     private boolean isPlaybackAvailable() {
         return StringUtils.isNotEmpty(syncTrack.getUri());
+    }
+
+    private void subscribeListenersToMediaPlayer() {
+        mediaPlayerService.addPlayerStateChangeListener(playerStateChangeListener);
+        mediaPlayerService.addTrackChangeListener(trackChangeListener);
+    }
+
+    private void unsubscribeListenersToMediaPlayer() {
+        mediaPlayerService.removePlayerStateChangeListener(playerStateChangeListener);
+        mediaPlayerService.removeTrackChangeListener(trackChangeListener);
     }
 }

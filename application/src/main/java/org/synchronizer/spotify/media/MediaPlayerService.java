@@ -8,14 +8,26 @@ import org.synchronizer.spotify.common.PlayerState;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import org.synchronizer.spotify.views.components.PlayerComponent;
 
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 @Log4j2
 @Service
 @RequiredArgsConstructor
 public class MediaPlayerService {
+    private final List<PlayerStateChangeListener> playerStateChangeListeners = new ArrayList<>();
+    private final List<TrackChangeListener> trackChangeListeners = new ArrayList<>();
     private final PlayerComponent playerComponent;
+
+    @PostConstruct
+    private void init() {
+        playerComponent.setOnPlayerStateChange(oldPlayerState ->
+                new ArrayList<>(playerStateChangeListeners).forEach(e -> e.onChange(oldPlayerState, getCurrentPlayerState())));
+        playerComponent.setOnTrackChange(oldTrack ->
+                new ArrayList<>(trackChangeListeners).forEach(e -> e.onChange(oldTrack, getCurrentTrack().orElse(null))));
+    }
 
     /**
      * Play the given music track.
@@ -62,29 +74,38 @@ public class MediaPlayerService {
     }
 
     /**
-     * Add a listener which is invoked when the on next is clicked.
+     * Add a listener which is invoked when the player state is being changed.
      *
-     * @param onNext The listener to subscribe.
+     * @param playerStateChangeListener The player state change listener to add.
      */
-    public void addOnNextListener(Consumer<MusicTrack> onNext) {
-        playerComponent.setOnNext(onNext);
+    public void addPlayerStateChangeListener(PlayerStateChangeListener playerStateChangeListener) {
+        playerStateChangeListeners.add(playerStateChangeListener);
     }
 
     /**
-     * Add a listener which is invoked when the on previous is clicked.
+     * Remove a player state change listener.
      *
-     * @param onPrevious The listener to subscribe.
+     * @param playerStateChangeListener The player state change listener to remove.
      */
-    public void addOnPreviousListener(Consumer<MusicTrack> onPrevious) {
-        playerComponent.setOnPrevious(onPrevious);
+    public void removePlayerStateChangeListener(PlayerStateChangeListener playerStateChangeListener) {
+        playerStateChangeListeners.remove(playerStateChangeListener);
     }
 
     /**
      * Add a listener which is invoked when the track is being changed.
      *
-     * @param onTrackChange The listener to subscribe.
+     * @param trackChangeListener The track change listener to add.
      */
-    public void addOnTrackChangeListener(Runnable onTrackChange) {
-        playerComponent.setOnTrackChange(onTrackChange);
+    public void addTrackChangeListener(TrackChangeListener trackChangeListener) {
+        trackChangeListeners.add(trackChangeListener);
+    }
+
+    /**
+     * Remove a track change listener.
+     *
+     * @param trackChangeListener The track change listener to remove.
+     */
+    public void removeTrackChangeListener(TrackChangeListener trackChangeListener) {
+        trackChangeListeners.remove(trackChangeListener);
     }
 }
