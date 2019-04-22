@@ -53,7 +53,7 @@ public class AlbumOverviewComponent implements Initializable {
         albumOverview.getTracks().forEach(this::createNewAlbumTrackComponent);
         albumOverview.addObserver((o, args) -> {
             if (noAlbum.isVisible()) {
-                albumOverview.getTracks().stream()
+                CollectionUtils.copy(albumOverview.getTracks()).stream()
                         .filter(e -> e.getAlbum().getHighResImage() != null)
                         .findFirst()
                         .map(SyncTrack::getAlbum)

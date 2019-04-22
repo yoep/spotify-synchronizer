@@ -45,3 +45,7 @@
     -fx-text-fill: #12bc53;
     -fx-fill: #12bc53;
 }
+
+.progress-indicator {
+    -fx-progress-color: #0c7032;
+}

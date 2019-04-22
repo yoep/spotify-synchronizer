@@ -1,6 +1,5 @@
 package org.synchronizer.spotify.synchronize;
 
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -14,6 +13,7 @@ import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.synchronize.model.SyncTrackImpl;
 import org.synchronizer.spotify.ui.UIText;
+import org.synchronizer.spotify.utils.CollectionUtils;
 import org.synchronizer.spotify.views.components.SynchronizeStatusComponent;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class SynchronisationService {
     private final SynchronizeDatabaseService synchronizeDatabaseService;
     private final UIText uiText;
     private final SynchronizeStatusComponent statusComponent;
-    private final ObservableList<SyncTrack> tracks = FXCollections.observableArrayList(param -> new Observable[]{param});
+    private final ObservableList<SyncTrack> tracks = FXCollections.observableArrayList();
 
     /**
      * Initialize the synchronizer and start the synchronisation.
@@ -68,7 +68,7 @@ public class SynchronisationService {
 
     private void synchronizeList(ListChangeListener.Change<? extends MusicTrack> changeList) {
         while (changeList.next()) {
-            List<? extends MusicTrack> addedTracks = new ArrayList<>(changeList.getAddedSubList());
+            List<? extends MusicTrack> addedTracks = CollectionUtils.copy(changeList.getAddedSubList());
             List<SyncTrack> newSyncTracks = new ArrayList<>();
 
             for (MusicTrack newTrack : addedTracks) {

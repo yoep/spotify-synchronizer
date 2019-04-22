@@ -3,6 +3,7 @@ package org.synchronizer.spotify.synchronize.model;
 import lombok.*;
 
 import java.io.File;
+import java.util.Objects;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
@@ -22,22 +23,35 @@ public class LocalTrack extends AbstractMusicTrack {
     }
 
     public void setTitle(String title) {
+        if (!this.title.equals(title))
+            this.setChanged();
+
         this.title = title;
-        listeners.forEach(e -> e.invalidated(this));
+        this.notifyObservers();
     }
 
     public void setArtist(String artist) {
+        if (!this.artist.equals(artist))
+            this.setChanged();
+
         this.artist = artist;
-        listeners.forEach(e -> e.invalidated(this));
+        this.notifyObservers();
     }
 
     public void setAlbum(Album album) {
+        if (this.album != album)
+            this.setChanged();
+
         this.album = album;
-        listeners.forEach(e -> e.invalidated(this));
+        this.notifyObservers();
+        addChildObserver(this.album);
     }
 
     public void setTrackNumber(Integer trackNumber) {
+        if (!Objects.equals(this.trackNumber, trackNumber))
+            this.setChanged();
+
         this.trackNumber = trackNumber;
-        listeners.forEach(e -> e.invalidated(this));
+        this.notifyObservers();
     }
 }

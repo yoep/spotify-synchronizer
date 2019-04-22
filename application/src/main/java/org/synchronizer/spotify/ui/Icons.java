@@ -24,5 +24,7 @@ public class Icons {
     public static final String CROSS = "\uf00d";
     public static final String CHECK_MARK = "\uf00c";
     public static final String EXCLAMATION = "\uf12a";
+    public static final String REFRESH = "\uf021";
+    public static final String SPINNER = "\uf110";
     //CHECKSTYLE:ON
 }

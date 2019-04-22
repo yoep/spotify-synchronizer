@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Text?>
+<?import org.synchronizer.spotify.ui.Icons?>
+<StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <ProgressIndicator fx:id="progressIndicator" maxHeight="10" styleClass="progress-indicator"/>
+
+    <Text fx:id="outOfSyncIcon" styleClass="icon, icon-clickable" visible="false">
+        <Icons fx:constant="EXCLAMATION"/>
+    </Text>
+    <Text fx:id="inSyncIcon" styleClass="icon" visible="false">
+        <Icons fx:constant="CHECK_MARK"/>
+    </Text>
+    <Text fx:id="noSyncIcon" styleClass="icon" visible="false">
+        <Icons fx:constant="CROSS"/>
+    </Text>
+</StackPane>

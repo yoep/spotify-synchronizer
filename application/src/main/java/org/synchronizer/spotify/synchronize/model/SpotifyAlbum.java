@@ -1,29 +1,24 @@
 package org.synchronizer.spotify.synchronize.model;
 
 import javafx.scene.image.Image;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Supplier;
 
+@EqualsAndHashCode(callSuper = false, exclude = "imageSupplier")
+@ToString(exclude = "imageSupplier")
 @Data
 @Builder
 @AllArgsConstructor
-public class SpotifyAlbum implements Album {
+public class SpotifyAlbum extends Observable implements Album {
     private String name;
     private String lowResImageUri;
     private String highResImageUri;
-
-    @Override
-    public byte[] getImage() {
-        return new byte[0]; //no-op
-    }
+    private Supplier<String> imageMimeTypeSupplier;
+    private Supplier<byte[]> imageSupplier;
 
     @Override
     public Image getLowResImage() {
@@ -33,6 +28,16 @@ public class SpotifyAlbum implements Album {
     @Override
     public Image getHighResImage() {
         return new Image(highResImageUri);
+    }
+
+    @Override
+    public String getImageMimeType() {
+        return imageMimeTypeSupplier.get();
+    }
+
+    @Override
+    public byte[] getImage() {
+        return imageSupplier.get();
     }
 
     @Override

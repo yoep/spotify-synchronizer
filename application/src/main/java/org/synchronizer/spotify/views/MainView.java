@@ -16,6 +16,7 @@ import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.ui.ScaleAwareImpl;
 import org.synchronizer.spotify.ui.SizeAware;
 import org.synchronizer.spotify.ui.elements.AlbumOverviewBox;
+import org.synchronizer.spotify.utils.CollectionUtils;
 import org.synchronizer.spotify.views.model.AlbumOverview;
 
 import java.net.URL;
@@ -54,7 +55,7 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
                 addedTracks.forEach(track -> {
                     Album album = track.getAlbum();
 
-                    AlbumOverview albumOverview = trackOverview.getAlbumOverviews().stream()
+                    AlbumOverview albumOverview = CollectionUtils.copy(trackOverview.getAlbumOverviews()).stream()
                             .filter(e -> album.equals(e.getAlbum()))
                             .findFirst()
                             .orElseGet(() -> createNewAlbumOverview(album));

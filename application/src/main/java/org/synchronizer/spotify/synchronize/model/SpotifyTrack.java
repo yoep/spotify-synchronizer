@@ -1,10 +1,12 @@
 package org.synchronizer.spotify.synchronize.model;
 
-import org.synchronizer.spotify.spotify.api.v1.SavedTrack;
-import org.synchronizer.spotify.spotify.api.v1.Track;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
+import org.synchronizer.spotify.spotify.api.v1.SavedTrack;
+import org.synchronizer.spotify.spotify.api.v1.Track;
+
+import java.util.Objects;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
@@ -34,23 +36,35 @@ public class SpotifyTrack extends AbstractMusicTrack {
     }
 
     public void setTitle(String title) {
+        if (!Objects.equals(this.title, title))
+            this.setChanged();
+
         this.title = title;
-        listeners.forEach(e -> e.invalidated(this));
+        this.notifyObservers();
     }
 
     public void setArtist(String artist) {
+        if (!Objects.equals(this.artist, artist))
+            this.setChanged();
+
         this.artist = artist;
-        listeners.forEach(e -> e.invalidated(this));
+        this.notifyObservers();
     }
 
     public void setAlbum(Album album) {
+        if (!Objects.equals(this.album, album))
+            this.setChanged();
+
         this.album = album;
-        listeners.forEach(e -> e.invalidated(this));
+        this.notifyObservers();
     }
 
     public void setTrackNumber(Integer trackNumber) {
+        if (!Objects.equals(this.trackNumber, trackNumber))
+            this.setChanged();
+
         this.trackNumber = trackNumber;
-        listeners.forEach(e -> e.invalidated(this));
+        this.notifyObservers();
     }
 
     /**

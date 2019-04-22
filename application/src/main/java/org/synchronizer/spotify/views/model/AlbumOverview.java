@@ -2,25 +2,28 @@ package org.synchronizer.spotify.views.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.extern.log4j.Log4j2;
+import org.synchronizer.spotify.common.AbstractObservable;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false, exclude = "tracks")
 @Data
-public class AlbumOverview extends Observable implements Comparable<AlbumOverview> {
+@Log4j2
+public class AlbumOverview extends AbstractObservable implements Comparable<AlbumOverview> {
     private final Album album;
-    private final List<SyncTrack> tracks = new ArrayList<>();
+    private final SortedSet<SyncTrack> tracks = new TreeSet<>();
     private boolean rendering;
 
     public AlbumOverview(Album album) {
         this.album = album;
     }
 
-    public List<SyncTrack> getTracks() {
-        return Collections.unmodifiableList(tracks);
+    public Set<SyncTrack> getTracks() {
+        return Collections.unmodifiableSet(tracks);
     }
 
     public void addTracks(SyncTrack... tracks) {
@@ -31,13 +34,11 @@ public class AlbumOverview extends Observable implements Comparable<AlbumOvervie
         if (newTracks.size() > 0)
             this.setChanged();
 
+        log.debug("Adding " + newTracks.size() + " new track(s) to album overview of " + album);
         this.tracks.addAll(newTracks);
         this.notifyObservers();
 
-        newTracks.forEach(e -> e.addListener(observable -> {
-            this.setChanged();
-            this.notifyObservers();
-        }));
+        newTracks.forEach(this::addChildObserver);
     }
 
     @Override

@@ -13,9 +13,12 @@ public class CollectionUtils extends org.springframework.util.CollectionUtils {
      * @param <T>          The list type.
      * @return Returns a new {@link List} instance with the same original elements.
      */
+    @SuppressWarnings("unchecked")
     public static <T> List<T> copy(List<T> originalList) {
         return Optional.ofNullable(originalList)
-                .map(ArrayList::new)
+                .map(List::toArray)
+                .map(e -> (T[]) e)
+                .map(Arrays::asList)
                 .orElse(new ArrayList<>());
     }
 

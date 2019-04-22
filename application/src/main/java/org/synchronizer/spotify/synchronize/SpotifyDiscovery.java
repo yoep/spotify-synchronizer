@@ -1,19 +1,24 @@
 package org.synchronizer.spotify.synchronize;
 
-import org.synchronizer.spotify.spotify.SpotifyService;
-import org.synchronizer.spotify.spotify.api.v1.SavedTrack;
-import org.synchronizer.spotify.spotify.api.v1.Tracks;
-import org.synchronizer.spotify.synchronize.model.MusicTrack;
-import org.synchronizer.spotify.synchronize.model.SpotifyTrack;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.synchronizer.spotify.spotify.SpotifyService;
+import org.synchronizer.spotify.spotify.api.v1.SavedTrack;
+import org.synchronizer.spotify.spotify.api.v1.Tracks;
+import org.synchronizer.spotify.synchronize.model.MusicTrack;
+import org.synchronizer.spotify.synchronize.model.SpotifyAlbum;
+import org.synchronizer.spotify.synchronize.model.SpotifyTrack;
 
 import javax.annotation.PostConstruct;
+import java.net.URI;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -22,6 +27,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SpotifyDiscovery implements DiscoveryService {
     private final SpotifyService spotifyService;
+    private final RestTemplate restTemplate;
     private final ObservableList<MusicTrack> trackList = FXCollections.observableArrayList();
     private final ObservableList<SavedTrack> savedTrackList = FXCollections.observableArrayList();
 
@@ -34,6 +40,7 @@ public class SpotifyDiscovery implements DiscoveryService {
             if (change.next()) {
                 trackList.addAll(change.getAddedSubList().stream()
                         .map(SpotifyTrack::from)
+                        .map(this::retrieveMimeType)
                         .collect(Collectors.toList()));
             }
         });
@@ -78,5 +85,29 @@ public class SpotifyDiscovery implements DiscoveryService {
         if (callback != null) {
             this.callback.run();
         }
+    }
+
+    private SpotifyTrack retrieveMimeType(SpotifyTrack track) {
+        try {
+            URI uri = new URI(track.getAlbum().getHighResImageUri());
+            SpotifyAlbum album = (SpotifyAlbum) track.getAlbum();
+
+            album.setImageMimeTypeSupplier(() -> getImageMimeTypeForUri(uri));
+            album.setImageSupplier(() -> getImageForUri(uri));
+        } catch (Exception ex) {
+            log.error("Failed to retrieve mime type for " + track, ex);
+        }
+
+        return track;
+    }
+
+    private String getImageMimeTypeForUri(URI uri) {
+        return Optional.ofNullable(restTemplate.headForHeaders(uri).getContentType())
+                .map(MediaType::toString)
+                .orElse(null);
+    }
+
+    private byte[] getImageForUri(URI uri) {
+        return restTemplate.getForObject(uri, byte[].class);
     }
 }

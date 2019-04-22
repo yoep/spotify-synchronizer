@@ -28,4 +28,6 @@ public class AlbumInfoEntity implements AlbumInfo {
     private String highResImageUri;
 
     private byte[] image;
+
+    private String imageMimeType;
 }

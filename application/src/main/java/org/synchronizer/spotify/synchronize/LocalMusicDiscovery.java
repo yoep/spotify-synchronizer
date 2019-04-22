@@ -1,6 +1,7 @@
 package org.synchronizer.spotify.synchronize;
 
 import org.springframework.core.task.TaskExecutor;
+import org.synchronizer.spotify.media.AudioService;
 import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.Synchronization;
 import org.synchronizer.spotify.settings.model.UserSettings;

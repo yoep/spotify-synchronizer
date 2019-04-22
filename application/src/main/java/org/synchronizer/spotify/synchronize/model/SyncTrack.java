@@ -14,6 +14,13 @@ public interface SyncTrack extends MusicTrack {
     boolean isLocalTrackAvailable();
 
     /**
+     * Verify if the spotify track is available.
+     *
+     * @return Returns true if the spotify track is available, else false.
+     */
+    boolean isSpotifyTrackAvailable();
+
+    /**
      * Verify if the metadata from the local track is the same as the spotify track.
      *
      * @return Returns true if the local track is in sync, else false.

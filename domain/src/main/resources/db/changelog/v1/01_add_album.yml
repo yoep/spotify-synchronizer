@@ -27,3 +27,6 @@ databaseChangeLog:
               - column:
                   name: IMAGE
                   type: BLOB
+              - column:
+                  name: IMAGE_MIME_TYPE
+                  type: VARCHAR(45)

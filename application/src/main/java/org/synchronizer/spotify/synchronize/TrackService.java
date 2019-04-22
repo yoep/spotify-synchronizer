@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.synchronizer.spotify.domain.TrackType;
 import org.synchronizer.spotify.domain.entities.AlbumInfoEntity;
 import org.synchronizer.spotify.domain.entities.TrackInfoEntity;
@@ -22,6 +23,7 @@ public class TrackService {
 
     @Transactional
     public void synchronizeTrack(MusicTrack musicTrack) {
+        Assert.notNull(musicTrack, "musicTrack cannot be null");
         TrackType type = musicTrack instanceof SpotifyTrack ? TrackType.SPOTIFY : TrackType.LOCAL;
 
         try {

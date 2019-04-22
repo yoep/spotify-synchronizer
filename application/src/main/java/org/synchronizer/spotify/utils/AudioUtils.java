@@ -4,7 +4,9 @@ import com.mpatric.mp3agic.ID3v1;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.synchronizer.spotify.synchronize.SynchronizeException;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.LocalAlbum;
 import org.synchronizer.spotify.synchronize.model.LocalTrack;
@@ -48,7 +50,8 @@ public class AudioUtils {
 
     public static void updateFileMetadata(LocalTrack track) {
         try {
-            Mp3File mp3File = new Mp3File(track.getFile());
+            File file = track.getFile();
+            Mp3File mp3File = new Mp3File(file);
 
             if (mp3File.hasId3v2Tag()) {
                 updateMetadataV2(mp3File, track);
@@ -57,8 +60,10 @@ public class AudioUtils {
                 updateMetadataV1(mp3File, track);
             }
 
-            //TODO: save as temp file first and replace the original afterwards
-            mp3File.save(track.getFile().getName());
+            String tempFile = getTempFilePath(file);
+            mp3File.save(tempFile);
+            replaceFileWithTempFile(file, tempFile);
+            log.debug("Updated metadata of " + file);
         } catch (Exception ex) {
             log.error("Failed to update audio file metadata", ex);
         }
@@ -111,6 +116,14 @@ public class AudioUtils {
     private static void updateMetadataV1(Mp3File file, LocalTrack track) {
         ID3v1 metadata = file.getId3v1Tag();
 
+        //update track info
+        metadata.setTrack(Optional.ofNullable(track.getTrackNumber())
+                .map(String::valueOf)
+                .orElse(null));
+        metadata.setArtist(track.getArtist());
+        metadata.setTitle(track.getTitle());
+
+        //update album info
         metadata.setAlbum(track.getAlbum().getName());
         metadata.setTrack(Optional.ofNullable(track.getTrackNumber())
                 .map(String::valueOf)
@@ -121,7 +134,35 @@ public class AudioUtils {
         ID3v2 metadata = file.getId3v2Tag();
         Album album = track.getAlbum();
 
+        //update track info
+        metadata.setTrack(Optional.ofNullable(track.getTrackNumber())
+                .map(String::valueOf)
+                .orElse(null));
+        metadata.setArtist(track.getArtist());
+        metadata.setTitle(track.getTitle());
+
+        //update album info
         metadata.setAlbum(album.getName());
         metadata.setAlbumImage(album.getImage(), album.getImageMimeType());
+    }
+
+    private static String getTempFilePath(File file) {
+        String path = FilenameUtils.getFullPath(file.getAbsolutePath());
+        String name = FilenameUtils.removeExtension(file.getName());
+        String extension = FilenameUtils.getExtension(file.getName());
+
+        return path + name + "_temp." + extension;
+    }
+
+    private static void replaceFileWithTempFile(File file, String tempFilePath) {
+        File tempFile = new File(tempFilePath);
+
+        if (file.delete()) {
+            if (!tempFile.renameTo(file)) {
+                throw new SynchronizeException("Rename of file " + tempFilePath + " to " + file + " failed");
+            }
+        } else {
+            log.error("Failed to delete file " + file);
+        }
     }
 }

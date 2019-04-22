@@ -1,12 +1,12 @@
-package org.synchronizer.spotify.synchronize;
+package org.synchronizer.spotify.media;
 
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.synchronizer.spotify.synchronize.model.LocalTrack;
-import org.synchronizer.spotify.synchronize.model.MusicTrack;
+import org.synchronizer.spotify.synchronize.SynchronizeException;
+import org.synchronizer.spotify.synchronize.model.*;
 import org.synchronizer.spotify.utils.AudioUtils;
 
 import java.io.File;
@@ -38,9 +38,24 @@ public class AudioService {
     }
 
     @Async
-    public void updateFileMetadata(LocalTrack track) {
+    public void updateFileMetadata(SyncTrack track) {
         Assert.notNull(track, "track cannot be null");
-        AudioUtils.updateFileMetadata(track);
+        LocalTrack localTrack = (LocalTrack) track.getLocalTrack().orElseThrow(() -> new SynchronizeException("Local track is not available for synchronization"));
+        SpotifyTrack spotifyTrack = track.getSpotifyTrack().orElseThrow(() -> new SynchronizeException("Spotify track is not available for synchronization"));
+        LocalAlbum localAlbum = (LocalAlbum) localTrack.getAlbum();
+        SpotifyAlbum spotifyAlbum = (SpotifyAlbum) spotifyTrack.getAlbum();
+
+        //update track info
+        localTrack.setTitle(spotifyTrack.getTitle());
+        localTrack.setArtist(spotifyTrack.getArtist());
+        localTrack.setTrackNumber(spotifyTrack.getTrackNumber());
+
+        //update album info
+        localAlbum.setImage(spotifyAlbum.getImage());
+        localAlbum.setImageMimeType(spotifyAlbum.getImageMimeType());
+        localAlbum.setName(spotifyAlbum.getName());
+
+        AudioUtils.updateFileMetadata(localTrack);
     }
 
     private boolean isAudioFile(File file) {

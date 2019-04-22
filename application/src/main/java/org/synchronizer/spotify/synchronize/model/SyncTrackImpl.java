@@ -2,8 +2,6 @@ package org.synchronizer.spotify.synchronize.model;
 
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -52,11 +50,16 @@ public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
     }
 
     @Override
+    public boolean isSpotifyTrackAvailable() {
+        return spotifyTrack != null;
+    }
+
+    @Override
     public boolean isMetaDataSynchronized() {
-        return isLocalTrackAvailable() && spotifyTrack != null &&
+        return isLocalTrackAvailable() && isSpotifyTrackAvailable() &&
                 spotifyTrack.getTitle().equalsIgnoreCase(localTrack.getTitle()) &&
                 spotifyTrack.getArtist().equalsIgnoreCase(localTrack.getArtist()) &&
-                spotifyTrack.getAlbum().getName().equals(localTrack.getAlbum().getName());
+                isAlbumInSync();
     }
 
     @Override
@@ -70,17 +73,21 @@ public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
     }
 
     public void setSpotifyTrack(MusicTrack spotifyTrack) {
+        if (this.spotifyTrack != spotifyTrack)
+            this.setChanged();
+
         this.spotifyTrack = spotifyTrack;
-        new ArrayList<>(listeners).stream()
-                .filter(Objects::nonNull)
-                .forEach(e -> e.invalidated(this));
+        this.notifyObservers();
+        addChildObserver(this.spotifyTrack);
     }
 
     public void setLocalTrack(MusicTrack localTrack) {
+        if (this.localTrack != localTrack)
+            this.setChanged();
+
         this.localTrack = localTrack;
-        new ArrayList<>(listeners).stream()
-                .filter(Objects::nonNull)
-                .forEach(e -> e.invalidated(this));
+        this.notifyObservers();
+        addChildObserver(this.localTrack);
     }
 
     private <T> T getProperty(Function<MusicTrack, T> mapProperty) {
@@ -89,5 +96,10 @@ public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
                 .orElse(ofNullable(spotifyTrack)
                         .map(mapProperty)
                         .orElse(null));
+    }
+
+    private boolean isAlbumInSync() {
+        return spotifyTrack.getAlbum().getName().equals(localTrack.getAlbum().getName()) &&
+                localTrack.getAlbum().getImage() != null;
     }
 }

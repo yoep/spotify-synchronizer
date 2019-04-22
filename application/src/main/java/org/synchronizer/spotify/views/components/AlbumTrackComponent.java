@@ -3,8 +3,8 @@ package org.synchronizer.spotify.views.components;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
@@ -15,8 +15,7 @@ import org.synchronizer.spotify.media.PlayerStateChangeListener;
 import org.synchronizer.spotify.media.TrackChangeListener;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.ui.Icons;
-import org.synchronizer.spotify.ui.UIText;
-import org.synchronizer.spotify.ui.lang.MainMessage;
+import org.synchronizer.spotify.ui.ViewLoader;
 
 import java.net.URL;
 import java.util.Objects;
@@ -27,7 +26,7 @@ import java.util.ResourceBundle;
 public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrackComponent> {
     private final SyncTrack syncTrack;
     private final MediaPlayerService mediaPlayerService;
-    private final UIText uiText;
+    private final ViewLoader viewLoader;
 
     private boolean activeInMediaPlayer;
     private TrackChangeListener trackChangeListener;
@@ -48,12 +47,12 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     @FXML
     private Label artist;
     @FXML
-    private Text syncStatusIcon;
+    private Pane syncPane;
 
     public AlbumTrackComponent(SyncTrack syncTrack) {
         this.syncTrack = syncTrack;
         this.mediaPlayerService = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(MediaPlayerService.class);
-        this.uiText = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(UIText.class);
+        this.viewLoader = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(ViewLoader.class);
     }
 
     @Override
@@ -62,11 +61,9 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         title.setText(syncTrack.getTitle());
         artist.setText(syncTrack.getArtist());
 
-        updateSyncState();
-        syncTrack.addListener(observable -> updateSyncState());
-
         initializeEvents();
         initializeListeners();
+        initializeSyncPane();
     }
 
     @Override
@@ -92,6 +89,10 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         playPauseIcon.setOnMouseClicked(event -> playPauseTrack());
         trackRow.setOnMouseEntered(event -> updatePlayTrackVisibilityState(true));
         trackRow.setOnMouseExited(event -> updatePlayTrackVisibilityState(false));
+    }
+
+    private void initializeSyncPane() {
+        syncPane.getChildren().add(viewLoader.loadComponent("album_track_sync_component.fxml", new AlbumTrackSyncComponent(syncTrack)));
     }
 
     private void play() {
@@ -147,19 +148,6 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         playTrackIcon.setVisible(isMouseHovering && playbackAvailable);
         playbackUnavailableIcon.setVisible(isMouseHovering && !playbackAvailable);
         trackNumber.setVisible(!isMouseHovering);
-    }
-
-    private void updateSyncState() {
-        if (syncTrack.isLocalTrackAvailable() && syncTrack.isMetaDataSynchronized()) {
-            syncStatusIcon.setText(Icons.CHECK_MARK);
-            Tooltip tooltip = new Tooltip(uiText.get(MainMessage.SYNCHRONIZED));
-            Tooltip.install(syncStatusIcon, tooltip);
-        }
-        if (syncTrack.isLocalTrackAvailable() && !syncTrack.isMetaDataSynchronized()) {
-            syncStatusIcon.setText(Icons.EXCLAMATION);
-            Tooltip tooltip = new Tooltip(uiText.get(MainMessage.METADATA_OUT_OF_SYNC));
-            Tooltip.install(syncStatusIcon, tooltip);
-        }
     }
 
     private String getTrackNumber() {
