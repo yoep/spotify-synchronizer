@@ -23,7 +23,7 @@ public class LocalTrack extends AbstractMusicTrack {
     }
 
     public void setTitle(String title) {
-        if (!this.title.equals(title))
+        if (!Objects.equals(this.title, title))
             this.setChanged();
 
         this.title = title;
@@ -31,7 +31,7 @@ public class LocalTrack extends AbstractMusicTrack {
     }
 
     public void setArtist(String artist) {
-        if (!this.artist.equals(artist))
+        if (!Objects.equals(this.artist, artist))
             this.setChanged();
 
         this.artist = artist;
@@ -39,7 +39,7 @@ public class LocalTrack extends AbstractMusicTrack {
     }
 
     public void setAlbum(Album album) {
-        if (this.album != album)
+        if (!Objects.equals(this.album, album))
             this.setChanged();
 
         this.album = album;

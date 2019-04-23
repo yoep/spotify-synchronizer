@@ -13,10 +13,4 @@
         </tooltip>
         <Icons fx:constant="COG"/>
     </Button>
-    <Button onAction="#openHelpView" styleClass="icon" disable="true">
-        <tooltip>
-            <Tooltip text="%help"/>
-        </tooltip>
-        <Icons fx:constant="HELP"/>
-    </Button>
 </ToolBar>

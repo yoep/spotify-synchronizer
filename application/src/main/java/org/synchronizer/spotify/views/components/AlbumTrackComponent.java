@@ -85,6 +85,14 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         return Objects.compare(trackNumber, compareToTrackNumber, Integer::compareTo);
     }
 
+    public boolean isPlaybackAvailable() {
+        return StringUtils.isNotEmpty(syncTrack.getUri());
+    }
+
+    public boolean isSyncTrackDataAvailable() {
+        return !syncTrack.isMetaDataSynchronized() && syncTrack.isLocalTrackAvailable() && syncTrack.isSpotifyTrackAvailable();
+    }
+
     public void play() {
         if (isPlaybackAvailable()) {
             mediaPlayerService.play(syncTrack);
@@ -95,7 +103,8 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     }
 
     public void syncTrackData() {
-        audioService.updateFileMetadata(syncTrack);
+        if (isSyncTrackDataAvailable())
+            audioService.updateFileMetadata(syncTrack);
     }
 
     private void initializeListeners() {
@@ -168,10 +177,6 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         return Optional.ofNullable(syncTrack.getTrackNumber())
                 .map(String::valueOf)
                 .orElse("#");
-    }
-
-    private boolean isPlaybackAvailable() {
-        return StringUtils.isNotEmpty(syncTrack.getUri());
     }
 
     private void subscribeListenersToMediaPlayer() {

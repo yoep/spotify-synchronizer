@@ -42,6 +42,6 @@
     -fx-fill: #12bc53;
 }
 
-.root .progress-indicator {
+.root ProgressIndicator {
     -fx-progress-color: #0c7032;
 }

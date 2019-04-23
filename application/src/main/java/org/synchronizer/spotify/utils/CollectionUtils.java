@@ -15,8 +15,13 @@ public class CollectionUtils extends org.springframework.util.CollectionUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T> List<T> copy(List<T> originalList) {
-        return Optional.ofNullable(originalList)
-                .map(List::toArray)
+        Object[] items;
+
+        synchronized (originalList) {
+            items = originalList.toArray();
+        }
+
+        return Optional.of(items)
                 .map(e -> (T[]) e)
                 .map(Arrays::asList)
                 .orElse(new ArrayList<>());
@@ -31,8 +36,13 @@ public class CollectionUtils extends org.springframework.util.CollectionUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T> Set<T> copy(Set<T> originalSet) {
-        return Optional.ofNullable(originalSet)
-                .map(Set::toArray)
+        Object[] items;
+
+        synchronized (originalSet) {
+           items = originalSet.toArray();
+        }
+
+        return Optional.of(items)
                 .map(e -> (T[]) e)
                 .map(Arrays::asList)
                 .map(HashSet::new)

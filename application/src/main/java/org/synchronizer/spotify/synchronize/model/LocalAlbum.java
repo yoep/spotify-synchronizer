@@ -10,13 +10,15 @@ import java.util.Observable;
 import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = false)
-@ToString(exclude = "image")
+@ToString
 @Getter
 @Builder
 @AllArgsConstructor
 public class LocalAlbum extends Observable implements Album {
     private String name;
     private String imageMimeType;
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private byte[] image;
 
     @Override

@@ -95,7 +95,10 @@ public class AlbumOverviewComponent implements Initializable {
 
     @FXML
     private void play() {
-        albumTracks.first().play();
+        albumTracks.stream()
+                .filter(AlbumTrackComponent::isPlaybackAvailable)
+                .findFirst()
+                .ifPresent(AlbumTrackComponent::play);
     }
 
     private void updateAlbumArtwork(Album album) {
@@ -116,6 +119,8 @@ public class AlbumOverviewComponent implements Initializable {
     }
 
     private void syncAllTracks() {
-        albumTracks.forEach(AlbumTrackComponent::syncTrackData);
+        albumTracks.stream()
+                .filter(AlbumTrackComponent::isSyncTrackDataAvailable)
+                .forEach(AlbumTrackComponent::syncTrackData);
     }
 }

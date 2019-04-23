@@ -10,13 +10,13 @@ import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@EqualsAndHashCode(callSuper = false, exclude = "tracks")
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Log4j2
 public class AlbumOverview extends AbstractObservable implements Comparable<AlbumOverview> {
     private final Album album;
+    @EqualsAndHashCode.Exclude
     private final SortedSet<SyncTrack> tracks = new TreeSet<>();
-    private boolean rendering;
 
     public AlbumOverview(Album album) {
         this.album = album;

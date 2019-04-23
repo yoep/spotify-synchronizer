@@ -8,8 +8,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.function.Supplier;
 
-@EqualsAndHashCode(callSuper = false, exclude = "imageSupplier")
-@ToString(exclude = "imageSupplier")
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Builder
 @AllArgsConstructor
@@ -17,7 +16,11 @@ public class SpotifyAlbum extends Observable implements Album {
     private String name;
     private String lowResImageUri;
     private String highResImageUri;
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Supplier<String> imageMimeTypeSupplier;
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Supplier<byte[]> imageSupplier;
 
     @Override
