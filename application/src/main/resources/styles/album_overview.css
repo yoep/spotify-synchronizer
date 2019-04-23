@@ -14,3 +14,15 @@
 .artist {
     -fx-text-fill: rgba(12, 110, 48, 0.69);
 }
+
+.root .album_image_overlay {
+    -fx-background-color: rgba(90, 90, 90, 0.5);
+}
+
+.root .album_image_overlay .icon {
+    -fx-fill: #d5d5d5;
+}
+
+.root .album_image_overlay .icon-clickable:hover {
+    -fx-fill: #fafafa;
+}

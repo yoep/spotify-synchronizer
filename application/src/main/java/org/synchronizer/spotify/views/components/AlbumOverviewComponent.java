@@ -3,17 +3,24 @@ package org.synchronizer.spotify.views.components;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
+import javafx.scene.Node;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.text.Text;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.synchronizer.spotify.SpotifySynchronizer;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
+import org.synchronizer.spotify.ui.Icons;
+import org.synchronizer.spotify.ui.UIText;
 import org.synchronizer.spotify.ui.ViewLoader;
+import org.synchronizer.spotify.ui.lang.SyncMessage;
 import org.synchronizer.spotify.utils.CollectionUtils;
+import org.synchronizer.spotify.utils.UIUtils;
 import org.synchronizer.spotify.views.model.AlbumOverview;
 
 import java.net.URL;
@@ -26,29 +33,33 @@ import java.util.TreeSet;
 public class AlbumOverviewComponent implements Initializable {
     private final AlbumOverview albumOverview;
     private final ViewLoader viewLoader;
+    private final UIText uiText;
 
     private final SortedSet<AlbumTrackComponent> albumTracks = new TreeSet<>();
 
     @FXML
-    private Label albumTitle;
+    private Text albumTitle;
     @FXML
     private ImageView albumImage;
     @FXML
     private HBox noAlbum;
+    @FXML
+    private Region albumOverlay;
+    @FXML
+    private Text albumOptions;
     @FXML
     private FlowPane trackOverview;
 
     public AlbumOverviewComponent(AlbumOverview albumOverview) {
         this.albumOverview = albumOverview;
         this.viewLoader = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(ViewLoader.class);
+        this.uiText = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(UIText.class);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Album album = albumOverview.getAlbum();
-
-        albumTitle.setText(album.getName());
-        updateAlbumArtwork(album);
+        initializeAlbumDetails();
+        initializeAlbumOverlay();
 
         albumOverview.getTracks().forEach(this::createNewAlbumTrackComponent);
         albumOverview.addObserver((o, args) -> {
@@ -66,6 +77,27 @@ public class AlbumOverviewComponent implements Initializable {
         });
     }
 
+    private void initializeAlbumDetails() {
+        Album album = albumOverview.getAlbum();
+
+        albumTitle.setText(album.getName());
+        updateAlbumArtwork(album);
+    }
+
+    private void initializeAlbumOverlay() {
+        albumOverlay.getParent().setOnMouseEntered(event -> albumOverlay.setVisible(true));
+        albumOverlay.getParent().setOnMouseExited(event -> albumOverlay.setVisible(false));
+
+        ContextMenu contextMenu = new ContextMenu(UIUtils.createMenuItem(uiText.get(SyncMessage.SYNC_ALL), Icons.REFRESH, this::syncAllTracks));
+        albumOptions.setOnContextMenuRequested(event -> contextMenu.show((Node) event.getSource(), event.getScreenX(), event.getScreenY()));
+        albumOptions.setOnMouseClicked(event -> contextMenu.show((Node) event.getSource(), event.getScreenX(), event.getScreenY()));
+    }
+
+    @FXML
+    private void play() {
+        albumTracks.first().play();
+    }
+
     private void updateAlbumArtwork(Album album) {
         log.debug("Updating album artwork for " + album);
         albumImage.setImage(album.getHighResImage());
@@ -81,5 +113,9 @@ public class AlbumOverviewComponent implements Initializable {
 
     private void createNewTrackRow(AlbumTrackComponent albumTrackComponent) {
         trackOverview.getChildren().add(viewLoader.loadComponent("album_track_component.fxml", albumTrackComponent));
+    }
+
+    private void syncAllTracks() {
+        albumTracks.forEach(AlbumTrackComponent::syncTrackData);
     }
 }

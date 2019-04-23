@@ -1,5 +1,6 @@
 package org.synchronizer.spotify.views.components;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -75,14 +76,16 @@ public class PlayerComponent implements Initializable {
 
         this.currentTrack = track;
 
-        try {
-            mediaPlayer = new MediaPlayer(new Media(track.getUri()));
-            mediaPlayerComponents.forEach(e -> e.setMediaPlayer(mediaPlayer));
-            image.setImage(track.getAlbum().getLowResImage());
-            registerMediaPlayerEvents();
-        } catch (MediaException ex) {
-            log.error(ex.getMessage(), ex);
-        }
+        Platform.runLater(() -> {
+            try {
+                mediaPlayer = new MediaPlayer(new Media(track.getUri()));
+                mediaPlayerComponents.forEach(e -> e.setMediaPlayer(mediaPlayer));
+                image.setImage(track.getAlbum().getLowResImage());
+                registerMediaPlayerEvents();
+            } catch (MediaException ex) {
+                log.error(ex.getMessage(), ex);
+            }
+        });
 
         if (onTrackChange != null)
             onTrackChange.accept(oldMusicTrack);

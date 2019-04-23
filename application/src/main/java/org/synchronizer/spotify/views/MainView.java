@@ -20,8 +20,8 @@ import org.synchronizer.spotify.utils.CollectionUtils;
 import org.synchronizer.spotify.views.model.AlbumOverview;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 @Log4j2
@@ -50,13 +50,13 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
 
         synchronisationService.getTracks().addListener((ListChangeListener<SyncTrack>) c -> {
             while (c.next()) {
-                List<? extends SyncTrack> addedTracks = new ArrayList<>(c.getAddedSubList());
+                List<? extends SyncTrack> addedTracks = CollectionUtils.copy(c.getAddedSubList());
 
                 addedTracks.forEach(track -> {
                     Album album = track.getAlbum();
 
                     AlbumOverview albumOverview = CollectionUtils.copy(trackOverview.getAlbumOverviews()).stream()
-                            .filter(e -> album.equals(e.getAlbum()))
+                            .filter(e -> Objects.equals(album.getName(), e.getAlbum().getName()))
                             .findFirst()
                             .orElseGet(() -> createNewAlbumOverview(album));
 

@@ -4,17 +4,16 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tooltip;
 import javafx.scene.text.Text;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
-import org.synchronizer.spotify.SpotifySynchronizer;
-import org.synchronizer.spotify.media.AudioService;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
+import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
 import org.synchronizer.spotify.ui.lang.SyncMessage;
+import org.synchronizer.spotify.utils.UIUtils;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -24,7 +23,8 @@ import java.util.ResourceBundle;
 public class AlbumTrackSyncComponent implements Initializable {
     private final SyncTrack syncTrack;
     private final UIText uiText;
-    private final AudioService audioService;
+
+    private Runnable onSyncClicked;
 
     @FXML
     private Text outOfSyncIcon;
@@ -35,10 +35,9 @@ public class AlbumTrackSyncComponent implements Initializable {
     @FXML
     private ProgressIndicator progressIndicator;
 
-    public AlbumTrackSyncComponent(SyncTrack syncTrack) {
+    public AlbumTrackSyncComponent(SyncTrack syncTrack, UIText uiText) {
         this.syncTrack = syncTrack;
-        this.uiText = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(UIText.class);
-        this.audioService = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(AudioService.class);
+        this.uiText = uiText;
     }
 
     @Override
@@ -62,8 +61,7 @@ public class AlbumTrackSyncComponent implements Initializable {
     }
 
     private void initializeContextMenus() {
-        ContextMenu contextMenu = new ContextMenu(
-                createMenuItem(uiText.get(SyncMessage.UPDATE_METADATA), this::updateMetaData));
+        ContextMenu contextMenu = new ContextMenu(UIUtils.createMenuItem(uiText.get(SyncMessage.SYNC), Icons.REFRESH, this::updateMetaData));
 
         outOfSyncIcon.setOnContextMenuRequested(event -> contextMenu.show((Node) event.getSource(), event.getScreenX(), event.getScreenY()));
         outOfSyncIcon.setOnMouseClicked(event -> contextMenu.show((Node) event.getSource(), event.getScreenX(), event.getScreenY()));
@@ -97,13 +95,6 @@ public class AlbumTrackSyncComponent implements Initializable {
         inSyncIcon.setVisible(false);
         outOfSyncIcon.setVisible(false);
 
-        audioService.updateFileMetadata(syncTrack);
-    }
-
-    private static MenuItem createMenuItem(String text, Runnable action) {
-        MenuItem menuItem = new MenuItem(text);
-
-        menuItem.setOnAction(event -> action.run());
-        return menuItem;
+        onSyncClicked.run();
     }
 }

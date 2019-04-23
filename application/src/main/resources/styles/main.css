@@ -1,51 +1,47 @@
-.root {
-
-}
-
-.icon {
+.root .icon {
     -fx-font-family: FontAwesome;
     -fx-font-size: 1em;
     -fx-text-fill: #0c7032;
     -fx-fill: #0c7032;
 }
 
-.icon-regular {
+.root .icon-regular {
     -fx-font-family: "Font Awesome 5 Free Regular";
     -fx-font-size: 1em;
     -fx-text-fill: #0c7032;
     -fx-fill: #0c7032;
 }
 
-.icon-solid {
+.root .icon-solid {
     -fx-font-family: "Font Awesome 5 Free Solid";
     -fx-font-size: 1em;
     -fx-text-fill: #0c7032;
     -fx-fill: #0c7032;
 }
 
-.icon:disabled {
+.root .icon:disabled {
     -fx-text-fill: gray;
     -fx-fill: gray;
 }
 
-.icon-large {
+.root .icon-large {
     -fx-font-size: 2em;
 }
 
-.icon-xlarge {
+.root .icon-xlarge {
     -fx-font-size: 3em;
 }
 
-.icon-xxlarge {
+.root .icon-xxlarge {
     -fx-font-size: 4em;
 }
 
-.icon-clickable:hover {
+.root .icon-clickable:hover {
     -fx-cursor: hand;
     -fx-text-fill: #12bc53;
     -fx-fill: #12bc53;
 }
 
-.progress-indicator {
+.root .progress-indicator {
     -fx-progress-color: #0c7032;
 }

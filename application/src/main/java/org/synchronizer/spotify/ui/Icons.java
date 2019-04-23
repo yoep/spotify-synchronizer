@@ -1,7 +1,6 @@
 package org.synchronizer.spotify.ui;
 
 public class Icons {
-    //CHECKSTYLE:OFF
     public static final String FILE = "\uf15b";
     public static final String FOLDER_OPEN = "\uf07c";
     public static final String DOWNLOAD = "\uf019";
@@ -10,6 +9,7 @@ public class Icons {
     public static final String COG = "\uf013";
     public static final String PLAY = "\uf04b";
     public static final String PLAY_CIRCLE = "\uf144";
+    public static final String PLAY_CIRCLE_OPEN = "\uf01d";
     public static final String PAUSE = "\uf04c";
     public static final String PAUSE_CIRCLE = "\uf28b";
     public static final String PREVIOUS = "\uf048";
@@ -26,5 +26,5 @@ public class Icons {
     public static final String EXCLAMATION = "\uf12a";
     public static final String REFRESH = "\uf021";
     public static final String SPINNER = "\uf110";
-    //CHECKSTYLE:ON
+    public static final String ELLIPSIS_V = "\uf142";
 }

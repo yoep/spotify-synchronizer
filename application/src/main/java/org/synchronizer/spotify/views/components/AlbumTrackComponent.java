@@ -10,11 +10,13 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.synchronizer.spotify.SpotifySynchronizer;
 import org.synchronizer.spotify.common.PlayerState;
+import org.synchronizer.spotify.media.AudioService;
 import org.synchronizer.spotify.media.MediaPlayerService;
 import org.synchronizer.spotify.media.PlayerStateChangeListener;
 import org.synchronizer.spotify.media.TrackChangeListener;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.ui.Icons;
+import org.synchronizer.spotify.ui.UIText;
 import org.synchronizer.spotify.ui.ViewLoader;
 
 import java.net.URL;
@@ -27,6 +29,8 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     private final SyncTrack syncTrack;
     private final MediaPlayerService mediaPlayerService;
     private final ViewLoader viewLoader;
+    private final UIText uiText;
+    private final AudioService audioService;
 
     private boolean activeInMediaPlayer;
     private TrackChangeListener trackChangeListener;
@@ -53,6 +57,8 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         this.syncTrack = syncTrack;
         this.mediaPlayerService = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(MediaPlayerService.class);
         this.viewLoader = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(ViewLoader.class);
+        this.uiText = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(UIText.class);
+        this.audioService = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(AudioService.class);
     }
 
     @Override
@@ -79,6 +85,19 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         return Objects.compare(trackNumber, compareToTrackNumber, Integer::compareTo);
     }
 
+    public void play() {
+        if (isPlaybackAvailable()) {
+            mediaPlayerService.play(syncTrack);
+            subscribeListenersToMediaPlayer();
+
+            setPlaybackState(true);
+        }
+    }
+
+    public void syncTrackData() {
+        audioService.updateFileMetadata(syncTrack);
+    }
+
     private void initializeListeners() {
         trackChangeListener = (oldTrack, newTrack) -> setPlaybackState(false);
         playerStateChangeListener = (oldState, newState) -> updatePlayPauseIcon(newState);
@@ -92,16 +111,11 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     }
 
     private void initializeSyncPane() {
-        syncPane.getChildren().add(viewLoader.loadComponent("album_track_sync_component.fxml", new AlbumTrackSyncComponent(syncTrack)));
-    }
+        AlbumTrackSyncComponent syncComponent = new AlbumTrackSyncComponent(syncTrack, uiText);
 
-    private void play() {
-        if (isPlaybackAvailable()) {
-            mediaPlayerService.play(syncTrack);
-            subscribeListenersToMediaPlayer();
+        syncComponent.setOnSyncClicked(this::syncTrackData);
 
-            setPlaybackState(true);
-        }
+        syncPane.getChildren().add(viewLoader.loadComponent("album_track_sync_component.fxml", syncComponent));
     }
 
     private void playPauseTrack() {

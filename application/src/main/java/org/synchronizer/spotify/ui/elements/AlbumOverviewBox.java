@@ -82,6 +82,6 @@ public class AlbumOverviewBox extends ScrollPane {
     }
 
     private long calculateInitialRender() {
-        return Math.round(this.getHeight() / BOX_MIN_HEIGHT);
+        return Math.round(this.getHeight() / BOX_MIN_HEIGHT) + 1;
     }
 }
