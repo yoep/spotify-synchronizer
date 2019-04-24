@@ -1,0 +1,7 @@
+.root .search-area {
+    -fx-background-color: linear-gradient(rgb(244, 244, 244) 60%, rgba(244, 244, 244, 0) 100%);
+}
+
+.root .search {
+
+}

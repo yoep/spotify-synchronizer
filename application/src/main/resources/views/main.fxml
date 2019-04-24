@@ -8,17 +8,13 @@
         <ColumnConstraints maxWidth="Infinity" hgrow="ALWAYS"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints maxHeight="30" minHeight="30"/>
         <RowConstraints maxHeight="Infinity" vgrow="ALWAYS"/>
         <RowConstraints maxHeight="75" minHeight="75"/>
     </rowConstraints>
 
-    <!-- MENU -->
-    <fx:include source="components/menu_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-
     <!-- CONTENT -->
-    <InfiniteScrollPane fx:id="trackOverview" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+    <InfiniteScrollPane fx:id="trackOverview" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
 
     <!-- PLAYER -->
-    <fx:include source="components/player_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+    <fx:include source="components/player_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
 </GridPane>

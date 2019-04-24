@@ -3,6 +3,7 @@ package org.synchronizer.spotify.views.components;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
@@ -84,6 +85,7 @@ public class PlayerComponent implements Initializable {
                 registerMediaPlayerEvents();
             } catch (MediaException ex) {
                 log.error(ex.getMessage(), ex);
+                new Alert(Alert.AlertType.ERROR, "Failed to play media").show();
             }
         });
 

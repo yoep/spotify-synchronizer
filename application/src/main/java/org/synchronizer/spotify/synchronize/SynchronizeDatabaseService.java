@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SynchronizeDatabaseService {
     private final TrackService trackService;
-    private final TaskExecutor taskExecutor;
+    private final TaskExecutor threadPoolTaskExecutor;
     private final List<MusicTrack> tracksToSync = new ArrayList<>();
     private boolean syncTaskRunning;
 
@@ -31,7 +31,7 @@ public class SynchronizeDatabaseService {
     private void startSyncTask() {
         syncTaskRunning = true;
 
-        taskExecutor.execute(() -> {
+        threadPoolTaskExecutor.execute(() -> {
             while (tracksToSync.size() > 0) {
                 MusicTrack musicTrack = tracksToSync.get(0);
 

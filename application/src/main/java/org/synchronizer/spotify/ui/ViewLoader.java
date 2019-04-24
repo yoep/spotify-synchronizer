@@ -1,16 +1,11 @@
 package org.synchronizer.spotify.ui;
 
-import javafx.scene.layout.Pane;
-import org.synchronizer.spotify.settings.SettingsService;
-import org.synchronizer.spotify.settings.model.UserInterface;
-import org.synchronizer.spotify.settings.model.UserSettings;
-import org.synchronizer.spotify.ui.exceptions.PrimaryWindowNotAvailableException;
-import org.synchronizer.spotify.ui.exceptions.ViewNotFoundException;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
@@ -22,6 +17,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.synchronizer.spotify.settings.SettingsService;
+import org.synchronizer.spotify.settings.model.UserInterface;
+import org.synchronizer.spotify.settings.model.UserSettings;
+import org.synchronizer.spotify.ui.exceptions.PrimaryWindowNotAvailableException;
+import org.synchronizer.spotify.ui.exceptions.ViewNotFoundException;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -42,10 +42,10 @@ public class ViewLoader {
     /**
      * Intialize a new instance of {@link ViewLoader}.
      *
-     * @param settingsService Set the user settings service.
-     * @param applicationContext  Set the current application context.
-     * @param viewManager         Set the view manager to store the views in.
-     * @param uiText              Set the UI text manager.
+     * @param settingsService    Set the user settings service.
+     * @param applicationContext Set the current application context.
+     * @param viewManager        Set the view manager to store the views in.
+     * @param uiText             Set the UI text manager.
      */
     public ViewLoader(SettingsService settingsService, ApplicationContext applicationContext, ViewManager viewManager, UIText uiText) {
         this.settingsService = settingsService;
@@ -101,20 +101,34 @@ public class ViewLoader {
         Platform.runLater(() -> showScene(new Stage(), view, properties));
     }
 
+    /**
+     * Load the given FXML view and set the given controller.
+     *
+     * @param componentView The FXML file to load.
+     * @param controller    The controller to wire into the view.
+     * @return Returns the root pane of the loaded FXML view if successfully loaded, else null.
+     */
     public Pane loadComponent(String componentView, Object controller) {
         Assert.hasText(componentView, "componentView cannot be empty");
         Assert.notNull(controller, "controller cannot be null");
         FXMLLoader loader = new FXMLLoader(getClass().getResource(COMPONENT_DIRECTORY + componentView));
 
         loader.setController(controller);
-        loader.setResources(uiText.getResourceBundle());
+        return loadComponent(loader);
+    }
 
-        try {
-            return loader.load();
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            return null;
-        }
+    /**
+     * Load the given FXML view.
+     *
+     * @param componentView The FXML file to load.
+     * @return Returns the root pane of the loaded FXML view if successfully loaded, else null.
+     */
+    public Pane loadComponent(String componentView) {
+        Assert.hasText(componentView, "componentView cannot be empty");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(COMPONENT_DIRECTORY + componentView));
+
+        loader.setControllerFactory(applicationContext::getBean);
+        return loadComponent(loader);
     }
 
     /**
@@ -143,6 +157,17 @@ public class ViewLoader {
         }
 
         return null;
+    }
+
+    private Pane loadComponent(FXMLLoader loader) {
+        loader.setResources(uiText.getResourceBundle());
+
+        try {
+            return loader.load();
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
     }
 
     /**

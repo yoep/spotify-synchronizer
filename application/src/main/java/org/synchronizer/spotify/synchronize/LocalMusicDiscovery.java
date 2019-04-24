@@ -32,7 +32,7 @@ public class LocalMusicDiscovery implements DiscoveryService {
 
     private final SettingsService settingsService;
     private final AudioService audioService;
-    private final TaskExecutor taskExecutor;
+    private final TaskExecutor threadPoolTaskExecutor;
     private final ObservableList<MusicTrack> trackList = FXCollections.observableArrayList();
     private final List<CompletableFuture<List<MusicTrack>>> asyncDiscoveries = new ArrayList<>();
 
@@ -95,7 +95,7 @@ public class LocalMusicDiscovery implements DiscoveryService {
     }
 
     private void onAsyncDiscoveryCompletion(Runnable onCompletion) {
-        taskExecutor.execute(() -> {
+        threadPoolTaskExecutor.execute(() -> {
             //check if all completable futures have been completed
             //we don't wan't to chain all the completable futures with CompletableFuture.allOf as we want the results of each individual discovery to be visible
             //immediately in the overview list

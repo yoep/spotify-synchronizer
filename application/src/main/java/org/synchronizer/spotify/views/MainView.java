@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.UserInterface;
@@ -19,6 +20,7 @@ import org.synchronizer.spotify.ui.ViewLoader;
 import org.synchronizer.spotify.ui.elements.InfiniteScrollPane;
 import org.synchronizer.spotify.utils.CollectionUtils;
 import org.synchronizer.spotify.views.components.AlbumOverviewComponent;
+import org.synchronizer.spotify.views.components.SearchComponent;
 import org.synchronizer.spotify.views.model.AlbumOverview;
 
 import java.net.URL;
@@ -33,25 +35,17 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
     private final SynchronisationService synchronisationService;
     private final SettingsService settingsService;
     private final ViewLoader viewLoader;
+    private final SearchComponent searchComponent;
+    private final TaskExecutor uiTaskExecutor;
 
     @FXML
     private InfiniteScrollPane<AlbumOverview> trackOverview;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        trackOverview.setItemFactory(item -> viewLoader.loadComponent("album_overview_component.fxml", new AlbumOverviewComponent(item)));
+        initializeTrackOverview();
+
         synchronisationService.init();
-    }
-
-    @Override
-    public void setInitialSize(Stage window) {
-        UserSettings userSettings = settingsService.getUserSettingsOrDefault();
-        UserInterface userInterface = userSettings.getUserInterface();
-
-        window.setWidth(userInterface.getWidth());
-        window.setHeight(userInterface.getHeight());
-        window.setMaximized(userInterface.isMaximized());
-
         synchronisationService.getTracks().addListener((ListChangeListener<SyncTrack>) c -> {
             while (c.next()) {
                 List<? extends SyncTrack> addedTracks = CollectionUtils.copy(c.getAddedSubList());
@@ -71,6 +65,16 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
     }
 
     @Override
+    public void setInitialSize(Stage window) {
+        UserSettings userSettings = settingsService.getUserSettingsOrDefault();
+        UserInterface userInterface = userSettings.getUserInterface();
+
+        window.setWidth(userInterface.getWidth());
+        window.setHeight(userInterface.getHeight());
+        window.setMaximized(userInterface.isMaximized());
+    }
+
+    @Override
     public void onSizeChange(Number width, Number height, boolean isMaximized) {
         UserSettings userSettings = settingsService.getUserSettingsOrDefault();
         UserInterface userInterface = userSettings.getUserInterface();
@@ -79,6 +83,13 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
         userInterface.setHeight(height.floatValue());
         userInterface.setMaximized(isMaximized);
         userSettings.setUserInterface(userInterface);
+    }
+
+    private void initializeTrackOverview() {
+        trackOverview.setThreadExecutor(uiTaskExecutor);
+        trackOverview.setItemFactory(item -> viewLoader.loadComponent("album_overview_component.fxml", new AlbumOverviewComponent(item)));
+        trackOverview.setHeader(viewLoader.loadComponent("search_component.fxml"));
+        searchComponent.setOnSort(trackOverview::sort);
     }
 
     private AlbumOverview createNewAlbumOverview(Album album) {
