@@ -30,7 +30,7 @@ import java.io.IOException;
 @Component
 public class ViewLoader {
     public static final String VIEW_DIRECTORY = "/views/";
-    private static final String COMPONENT_DIRECTORY = VIEW_DIRECTORY + "/components/";
+    private static final String COMPONENT_DIRECTORY = VIEW_DIRECTORY + "components/";
     private static final String FONT_DIRECTORY = "/fonts/";
     private static final String IMAGE_DIRECTORY = "/images/";
 
@@ -140,10 +140,9 @@ public class ViewLoader {
      */
     private SceneInfo load(String view) throws ViewNotFoundException {
         Assert.hasText(view, "view cannot be empty");
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(VIEW_DIRECTORY + view));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(VIEW_DIRECTORY + view), uiText.getResourceBundle());
 
         loader.setControllerFactory(applicationContext::getBean);
-        loader.setResources(uiText.getResourceBundle());
 
         try {
             Scene scene = new Scene(loader.load());

@@ -1,6 +1,10 @@
 package org.synchronizer.spotify.ui.elements;
 
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -15,22 +19,25 @@ import lombok.EqualsAndHashCode;
 import lombok.Setter;
 import org.springframework.util.Assert;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPane {
+public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPane implements SearchListener, SortListener {
     private static final int BOX_MIN_HEIGHT = 100;
     private static final int ADDITIONAL_RENDER = 5;
     private static final int SCROLLBAR_THRESHOLD = 97;
 
     private final List<ItemWrapper<T>> items = new ArrayList<>();
     private final ScrollPane scrollPane = new ScrollPane();
+    private final ProgressIndicator progressIndicator = new ProgressIndicator();
     private final VBox itemsContainer = new VBox();
-    private final VBox contentPane = new VBox(itemsContainer, new ProgressIndicator());
+    private final VBox contentPane = new VBox(itemsContainer, progressIndicator);
+    private final BooleanProperty updating = new SimpleBooleanProperty();
+    private final BooleanProperty isSearchActive = new SimpleBooleanProperty();
 
     /**
      * Item factory that will be used to create the views for each item.
@@ -45,7 +52,6 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
     private Executor threadExecutor;
     private Pane header;
     private long lastUpdated;
-    private boolean updating;
 
     public InfiniteScrollPane() {
         initializeScrollBars();
@@ -79,7 +85,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
             items.add(new ItemWrapper<>(item));
         }
 
-        if (isAllowedToUpdate())
+        if (isAllowedToUpdate() && !isSearchActive.get())
             this.updateRendering();
     }
 
@@ -96,23 +102,51 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
         initializeHeader();
     }
 
-    /**
-     * Sort the items of this infinite scroll.
-     *
-     * @param order The order to sort the items in.
-     */
-    public void sort(SortOrder order) {
+    @Override
+    public void onSort(Order order) {
         runTask(() -> {
             synchronized (items) {
                 Collections.sort(items);
 
-                if (order == SortOrder.DESCENDING)
+                if (order == Order.DESC)
                     Collections.reverse(items);
             }
 
             Platform.runLater(() -> {
                 this.clearItemRendering();
                 this.renderAdditionalItems(calculateInitialRender());
+            });
+        });
+    }
+
+    @Override
+    public void onSearchValueChanged(final String searchValue) {
+        if (!updating.get()) {
+            updateSearch(searchValue);
+        } else {
+            updating.addListener(new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                    //check if we're done updating
+                    if (!newValue) {
+                        updating.removeListener(this);
+                        updateSearch(searchValue);
+                    }
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onSearchValueCleared() {
+        isSearchActive.set(false);
+
+        runTask(() -> {
+            clearSearchFlagOnItems();
+
+            Platform.runLater(() -> {
+                this.clearItemRendering();
+                this.updateRendering();
             });
         });
     }
@@ -134,42 +168,76 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
 
     }
 
+    private void updateSearch(String searchValue) {
+        runTask(() -> {
+            Pattern pattern = Pattern.compile(".*" + searchValue + ".*", Pattern.CASE_INSENSITIVE);
+
+            clearSearchFlagOnItems();
+
+            synchronized (items) {
+                items.stream()
+                        .filter(e -> pattern.matcher(e.getItem().toString()).matches())
+                        .forEach(e -> e.setMatchingSearchValue(true));
+            }
+
+            this.isSearchActive.set(true);
+
+            Platform.runLater(() -> {
+                this.clearItemRendering();
+                this.updateRendering();
+            });
+        });
+    }
+
     private void renderAdditionalItems(long totalAdditionalItems) {
-        updating = true;
+        updating.set(true);
 
         runTask(() -> {
             List<ItemWrapper<T>> renderItems;
 
             synchronized (items) {
                 renderItems = items.stream()
-                        .filter(e -> !e.isRendering())
+                        .filter(e -> !e.isRendering() && (!isSearchActive.get() || e.isMatchingSearchValue()))
                         .limit(totalAdditionalItems)
                         .collect(Collectors.toList());
             }
 
             if (renderItems.size() > 0) {
-                renderItems.stream()
-                        .filter(e -> e.getView() == null)
-                        .forEach(e -> e.setView(itemFactory.loadView(e.getItem())));
-
-                renderItems.forEach(e -> e.setRendering(true));
-
-                Platform.runLater(() -> {
-                    itemsContainer.getChildren().addAll(renderItems.stream()
-                            .map(ItemWrapper::getView)
-                            .collect(Collectors.toList()));
-
-                    lastUpdated = System.currentTimeMillis();
-                    updating = false;
-                });
+                progressIndicator.setVisible(true);
+                render(renderItems);
             } else {
-                lastUpdated = System.currentTimeMillis();
-                updating = false;
+                progressIndicator.setVisible(false);
             }
         });
     }
 
+    private void render(List<ItemWrapper<T>> items) {
+        updating.set(true);
+
+        runTask(() -> {
+            // load the views of the items that are rendered for the first time
+            items.stream()
+                    .filter(e -> e.getView() == null)
+                    .forEach(e -> e.setView(itemFactory.loadView(e.getItem())));
+
+            // set rendering to true for all items
+            items.forEach(e -> e.setRendering(true));
+
+            // render items on the JavaFX thread and update the state of this infinite scroll
+            Platform.runLater(() -> {
+                itemsContainer.getChildren().addAll(items.stream()
+                        .map(ItemWrapper::getView)
+                        .collect(Collectors.toList()));
+
+                lastUpdated = System.currentTimeMillis();
+                updating.set(false);
+            });
+        });
+    }
+
     private void clearItemRendering() {
+        progressIndicator.setVisible(true);
+
         synchronized (items) {
             itemsContainer.getChildren().clear();
             items.stream()
@@ -178,12 +246,20 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
         }
     }
 
+    private void clearSearchFlagOnItems() {
+        synchronized (items) {
+            items.stream()
+                    .filter(ItemWrapper::isMatchingSearchValue)
+                    .forEach(e -> e.setMatchingSearchValue(false));
+        }
+    }
+
     private long calculateInitialRender() {
         return Math.round(this.getHeight() / BOX_MIN_HEIGHT) + 1;
     }
 
     private boolean isAllowedToUpdate() {
-        return !updating && System.currentTimeMillis() - lastUpdated > 200;
+        return !updating.get() && System.currentTimeMillis() - lastUpdated > 200;
     }
 
     private void initializeScrollBars() {
@@ -202,6 +278,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
         this.scrollPane.setFocusTraversable(true);
         this.scrollPane.setFitToWidth(true);
         this.scrollPane.setContent(contentPane);
+        this.contentPane.setAlignment(Pos.CENTER);
         this.getChildren().add(scrollPane);
     }
 
@@ -255,6 +332,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
         @EqualsAndHashCode.Exclude
         private Pane view;
         private boolean rendering;
+        private boolean matchingSearchValue;
 
         ItemWrapper(T item) {
             this.item = item;

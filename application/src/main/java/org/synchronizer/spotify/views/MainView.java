@@ -18,6 +18,8 @@ import org.synchronizer.spotify.ui.ScaleAwareImpl;
 import org.synchronizer.spotify.ui.SizeAware;
 import org.synchronizer.spotify.ui.ViewLoader;
 import org.synchronizer.spotify.ui.elements.InfiniteScrollPane;
+import org.synchronizer.spotify.ui.elements.SearchListener;
+import org.synchronizer.spotify.ui.elements.SortListener;
 import org.synchronizer.spotify.utils.CollectionUtils;
 import org.synchronizer.spotify.views.components.AlbumOverviewComponent;
 import org.synchronizer.spotify.views.components.SearchComponent;
@@ -89,7 +91,8 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
         trackOverview.setThreadExecutor(uiTaskExecutor);
         trackOverview.setItemFactory(item -> viewLoader.loadComponent("album_overview_component.fxml", new AlbumOverviewComponent(item)));
         trackOverview.setHeader(viewLoader.loadComponent("search_component.fxml"));
-        searchComponent.setOnSort(trackOverview::sort);
+        searchComponent.addListener((SearchListener) trackOverview);
+        searchComponent.addListener((SortListener) trackOverview);
     }
 
     private AlbumOverview createNewAlbumOverview(Album album) {

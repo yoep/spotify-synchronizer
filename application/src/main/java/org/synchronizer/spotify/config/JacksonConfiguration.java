@@ -1,4 +1,4 @@
-package org.synchronizer.spotify;
+package org.synchronizer.spotify.config;
 
 import org.synchronizer.spotify.common.SynchronizerModule;
 import org.synchronizer.spotify.spotify.SpotifyHttpMessageConverter;

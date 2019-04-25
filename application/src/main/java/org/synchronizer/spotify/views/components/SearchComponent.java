@@ -4,24 +4,24 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
 import org.synchronizer.spotify.ui.ViewLoader;
 import org.synchronizer.spotify.ui.ViewProperties;
+import org.synchronizer.spotify.ui.elements.SearchField;
+import org.synchronizer.spotify.ui.elements.SearchListener;
+import org.synchronizer.spotify.ui.elements.SortListener;
 import org.synchronizer.spotify.ui.lang.MenuMessage;
 import org.synchronizer.spotify.ui.lang.SettingMessage;
 import org.synchronizer.spotify.utils.UIUtils;
 
-import javax.swing.*;
 import java.net.URL;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
-import java.util.function.Consumer;
 
 @Component
 @RequiredArgsConstructor
@@ -29,23 +29,41 @@ public class SearchComponent implements Initializable {
     private final ViewLoader viewLoader;
     private final UIText uiText;
 
-    @Setter
-    private Consumer<SortOrder> onSort;
-    @Setter
-    private Consumer<String> onSearch;
-    private SortOrder sortOrder = SortOrder.DESCENDING;
+    private final List<SortListener> listeners = new ArrayList<>();
+
+    private SortListener.Order sortOrder = SortListener.Order.DESC;
 
     @FXML
     private Text menuIcon;
     @FXML
     private Text sortIcon;
     @FXML
-    private TextField searchBox;
+    private SearchField searchBox;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initializeMenu();
         initializeSort();
+    }
+
+    public void addListener(SearchListener listener) {
+        searchBox.addListener(listener);
+    }
+
+    public void removeListener(SearchListener listener) {
+        searchBox.removeListener(listener);
+    }
+
+    public void addListener(SortListener listener) {
+        synchronized (listeners) {
+            listeners.add(listener);
+        }
+    }
+
+    public void removeListener(SortListener listener) {
+        synchronized (listeners) {
+            listeners.remove(listener);
+        }
     }
 
     private void initializeMenu() {
@@ -76,13 +94,13 @@ public class SearchComponent implements Initializable {
     }
 
     private void sort() {
-        switch(sortOrder) {
-            case ASCENDING:
-                sortOrder = SortOrder.DESCENDING;
+        switch (sortOrder) {
+            case ASC:
+                sortOrder = SortListener.Order.DESC;
                 sortIcon.setText(Icons.SORT_ALPHA_DESC);
                 break;
-            case DESCENDING:
-                sortOrder = SortOrder.ASCENDING;
+            case DESC:
+                sortOrder = SortListener.Order.ASC;
                 sortIcon.setText(Icons.SORT_ALPHA_ASC);
                 break;
             default:
@@ -90,7 +108,8 @@ public class SearchComponent implements Initializable {
                 break;
         }
 
-        Optional.ofNullable(onSort)
-                .ifPresent(e -> e.accept(sortOrder));
+        synchronized (listeners) {
+            listeners.forEach(e -> e.onSort(sortOrder));
+        }
     }
 }
