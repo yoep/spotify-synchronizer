@@ -1,28 +1,56 @@
 package org.synchronizer.spotify.ui.elements;
 
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.StackPane;
 import lombok.extern.log4j.Log4j2;
-import org.controlsfx.control.textfield.CustomTextField;
 import org.synchronizer.spotify.ui.Icons;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
-public class SearchField extends CustomTextField {
-    private static final long MILLIS_BETWEEN_INVOKES = 200;
+public class SearchField extends StackPane {
+    private static final long MILLIS_BETWEEN_INVOKES = 300;
 
     private final List<SearchListener> listeners = new ArrayList<>();
+    private final TextField searchField = new TextField();
 
     private Thread waitThread;
     private Node clearIcon;
     private long lastChangeInvoked;
 
     public SearchField() {
-        initializeIcons();
         initializeSearchField();
+        initializeIcons();
+    }
+
+    public StringProperty promptTextProperty() {
+        return this.searchField.promptTextProperty();
+    }
+
+    public String getPromptText() {
+        return this.searchField.getPromptText();
+    }
+
+    public void setPromptText(String value) {
+        this.searchField.setPromptText(value);
+    }
+
+    public StringProperty textProperty() {
+        return this.searchField.textProperty();
+    }
+
+    public String getText() {
+        return this.searchField.getText();
+    }
+
+    public void setText(String text) {
+        this.searchField.setText(text);
     }
 
     /**
@@ -48,12 +76,21 @@ public class SearchField extends CustomTextField {
     }
 
     private void initializeIcons() {
-        this.setLeft(createIconGraph());
-        this.setRight(createClearGraph());
+        Node searchIcon = createIconGraph();
+        Node clearIcon = createClearGraph();
+
+        StackPane.setAlignment(searchIcon, Pos.CENTER_LEFT);
+        StackPane.setAlignment(clearIcon, Pos.CENTER_RIGHT);
+
+        this.getChildren().add(searchIcon);
+        this.getChildren().add(clearIcon);
     }
 
     private void initializeSearchField() {
-        this.textProperty().addListener((observable, oldValue, newValue) -> {
+        this.getChildren().add(this.searchField);
+
+        this.searchField.setPadding(new Insets(5, 20, 5, 20));
+        this.searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             String noSpacesValue = newValue.trim();
 
             if (newValue.length() > 0) {
@@ -79,7 +116,7 @@ public class SearchField extends CustomTextField {
 
     private void onChanged() {
         synchronized (listeners) {
-            listeners.forEach(e -> e.onSearchValueChanged(this.getText()));
+            listeners.forEach(e -> e.onSearchValueChanged(this.searchField.getText()));
         }
 
         lastChangeInvoked = System.currentTimeMillis();
@@ -109,7 +146,7 @@ public class SearchField extends CustomTextField {
         icon.setPadding(new Insets(-1, 5, 0, 5));
         icon.setVisible(false);
         icon.setOnMouseClicked(event -> {
-            this.clear();
+            this.searchField.clear();
             this.onCleared();
         });
         clearIcon = icon;

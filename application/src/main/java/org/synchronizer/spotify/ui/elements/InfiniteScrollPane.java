@@ -139,6 +139,9 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
 
     @Override
     public void onSearchValueCleared() {
+        if (!isSearchActive.get())
+            return;
+
         isSearchActive.set(false);
 
         runTask(() -> {
@@ -291,7 +294,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
         headerContainerChildren.add(header);
 
         StackPane.setAlignment(header, Pos.TOP_CENTER);
-        StackPane.setMargin(header, new Insets(0, 20, 0, 0));
+        StackPane.setMargin(header, new Insets(1, 20, 0, 1));
         header.heightProperty().addListener((observable, oldValue, newValue) -> this.updateContentTopSpacing(newValue.doubleValue()));
     }
 

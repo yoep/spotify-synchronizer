@@ -80,13 +80,6 @@
             <version>0.9.1</version>
         </dependency>
 
-        <!-- Additional Controls -->
-        <dependency>
-            <groupId>org.controlsfx</groupId>
-            <artifactId>controlsfx</artifactId>
-            <version>8.40.15</version>
-        </dependency>
-
         <!-- Compilation -->
         <dependency>
             <groupId>org.projectlombok</groupId>

@@ -22,7 +22,7 @@ import java.util.List;
 import static java.time.format.DateTimeFormatter.ofPattern;
 
 @Configuration
-public class JacksonConfiguration {
+public class JacksonConfig {
     @Bean
     public Module javaTimeModule() {
         return new JavaTimeModule()
