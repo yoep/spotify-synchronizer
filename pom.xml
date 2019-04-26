@@ -63,17 +63,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>com.zenjava</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>8.8.3</version>
-                <configuration>
-                    <title>Spotify Synchronizer</title>
-                    <vendor>org.synchronizer.spotify</vendor>
-                    <mainClass>org.springframework.boot.loader.JarLauncher</mainClass>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 </project>
