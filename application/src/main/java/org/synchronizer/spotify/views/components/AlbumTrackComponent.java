@@ -47,9 +47,9 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     @FXML
     private Text playbackUnavailableIcon;
     @FXML
-    private Label title;
+    private Text title;
     @FXML
-    private Label artist;
+    private Text artist;
     @FXML
     private Pane syncPane;
 

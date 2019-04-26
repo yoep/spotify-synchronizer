@@ -1,54 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.*?>
 <?import org.synchronizer.spotify.ui.Icons?>
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="/styles/album_overview.css, /styles/main.css"
           fx:id="trackRow">
     <columnConstraints>
-        <ColumnConstraints prefWidth="20"/>
-        <ColumnConstraints prefWidth="250"/>
-        <ColumnConstraints prefWidth="30"/>
+        <ColumnConstraints minWidth="15" prefWidth="20" halignment="LEFT"/>
+        <ColumnConstraints hgrow="ALWAYS" halignment="LEFT"/>
+        <ColumnConstraints minWidth="15" prefWidth="30" halignment="CENTER"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="20" vgrow="ALWAYS"/>
+        <RowConstraints minHeight="20" vgrow="ALWAYS" valignment="CENTER"/>
     </rowConstraints>
 
-    <!-- Play -->
-    <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0"
-               alignment="CENTER_LEFT" GridPane.fillWidth="true" GridPane.fillHeight="true">
-        <Text fx:id="trackNumber"/>
+    <!-- LEFT SECTION -->
+    <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="CENTER_LEFT">
+        <!-- TRACK NUMBER -->
+        <Text fx:id="trackNumber" text="#"/>
+
+        <!-- PLAY ICON -->
         <Text fx:id="playTrackIcon" styleClass="icon, icon-clickable" visible="false">
             <Icons fx:constant="PLAY_CIRCLE"/>
         </Text>
+        <!-- PAUSE ICON -->
         <Text fx:id="playPauseIcon" styleClass="icon, icon-clickable" visible="false">
             <Icons fx:constant="PAUSE"/>
         </Text>
+
+        <!-- TRACK UNAVAILABLE -->
         <Text fx:id="playbackUnavailableIcon" styleClass="icon" disable="true" visible="false">
             <Icons fx:constant="BAN"/>
         </Text>
     </StackPane>
 
-    <!-- Title & Artist -->
-    <GridPane GridPane.columnIndex="1" GridPane.rowIndex="0" alignment="CENTER_LEFT">
-        <columnConstraints>
-            <ColumnConstraints/>
-            <ColumnConstraints/>
-            <ColumnConstraints/>
-        </columnConstraints>
-        <rowConstraints>
-            <RowConstraints/>
-        </rowConstraints>
+    <!-- MIDDLE SECTION -->
+    <HBox GridPane.columnIndex="1" GridPane.rowIndex="0" alignment="CENTER_LEFT">
+        <!-- SONG TITLE -->
+        <Text fx:id="title" text="TITLE PLACEHOLDER"/>
 
-        <Label fx:id="title" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+        <Text text=" - "/>
 
-        <Label text=" - " GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <!-- ARTIST -->
+        <Text fx:id="artist" text="ARTIST PLACEHOLDER" styleClass="artist"/>
+    </HBox>
 
-        <Label fx:id="artist" GridPane.columnIndex="2" GridPane.rowIndex="0"
-               styleClass="artist"/>
-    </GridPane>
-
-    <!-- Sync status -->
-    <FlowPane fx:id="syncPane" GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.valignment="CENTER" alignment="CENTER" />
+    <!-- RIGHT SECTION / SYNC STATUS -->
+    <FlowPane fx:id="syncPane" GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.valignment="CENTER" alignment="CENTER"/>
 </GridPane>

@@ -1,12 +1,12 @@
 package org.synchronizer.spotify;
 
-import org.synchronizer.spotify.ui.ViewLoader;
 import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.synchronizer.spotify.ui.ViewLoader;
 
 public class SpotifyPreloader extends Preloader {
     private Stage stage;

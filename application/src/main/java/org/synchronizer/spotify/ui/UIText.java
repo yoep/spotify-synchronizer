@@ -1,6 +1,5 @@
 package org.synchronizer.spotify.ui;
 
-import org.synchronizer.spotify.ui.lang.Message;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ArrayUtils;
@@ -9,6 +8,7 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.context.support.MessageSourceResourceBundle;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
+import org.synchronizer.spotify.ui.lang.Message;
 
 import java.util.Locale;
 

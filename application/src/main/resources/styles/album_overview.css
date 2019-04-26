@@ -1,18 +1,18 @@
-.album_title {
+.root .album_title {
     -fx-font-size: 1.5em;
     -fx-text-fill: #0c7032;
+    -fx-fill: #0c7032;
     -fx-font-weight: bold;
-    -fx-border-width: 0 0 1 0;
-    -fx-border-color: #3C4A3E;
 }
 
-.album_border {
+.root .album_border {
     -fx-border-width: 2 2 2 2;
     -fx-border-color: #3C4A3E;
 }
 
-.artist {
+.root .artist {
     -fx-text-fill: rgba(12, 110, 48, 0.69);
+    -fx-fill: rgba(12, 110, 48, 0.69);
 }
 
 .root .album_image_overlay {

@@ -1,8 +1,5 @@
 package org.synchronizer.spotify.authorization;
 
-import org.synchronizer.spotify.ui.ViewLoader;
-import org.synchronizer.spotify.views.LoginView;
-import org.synchronizer.spotify.ui.ViewProperties;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -11,6 +8,9 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.oauth2.client.resource.UserRedirectRequiredException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.synchronizer.spotify.ui.ViewLoader;
+import org.synchronizer.spotify.ui.ViewProperties;
+import org.synchronizer.spotify.views.LoginView;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,9 +1,5 @@
 package org.synchronizer.spotify.views;
 
-import org.synchronizer.spotify.configuration.SpotifyConfiguration;
-import org.synchronizer.spotify.ui.ScaleAwareImpl;
-import org.synchronizer.spotify.ui.ViewManager;
-import org.synchronizer.spotify.ui.ViewManagerPolicy;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
@@ -20,6 +16,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.synchronizer.spotify.config.properties.SpotifyConfiguration;
+import org.synchronizer.spotify.ui.ScaleAwareImpl;
+import org.synchronizer.spotify.ui.ViewManager;
+import org.synchronizer.spotify.ui.ViewManagerPolicy;
 
 import java.net.URL;
 import java.util.ResourceBundle;

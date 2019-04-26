@@ -1,13 +1,5 @@
 package org.synchronizer.spotify.views.components;
 
-import org.synchronizer.spotify.SpotifySynchronizer;
-import org.synchronizer.spotify.synchronize.model.MusicTrack;
-import org.synchronizer.spotify.synchronize.model.SpotifyTrack;
-import org.synchronizer.spotify.synchronize.model.SyncTrack;
-import org.synchronizer.spotify.ui.Icons;
-import org.synchronizer.spotify.ui.UIText;
-import org.synchronizer.spotify.ui.lang.MainMessage;
-import org.synchronizer.spotify.ui.lang.Message;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -19,6 +11,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
+import org.synchronizer.spotify.SpotifySynchronizer;
+import org.synchronizer.spotify.synchronize.model.MusicTrack;
+import org.synchronizer.spotify.synchronize.model.SpotifyTrack;
+import org.synchronizer.spotify.synchronize.model.SyncTrack;
+import org.synchronizer.spotify.ui.Icons;
+import org.synchronizer.spotify.ui.UIText;
+import org.synchronizer.spotify.ui.lang.MainMessage;
+import org.synchronizer.spotify.ui.lang.Message;
 
 import java.util.Optional;
 import java.util.function.Consumer;

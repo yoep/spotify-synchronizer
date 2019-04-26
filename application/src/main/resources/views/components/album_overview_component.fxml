@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
@@ -11,23 +12,23 @@
         <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="150"/>
+        <RowConstraints minHeight="100" valignment="TOP"/>
     </rowConstraints>
     <padding>
         <Insets bottom="5" left="10" right="10" top="5"/>
     </padding>
 
-    <!-- Image -->
+    <!-- LEFT SIDE / IMAGE -->
     <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0">
-        <HBox fx:id="noAlbum" alignment="CENTER" maxHeight="150" maxWidth="150" minHeight="150" styleClass="album_border">
+        <HBox fx:id="noAlbum" maxHeight="150" maxWidth="150" minHeight="150" styleClass="album_border" StackPane.alignment="TOP_CENTER">
             <Text styleClass="icon-solid, icon-xxlarge">
                 <Icons fx:constant="COMPACT_DISK"/>
             </Text>
         </HBox>
-        <ImageView fx:id="albumImage" fitWidth="150" preserveRatio="true"/>
+        <ImageView fx:id="albumImage" fitWidth="150" preserveRatio="true" StackPane.alignment="TOP_CENTER"/>
 
-        <!-- Actions -->
-        <StackPane fx:id="albumOverlay" visible="false" styleClass="album_image_overlay" maxHeight="150">
+        <!-- ACTIONS -->
+        <StackPane fx:id="albumOverlay" visible="false" styleClass="album_image_overlay" maxHeight="150" StackPane.alignment="TOP_CENTER">
             <Text fx:id="albumOptions" styleClass="icon, icon-large, icon-clickable" StackPane.alignment="TOP_RIGHT">
                 <StackPane.margin>
                     <Insets top="5" right="5"/>
@@ -40,20 +41,32 @@
         </StackPane>
     </StackPane>
 
+    <!-- RIGHT SIDE -->
     <GridPane GridPane.columnIndex="1" GridPane.rowIndex="0">
         <columnConstraints>
             <ColumnConstraints hgrow="ALWAYS" percentWidth="100"/>
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints minHeight="30"/>
+            <RowConstraints/>
+            <RowConstraints/>
             <RowConstraints/>
         </rowConstraints>
         <padding>
             <Insets left="10"/>
         </padding>
 
-        <Text fx:id="albumTitle" styleClass="album_title" GridPane.columnIndex="0" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0"/>
+        <!-- TITLE -->
+        <Text fx:id="albumTitle" styleClass="album_title" text="TITLE PLACEHOLDER"
+              GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.fillWidth="true" GridPane.hgrow="ALWAYS"/>
+        <Separator styleClass="album_title_separator" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
 
-        <FlowPane fx:id="trackOverview" hgap="10" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"/>
+        <!-- TRACKS -->
+        <GridPane fx:id="trackOverview" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2">
+            <columnConstraints>
+                <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+                <ColumnConstraints percentWidth="50" hgrow="ALWAYS"/>
+            </columnConstraints>
+            <hgap>10</hgap>
+        </GridPane>
     </GridPane>
 </GridPane>

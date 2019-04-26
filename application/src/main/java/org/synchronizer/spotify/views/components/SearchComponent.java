@@ -4,34 +4,36 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Tooltip;
 import javafx.scene.text.Text;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
-import org.synchronizer.spotify.ui.ViewLoader;
-import org.synchronizer.spotify.ui.ViewProperties;
 import org.synchronizer.spotify.ui.elements.SearchField;
 import org.synchronizer.spotify.ui.elements.SearchListener;
 import org.synchronizer.spotify.ui.elements.SortListener;
+import org.synchronizer.spotify.ui.lang.MainMessage;
 import org.synchronizer.spotify.ui.lang.MenuMessage;
-import org.synchronizer.spotify.ui.lang.SettingMessage;
 import org.synchronizer.spotify.utils.UIUtils;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 @Component
 @RequiredArgsConstructor
 public class SearchComponent implements Initializable {
-    private final ViewLoader viewLoader;
     private final UIText uiText;
 
     private final List<SortListener> listeners = new ArrayList<>();
 
     private SortListener.Order sortOrder = SortListener.Order.DESC;
+    @Setter
+    private Runnable onSettingsClicked;
 
     @FXML
     private Text menuIcon;
@@ -77,20 +79,15 @@ public class SearchComponent implements Initializable {
     }
 
     private void initializeSort() {
-        sortIcon.setOnMouseClicked(event -> sort());
-    }
+        Tooltip tooltip = new Tooltip(uiText.get(MainMessage.SORT));
 
-    @FXML
-    private void openMenu() {
+        sortIcon.setOnMouseClicked(event -> sort());
+        Tooltip.install(sortIcon, tooltip);
     }
 
     private void openSettings() {
-        viewLoader.showWindow("settings.fxml", ViewProperties.builder()
-                .title(uiText.get(SettingMessage.TITLE))
-                .icon("logo.png")
-                .dialog(true)
-                .maximizable(false)
-                .build());
+        Optional.ofNullable(onSettingsClicked)
+                .ifPresent(Runnable::run);
     }
 
     private void sort() {

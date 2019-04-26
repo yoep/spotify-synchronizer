@@ -1,6 +1,7 @@
 package org.synchronizer.spotify.ui;
 
 public class Icons {
+    public static final String ARROW_CIRCLE_LEFT = "\uf0a8";
     public static final String BAN = "\uf05e";
     public static final String CHECK_MARK = "\uf00c";
     public static final String COG = "\uf013";

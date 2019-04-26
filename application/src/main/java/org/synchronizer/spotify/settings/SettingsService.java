@@ -1,8 +1,5 @@
 package org.synchronizer.spotify.settings;
 
-import org.synchronizer.spotify.SpotifySynchronizer;
-import org.synchronizer.spotify.common.ObservableWrapper;
-import org.synchronizer.spotify.settings.model.UserSettings;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +7,9 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.synchronizer.spotify.SpotifySynchronizer;
+import org.synchronizer.spotify.common.ObservableWrapper;
+import org.synchronizer.spotify.settings.model.UserSettings;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

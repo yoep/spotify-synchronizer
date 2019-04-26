@@ -1,7 +1,5 @@
 package org.synchronizer.spotify.config;
 
-import org.synchronizer.spotify.common.SynchronizerModule;
-import org.synchronizer.spotify.spotify.SpotifyHttpMessageConverter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.Module;
@@ -15,6 +13,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.synchronizer.spotify.common.SynchronizerModule;
+import org.synchronizer.spotify.spotify.SpotifyHttpMessageConverter;
 
 import java.time.LocalDate;
 import java.util.List;

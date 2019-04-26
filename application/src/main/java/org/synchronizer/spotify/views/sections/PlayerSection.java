@@ -1,4 +1,4 @@
-package org.synchronizer.spotify.views.components;
+package org.synchronizer.spotify.views.sections;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -13,10 +13,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.synchronizer.spotify.common.PlayerState;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
+import org.synchronizer.spotify.views.components.MediaPlayerComponent;
 
 import java.net.URL;
 import java.util.List;
@@ -25,9 +26,9 @@ import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 @Log4j2
-@Component
+@Controller
 @RequiredArgsConstructor
-public class PlayerComponent implements Initializable {
+public class PlayerSection implements Initializable {
     private final List<MediaPlayerComponent> mediaPlayerComponents;
 
     @Getter

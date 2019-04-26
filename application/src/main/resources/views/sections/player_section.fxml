@@ -8,7 +8,7 @@
 <GridPane prefHeight="75" prefWidth="800" stylesheets="/styles/main.css,/styles/player.css"
           xmlns="http://javafx.com/javafx/8.0.121"
           xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="org.synchronizer.spotify.views.components.PlayerComponent">
+          fx:controller="org.synchronizer.spotify.views.sections.PlayerSection">
     <columnConstraints>
         <ColumnConstraints maxWidth="75" minWidth="75"/>
         <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity"/>
@@ -20,8 +20,8 @@
 
     <!-- Image -->
     <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0">
-        <Text styleClass="icon, icon-large">
-            <Icons fx:constant="IMAGE"/>
+        <Text styleClass="icon, icon-solid, icon-xlarge">
+            <Icons fx:constant="COMPACT_DISK"/>
         </Text>
         <ImageView fx:id="image" preserveRatio="true" fitWidth="64"/>
     </StackPane>

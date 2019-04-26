@@ -1,8 +1,5 @@
 package org.synchronizer.spotify.views.components;
 
-import org.synchronizer.spotify.common.LoggingService;
-import org.synchronizer.spotify.settings.model.Logging;
-import org.synchronizer.spotify.settings.model.UserSettings;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
@@ -11,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.Level;
 import org.springframework.stereotype.Component;
+import org.synchronizer.spotify.common.LoggingService;
+import org.synchronizer.spotify.settings.SettingsService;
+import org.synchronizer.spotify.settings.model.Logging;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -20,8 +20,9 @@ import java.util.stream.Collectors;
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class SettingsLoggingComponent implements Initializable, SettingComponent {
+public class SettingsLoggingComponent implements Initializable {
     private final LoggingService loggingService;
+    private final SettingsService settingsService;
 
     @FXML
     private ComboBox<String> level;
@@ -32,22 +33,9 @@ public class SettingsLoggingComponent implements Initializable, SettingComponent
     public void initialize(URL location, ResourceBundle resources) {
         initializeLogLevel();
         initializeLogfile();
-    }
 
-    @Override
-    public void apply(UserSettings currentUserSettings) {
-        if (logfile.isSelected()) {
-            loggingService.enableLogfile();
-        } else {
-            loggingService.disableLogfile();
-        }
-
-        loggingService.setLevel(Level.valueOf(level.getValue()));
-
-        currentUserSettings.setLogging(Logging.builder()
-                .level(Level.valueOf(level.getValue()))
-                .logfileEnabled(logfile.isSelected())
-                .build());
+        level.valueProperty().addListener((observable, oldValue, newValue) -> updateLogLevel());
+        logfile.selectedProperty().addListener((observable, oldValue, newValue) -> updateLogFile());
     }
 
     private void initializeLogLevel() {
@@ -59,5 +47,26 @@ public class SettingsLoggingComponent implements Initializable, SettingComponent
 
     private void initializeLogfile() {
         logfile.setSelected(loggingService.isLogfileEnabled());
+    }
+
+    private void updateLogLevel() {
+        Level level = Level.valueOf(this.level.getValue());
+
+        loggingService.setLevel(level);
+        getLoggingSettings().setLevel(level);
+    }
+
+    private void updateLogFile() {
+        if (logfile.isSelected()) {
+            loggingService.enableLogfile();
+        } else {
+            loggingService.disableLogfile();
+        }
+
+        getLoggingSettings().setLogfileEnabled(logfile.isSelected());
+    }
+
+    private Logging getLoggingSettings() {
+        return settingsService.getUserSettingsOrDefault().getLogging();
     }
 }

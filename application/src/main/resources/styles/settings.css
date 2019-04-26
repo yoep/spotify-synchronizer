@@ -1,0 +1,6 @@
+.root .setting_section {
+    -fx-font-size: 1.5em;
+    -fx-fill: #0c7032;
+    -fx-font-weight: bold;
+    -fx-padding: 10 0 0 0;
+}

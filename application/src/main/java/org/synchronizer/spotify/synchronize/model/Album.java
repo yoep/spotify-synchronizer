@@ -1,8 +1,8 @@
 package org.synchronizer.spotify.synchronize.model;
 
+import javafx.scene.image.Image;
 import org.synchronizer.spotify.common.IObservable;
 import org.synchronizer.spotify.domain.AlbumInfo;
-import javafx.scene.image.Image;
 
 /**
  * Defines the information about a album which generalizes the info between local and Spotify albums.

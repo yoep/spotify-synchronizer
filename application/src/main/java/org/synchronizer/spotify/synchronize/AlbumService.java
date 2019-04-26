@@ -1,11 +1,11 @@
 package org.synchronizer.spotify.synchronize;
 
-import org.synchronizer.spotify.domain.entities.AlbumInfoEntity;
-import org.synchronizer.spotify.domain.repositories.AlbumRepository;
-import org.synchronizer.spotify.synchronize.model.Album;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.synchronizer.spotify.domain.entities.AlbumInfoEntity;
+import org.synchronizer.spotify.domain.repositories.AlbumRepository;
+import org.synchronizer.spotify.synchronize.model.Album;
 
 @Service
 @RequiredArgsConstructor

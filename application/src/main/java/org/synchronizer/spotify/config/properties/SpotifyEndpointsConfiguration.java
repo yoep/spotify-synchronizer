@@ -1,4 +1,4 @@
-package org.synchronizer.spotify.configuration;
+package org.synchronizer.spotify.config.properties;
 
 import lombok.Data;
 

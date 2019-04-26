@@ -1,9 +1,9 @@
 package org.synchronizer.spotify.ui;
 
-import org.synchronizer.spotify.ui.exceptions.PrimaryWindowNotAvailableException;
-import org.synchronizer.spotify.ui.exceptions.WindowNotFoundException;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.synchronizer.spotify.ui.exceptions.PrimaryWindowNotAvailableException;
+import org.synchronizer.spotify.ui.exceptions.WindowNotFoundException;
 
 public interface ViewManager {
     /**

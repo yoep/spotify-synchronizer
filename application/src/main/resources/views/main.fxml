@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.*?>
-<?import org.synchronizer.spotify.ui.elements.InfiniteScrollPane?>
 <GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1"
           stylesheets="/styles/main.css" fx:controller="org.synchronizer.spotify.views.MainView">
     <columnConstraints>
@@ -13,8 +12,8 @@
     </rowConstraints>
 
     <!-- CONTENT -->
-    <InfiniteScrollPane fx:id="trackOverview" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <fx:include source="sections/content_section.fxml" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
 
     <!-- PLAYER -->
-    <fx:include source="components/player_component.fxml" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+    <fx:include source="sections/player_section.fxml" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
 </GridPane>

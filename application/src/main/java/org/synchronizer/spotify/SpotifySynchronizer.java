@@ -14,7 +14,7 @@ import java.io.File;
 
 @SpringBootApplication
 public class SpotifySynchronizer extends Application {
-    public static final String APP_DIR = System.getProperty("user.home") + File.separator + ".ssynchronizer" + File.separator;
+    public static final String APP_DIR = System.getProperty("user.home") + File.separator + ".spotify-synchronizer" + File.separator;
     public static ApplicationContext APPLICATION_CONTEXT;
 
     private static String[] ARGUMENTS;

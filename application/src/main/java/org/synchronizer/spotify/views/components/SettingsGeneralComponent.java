@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.UserInterface;
-import org.synchronizer.spotify.settings.model.UserSettings;
 
 import java.net.URL;
 import java.util.List;
@@ -22,7 +21,7 @@ import static java.util.Arrays.asList;
 
 @Component
 @RequiredArgsConstructor
-public class SettingsGeneralComponent implements Initializable, SettingComponent {
+public class SettingsGeneralComponent implements Initializable {
     private static final List<ScaleItem> SCALE_ITEMS = asList(
             new ScaleItem("50%", 0.5f),
             new ScaleItem("100%", 1.0f),
@@ -38,23 +37,26 @@ public class SettingsGeneralComponent implements Initializable, SettingComponent
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initializeUIScale();
-    }
 
-    @Override
-    public void apply(UserSettings currentUserSettings) {
-        UserInterface userInterface = currentUserSettings.getUserInterface();
+        uiScale.valueProperty().addListener((observable, oldValue, newValue) -> {
+            UserInterface userInterface = getUserInterfaceSettings();
 
-        userInterface.setScale(uiScale.getSelectionModel().getSelectedItem().getScale().getValue());
+            userInterface.setScale(uiScale.getSelectionModel().getSelectedItem().getScale().getValue());
+        });
     }
 
     private void initializeUIScale() {
-        UserInterface userInterface = settingsService.getUserSettingsOrDefault().getUserInterface();
+        UserInterface userInterface = getUserInterfaceSettings();
 
         uiScale.getItems().addAll(SCALE_ITEMS);
         uiScale.setValue(SCALE_ITEMS.stream()
                 .filter(e -> e.getScale().getValue().equals(userInterface.getScale()))
                 .findFirst()
                 .orElse(SCALE_ITEMS.get(1)));
+    }
+
+    private UserInterface getUserInterfaceSettings() {
+        return settingsService.getUserSettingsOrDefault().getUserInterface();
     }
 
     @Getter

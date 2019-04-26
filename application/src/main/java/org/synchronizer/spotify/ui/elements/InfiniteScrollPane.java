@@ -3,6 +3,8 @@ package org.synchronizer.spotify.ui.elements;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -14,6 +16,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -34,10 +38,12 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
     private final List<ItemWrapper<T>> items = new ArrayList<>();
     private final ScrollPane scrollPane = new ScrollPane();
     private final ProgressIndicator progressIndicator = new ProgressIndicator();
+    private final Text noSearchResultsFound = new Text();
     private final VBox itemsContainer = new VBox();
-    private final VBox contentPane = new VBox(itemsContainer, progressIndicator);
+    private final VBox contentPane = new VBox(itemsContainer, progressIndicator, noSearchResultsFound);
     private final BooleanProperty updating = new SimpleBooleanProperty();
     private final BooleanProperty isSearchActive = new SimpleBooleanProperty();
+    private final StringProperty noSearchResultTextProperty = new SimpleStringProperty();
 
     /**
      * Item factory that will be used to create the views for each item.
@@ -56,6 +62,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
     public InfiniteScrollPane() {
         initializeScrollBars();
         initializeContent();
+        initializeNoSearchResultsText();
     }
 
     /**
@@ -69,6 +76,14 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
                     .map(ItemWrapper::getItem)
                     .collect(Collectors.toList());
         }
+    }
+
+    public String getNoSearchResultText() {
+        return noSearchResultTextProperty.get();
+    }
+
+    public void setNoSearchResultText(String text) {
+        noSearchResultTextProperty.set(text);
     }
 
     /**
@@ -148,6 +163,8 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
             clearSearchFlagOnItems();
 
             Platform.runLater(() -> {
+                noSearchResultsFound.setVisible(false);
+
                 this.clearItemRendering();
                 this.updateRendering();
             });
@@ -174,16 +191,21 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
     private void updateSearch(String searchValue) {
         runTask(() -> {
             Pattern pattern = Pattern.compile(".*" + searchValue + ".*", Pattern.CASE_INSENSITIVE);
+            AtomicInteger totalMatchingItems = new AtomicInteger();
 
             clearSearchFlagOnItems();
 
             synchronized (items) {
                 items.stream()
                         .filter(e -> pattern.matcher(e.getItem().toString()).matches())
-                        .forEach(e -> e.setMatchingSearchValue(true));
+                        .forEach(e -> {
+                            e.setMatchingSearchValue(true);
+                            totalMatchingItems.getAndIncrement();
+                        });
             }
 
             this.isSearchActive.set(true);
+            this.noSearchResultsFound.setVisible(totalMatchingItems.get() == 0);
 
             Platform.runLater(() -> {
                 this.clearItemRendering();
@@ -206,11 +228,10 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
             }
 
             if (renderItems.size() > 0) {
-                progressIndicator.setVisible(true);
                 render(renderItems);
-            } else {
-                progressIndicator.setVisible(false);
             }
+
+            progressIndicator.setVisible(renderItems.size() == totalAdditionalItems);
         });
     }
 
@@ -296,6 +317,13 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
         StackPane.setAlignment(header, Pos.TOP_CENTER);
         StackPane.setMargin(header, new Insets(1, 20, 0, 1));
         header.heightProperty().addListener((observable, oldValue, newValue) -> this.updateContentTopSpacing(newValue.doubleValue()));
+    }
+
+    private void initializeNoSearchResultsText() {
+        this.noSearchResultsFound.setStyle("-fx-fill: #a5a5a5; -fx-font-size: 1.5em");
+        this.noSearchResultsFound.setVisible(false);
+
+        noSearchResultTextProperty.addListener((observable, oldValue, newValue) -> this.noSearchResultsFound.setText(newValue));
     }
 
     private void updateContentTopSpacing(double headerHeight) {

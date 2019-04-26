@@ -73,7 +73,7 @@ public class SynchronisationService {
 
             for (MusicTrack newTrack : addedTracks) {
                 try {
-                    ArrayList<SyncTrack> allTracks = new ArrayList<>(tracks);
+                    List<SyncTrack> allTracks = new ArrayList<>(tracks);
                     allTracks.addAll(newSyncTracks);
 
                     SyncTrack syncTrack = allTracks.stream()
@@ -97,7 +97,9 @@ public class SynchronisationService {
                 }
             }
 
-            tracks.addAll(newSyncTracks);
+            synchronized (tracks) {
+                tracks.addAll(newSyncTracks);
+            }
         }
     }
 }

@@ -1,12 +1,12 @@
 package org.synchronizer.spotify.views.components;
 
-import org.synchronizer.spotify.ui.Icons;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Slider;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import org.springframework.stereotype.Component;
+import org.synchronizer.spotify.ui.Icons;
 
 import java.net.URL;
 import java.util.ResourceBundle;

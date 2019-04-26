@@ -1,8 +1,8 @@
 package org.synchronizer.spotify.synchronize;
 
-import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import javafx.collections.ObservableList;
 import org.springframework.scheduling.annotation.Async;
+import org.synchronizer.spotify.synchronize.model.MusicTrack;
 
 /**
  * Defines a service which provides the information of a certain source through discovery methodes.

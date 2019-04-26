@@ -6,8 +6,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
 import lombok.ToString;
@@ -36,6 +37,7 @@ public class AlbumOverviewComponent implements Initializable {
     private final UIText uiText;
 
     private final SortedSet<AlbumTrackComponent> albumTracks = new TreeSet<>();
+    private int lastRowIndex = -1;
 
     @FXML
     private Text albumTitle;
@@ -48,7 +50,7 @@ public class AlbumOverviewComponent implements Initializable {
     @FXML
     private Text albumOptions;
     @FXML
-    private FlowPane trackOverview;
+    private GridPane trackOverview;
 
     public AlbumOverviewComponent(AlbumOverview albumOverview) {
         this.albumOverview = albumOverview;
@@ -111,11 +113,23 @@ public class AlbumOverviewComponent implements Initializable {
         AlbumTrackComponent albumTrackComponent = new AlbumTrackComponent(syncTrack);
 
         albumTracks.add(albumTrackComponent);
-        Platform.runLater(() -> createNewTrackRow(albumTrackComponent));
+        Platform.runLater(() -> createNewTrack(albumTrackComponent));
     }
 
-    private void createNewTrackRow(AlbumTrackComponent albumTrackComponent) {
-        trackOverview.getChildren().add(viewLoader.loadComponent("album_track_component.fxml", albumTrackComponent));
+    private void createNewTrack(AlbumTrackComponent albumTrackComponent) {
+        Pane track = viewLoader.loadComponent("album_track_component.fxml", albumTrackComponent);
+        int columnIndex = trackOverview.getChildren().size() % 2;
+
+        // if column is even, we should create a new row
+        if (columnIndex == 0) {
+            createNewRow();
+        }
+
+        trackOverview.add(track, columnIndex, lastRowIndex);
+    }
+
+    private void createNewRow() {
+        trackOverview.addRow(++lastRowIndex);
     }
 
     private void syncAllTracks() {

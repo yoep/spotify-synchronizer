@@ -1,7 +1,7 @@
 package org.synchronizer.spotify.ui;
 
-import org.synchronizer.spotify.settings.model.UserInterface;
 import javafx.scene.Scene;
+import org.synchronizer.spotify.settings.model.UserInterface;
 
 /**
  * Defines that a view controller is aware of the scale factor and the view is able to be scaled accordingly.

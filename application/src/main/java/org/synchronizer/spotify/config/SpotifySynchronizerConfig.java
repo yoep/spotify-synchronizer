@@ -15,7 +15,7 @@ import org.springframework.security.oauth2.client.token.grant.implicit.ImplicitA
 import org.springframework.security.oauth2.client.token.grant.password.ResourceOwnerPasswordAccessTokenProvider;
 import org.synchronizer.spotify.authorization.AuthorizationService;
 import org.synchronizer.spotify.authorization.SpotifyAccessTokenProvider;
-import org.synchronizer.spotify.configuration.SpotifyConfiguration;
+import org.synchronizer.spotify.config.properties.SpotifyConfiguration;
 import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.spotify.OAuth2RestTemplateSpotify;
 import org.synchronizer.spotify.ui.UIText;

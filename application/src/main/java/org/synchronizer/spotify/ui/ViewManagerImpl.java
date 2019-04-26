@@ -1,19 +1,22 @@
 package org.synchronizer.spotify.ui;
 
-import org.synchronizer.spotify.SpotifySynchronizer;
-import org.synchronizer.spotify.ui.exceptions.PrimaryWindowAlreadyPresentException;
-import org.synchronizer.spotify.ui.exceptions.PrimaryWindowNotAvailableException;
-import org.synchronizer.spotify.ui.exceptions.WindowNotFoundException;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.synchronizer.spotify.SpotifySynchronizer;
+import org.synchronizer.spotify.ui.exceptions.PrimaryWindowAlreadyPresentException;
+import org.synchronizer.spotify.ui.exceptions.PrimaryWindowNotAvailableException;
+import org.synchronizer.spotify.ui.exceptions.WindowNotFoundException;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

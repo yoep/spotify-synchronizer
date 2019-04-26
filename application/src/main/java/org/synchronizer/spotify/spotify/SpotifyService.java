@@ -1,7 +1,5 @@
 package org.synchronizer.spotify.spotify;
 
-import org.synchronizer.spotify.configuration.SpotifyConfiguration;
-import org.synchronizer.spotify.spotify.api.v1.Tracks;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -9,6 +7,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.stereotype.Service;
+import org.synchronizer.spotify.config.properties.SpotifyConfiguration;
+import org.synchronizer.spotify.spotify.api.v1.Tracks;
 
 import java.util.concurrent.CompletableFuture;
 

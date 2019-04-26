@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.synchronizer.spotify.common.PlayerState;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
-import org.synchronizer.spotify.views.components.PlayerComponent;
+import org.synchronizer.spotify.views.sections.PlayerSection;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -19,13 +19,13 @@ import java.util.Optional;
 public class MediaPlayerService {
     private final List<PlayerStateChangeListener> playerStateChangeListeners = new ArrayList<>();
     private final List<TrackChangeListener> trackChangeListeners = new ArrayList<>();
-    private final PlayerComponent playerComponent;
+    private final PlayerSection playerSection;
 
     @PostConstruct
     private void init() {
-        playerComponent.setOnPlayerStateChange(oldPlayerState ->
+        playerSection.setOnPlayerStateChange(oldPlayerState ->
                 new ArrayList<>(playerStateChangeListeners).forEach(e -> e.onChange(oldPlayerState, getCurrentPlayerState())));
-        playerComponent.setOnTrackChange(oldTrack ->
+        playerSection.setOnTrackChange(oldTrack ->
                 new ArrayList<>(trackChangeListeners).forEach(e -> e.onChange(oldTrack, getCurrentTrack().orElse(null))));
     }
 
@@ -38,21 +38,21 @@ public class MediaPlayerService {
     public void play(MusicTrack track) {
         Assert.notNull(track, "track cannot be null");
         Assert.hasText(track.getUri(), "uri cannot be empty");
-        playerComponent.play(track);
+        playerSection.play(track);
     }
 
     /**
      * Resume/play the current played track.
      */
     public void play() {
-        playerComponent.onPlay();
+        playerSection.onPlay();
     }
 
     /**
      * Pause the current played track.
      */
     public void pause() {
-        playerComponent.onPause();
+        playerSection.onPause();
     }
 
     /**
@@ -61,7 +61,7 @@ public class MediaPlayerService {
      * @return Returns the current track of the player.
      */
     public Optional<MusicTrack> getCurrentTrack() {
-        return playerComponent.getCurrentTrack();
+        return playerSection.getCurrentTrack();
     }
 
     /**
@@ -70,7 +70,7 @@ public class MediaPlayerService {
      * @return Returns the current player state.
      */
     public PlayerState getCurrentPlayerState() {
-        return playerComponent.getPlayerState();
+        return playerSection.getPlayerState();
     }
 
     /**

@@ -1,17 +1,17 @@
 package org.synchronizer.spotify.synchronize;
 
-import org.springframework.core.task.TaskExecutor;
-import org.synchronizer.spotify.media.AudioService;
-import org.synchronizer.spotify.settings.SettingsService;
-import org.synchronizer.spotify.settings.model.Synchronization;
-import org.synchronizer.spotify.settings.model.UserSettings;
-import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
+import org.synchronizer.spotify.media.AudioService;
+import org.synchronizer.spotify.settings.SettingsService;
+import org.synchronizer.spotify.settings.model.Synchronization;
+import org.synchronizer.spotify.settings.model.UserSettings;
+import org.synchronizer.spotify.synchronize.model.MusicTrack;
 
 import java.io.File;
 import java.util.ArrayList;

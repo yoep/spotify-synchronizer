@@ -56,7 +56,9 @@ public class SpotifyAccessTokenProvider extends AuthorizationCodeAccessTokenProv
         authorizationService.startAuthorization(ex);
         SpotifyToken spotifyToken = ofNullable(authorizationService.getAccessTokenWhenAvailable())
                 .orElseThrow(AccessTokenNotAvailable::new);
-        return retrieveAccessToken(details, spotifyToken.getAuthorizationCode(), ex.getStateToPreserve().toString());
+        return retrieveAccessToken(details, spotifyToken.getAuthorizationCode(), Optional.ofNullable(ex.getStateToPreserve())
+                .map(Object::toString)
+                .orElse(null));
     }
 
     private OAuth2AccessToken resolveAccessToken(OAuth2ProtectedResourceDetails details, OAuth2AccessTokenWrapper accessTokenWrapper) {

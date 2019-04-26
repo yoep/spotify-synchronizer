@@ -18,7 +18,8 @@ public enum MainMessage implements Message {
     OPEN_IN_SPOTIFY("open_in_spotify"),
     DONE_SYNCHRONIZING("done_synchronizing"),
     SYNCHRONIZED("synchronized"),
-    METADATA_OUT_OF_SYNC("metadata_out_of_sync");
+    METADATA_OUT_OF_SYNC("metadata_out_of_sync"),
+    SORT("sort");
 
     private String key;
 

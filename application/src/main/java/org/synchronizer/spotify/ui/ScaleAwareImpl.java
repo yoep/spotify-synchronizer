@@ -1,12 +1,12 @@
 package org.synchronizer.spotify.ui;
 
-import org.synchronizer.spotify.settings.model.UserInterface;
-import org.synchronizer.spotify.ui.exceptions.MissingScaleAwarePropertyException;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.Region;
 import javafx.scene.transform.Scale;
 import javafx.stage.Window;
+import org.synchronizer.spotify.settings.model.UserInterface;
+import org.synchronizer.spotify.ui.exceptions.MissingScaleAwarePropertyException;
 
 /**
  * Implementation of {@link ScaleAware} for scaling the scene during initialization.

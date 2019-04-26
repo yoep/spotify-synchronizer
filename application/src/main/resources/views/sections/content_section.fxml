@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import org.synchronizer.spotify.ui.elements.InfiniteScrollPane?>
+<GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+          fx:controller="org.synchronizer.spotify.views.sections.ContentSection">
+    <columnConstraints>
+        <ColumnConstraints percentWidth="100" halignment="CENTER"/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints percentHeight="100"/>
+    </rowConstraints>
+
+    <!-- OVERVIEW -->
+    <InfiniteScrollPane fx:id="overviewPane" noSearchResultText="%no_results_found"
+                        GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+
+    <!-- SETTINGS -->
+    <fx:include fx:id="settingsPane" source="settings_section.fxml" visible="false"
+                GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+</GridPane>

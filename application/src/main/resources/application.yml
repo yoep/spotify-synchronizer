@@ -2,7 +2,7 @@ spring:
   application:
     name: Spotify Synchronizer
   datasource:
-    url: jdbc:h2:file:~/.ssynchronizer/sync;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;AUTO_SERVER=TRUE
+    url: jdbc:h2:file:~/.spotify-synchronizer/sync;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;AUTO_SERVER=TRUE
     username: sa
     password:
     driver-class-name: org.h2.Driver
