@@ -1,7 +1,6 @@
 package org.synchronizer.spotify.synchronize.model;
 
 import org.synchronizer.spotify.common.IObservable;
-import org.synchronizer.spotify.domain.TrackInfo;
 
 /**
  * Defines the information about a music track which generalizes the info between local and Spotify music tracks.
