@@ -1,26 +1,37 @@
 package org.synchronizer.spotify.settings.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Observable;
 
+import static java.util.Arrays.asList;
+
 @EqualsAndHashCode(callSuper = false)
-@Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Synchronization extends Observable implements Serializable {
-    @NotNull
-    private File localMusicDirectory;
+    private List<File> localMusicDirectories = new ArrayList<>();
 
-    public void setLocalMusicDirectory(File localMusicDirectory) {
-        if (this.localMusicDirectory != localMusicDirectory)
-            this.setChanged();
+    public List<File> getLocalMusicDirectories() {
+        return Collections.unmodifiableList(localMusicDirectories);
+    }
 
-        this.localMusicDirectory = localMusicDirectory;
+    public void addLocalMusicDirectory(File... directory) {
+        this.localMusicDirectories.addAll(asList(directory));
+        this.setChanged();
+        this.notifyObservers();
+    }
+
+    public void removeLocalMusicDirectory(File directory) {
+        this.localMusicDirectories.remove(directory);
+        this.setChanged();
         this.notifyObservers();
     }
 }

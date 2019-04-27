@@ -25,7 +25,7 @@ public class UserSettings extends Observable implements Serializable {
     private Logging logging = Logging.builder().build();
     @Valid
     @Builder.Default
-    private Synchronization synchronization = Synchronization.builder().build();
+    private Synchronization synchronization = new Synchronization();
     @Valid
     @Builder.Default
     private UserInterface userInterface = UserInterface.builder().build();

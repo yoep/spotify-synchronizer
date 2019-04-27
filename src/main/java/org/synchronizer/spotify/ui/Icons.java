@@ -15,12 +15,14 @@ public class Icons {
     public static final String FOLDER_OPEN = "\uf07c";
     public static final String HELP = "\uf059";
     public static final String IMAGE = "\uf03e";
+    public static final String MINUS = "\uf068";
     public static final String NEXT = "\uf051";
     public static final String PAUSE = "\uf04c";
     public static final String PAUSE_CIRCLE = "\uf28b";
     public static final String PLAY = "\uf04b";
     public static final String PLAY_CIRCLE = "\uf144";
     public static final String PLAY_CIRCLE_OPEN = "\uf01d";
+    public static final String PLUS = "\uf067";
     public static final String PREVIOUS = "\uf048";
     public static final String REFRESH = "\uf021";
     public static final String SEARCH = "\uf002";

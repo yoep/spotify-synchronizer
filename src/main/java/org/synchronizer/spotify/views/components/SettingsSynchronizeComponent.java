@@ -1,23 +1,28 @@
 package org.synchronizer.spotify.views.components;
 
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TextField;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.stage.DirectoryChooser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.Synchronization;
-import org.synchronizer.spotify.settings.model.UserSettings;
 import org.synchronizer.spotify.ui.ViewManager;
 import org.synchronizer.spotify.ui.exceptions.PrimaryWindowNotAvailableException;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.Stream;
 
 @Log4j2
 @Component
@@ -27,48 +32,78 @@ public class SettingsSynchronizeComponent implements Initializable {
     private final ViewManager viewManager;
     private final DirectoryChooser directoryChooser = new DirectoryChooser();
 
-    private Property<File> selectedFileProperty = new SimpleObjectProperty<>();
-
     @FXML
-    private TextField directory;
+    private ListView<File> localMusicDirectories;
+    @FXML
+    private Button removeLocalDirectoryButton;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        initializeDirectory();
-
-        selectedFileProperty.addListener((observable, oldValue, newValue) -> updateLocalMusicDirectory());
+        initializeDirectoryPicker();
+        initializeLocalDirectoriesList();
     }
 
-    public void selectDirectory() throws PrimaryWindowNotAvailableException {
-        File file = directoryChooser.showDialog(viewManager.getPrimaryWindow());
-
-        if (file != null) {
-            this.directory.setText(file.getAbsolutePath());
-            this.selectedFileProperty.setValue(file);
-        }
+    private void initializeDirectoryPicker() {
+        getLocalMusicDirectoriesSettings().stream()
+                .filter(File::exists)
+                .findFirst()
+                .ifPresent(this.directoryChooser::setInitialDirectory);
     }
 
-    private void initializeDirectory() {
-        File localMusicDirectory = settingsService.getUserSettings()
-                .map(UserSettings::getSynchronization)
-                .map(Synchronization::getLocalMusicDirectory)
-                .orElse(null);
+    private void initializeLocalDirectoriesList() {
+        localMusicDirectories.getItems().addAll(getLocalMusicDirectoriesSettings());
+        localMusicDirectories.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> removeLocalDirectoryButton.setDisable(newValue == null));
 
-        if (localMusicDirectory != null) {
-            this.selectedFileProperty.setValue(localMusicDirectory);
-            this.directory.setText(localMusicDirectory.getAbsolutePath());
-            this.directoryChooser.setInitialDirectory(localMusicDirectory);
-        }
+        localMusicDirectories.setOnDragOver(this::onLocalDirectoriesDragOver);
+        localMusicDirectories.setOnDragDropped(this::onLocalDirectoriesDragDropped);
     }
 
-    private void updateLocalMusicDirectory() {
-        File localMusicDirectory = selectedFileProperty.getValue();
+    private void onLocalDirectoriesDragOver(DragEvent event) {
+        getDirectoryStreamFromDragBoard(event)
+                .filter(e -> e.anyMatch(File::isDirectory))
+                .ifPresent(e -> event.acceptTransferModes(TransferMode.LINK));
+    }
 
-        log.debug("Updating local music directory to " + localMusicDirectory.getAbsolutePath());
-        getSynchronizationSettings().setLocalMusicDirectory(localMusicDirectory);
+    private void onLocalDirectoriesDragDropped(DragEvent event) {
+        this.addLocalMusicDirectories(getDirectoryStreamFromDragBoard(event)
+                .orElse(Stream.empty())
+                .toArray(File[]::new));
+
+        event.setDropCompleted(true);
+    }
+
+    private Optional<Stream<File>> getDirectoryStreamFromDragBoard(DragEvent event) {
+        return Optional.of(event.getDragboard())
+                .filter(Dragboard::hasFiles)
+                .map(Dragboard::getFiles)
+                .map(Collection::stream);
+    }
+
+    private List<File> getLocalMusicDirectoriesSettings() {
+        return getSynchronizationSettings().getLocalMusicDirectories();
     }
 
     private Synchronization getSynchronizationSettings() {
         return settingsService.getUserSettingsOrDefault().getSynchronization();
+    }
+
+    private void addLocalMusicDirectories(File... directory) {
+        log.debug("Adding local music directories {} for synchronization", (Object[]) directory);
+        getSynchronizationSettings().addLocalMusicDirectory(directory);
+
+        localMusicDirectories.getItems().addAll(directory);
+    }
+
+    @FXML
+    private void openDirectoryPicker() throws PrimaryWindowNotAvailableException {
+        File file = directoryChooser.showDialog(viewManager.getPrimaryWindow());
+
+        if (file != null)
+            addLocalMusicDirectories(file);
+    }
+
+    @FXML
+    private void removeSelectedDirectory() {
+        getSynchronizationSettings().removeLocalMusicDirectory(localMusicDirectories.getSelectionModel().getSelectedItem());
     }
 }

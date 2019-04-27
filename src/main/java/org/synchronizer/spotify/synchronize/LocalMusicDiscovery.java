@@ -14,11 +14,9 @@ import org.synchronizer.spotify.settings.model.UserSettings;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Optional.ofNullable;
@@ -75,25 +73,33 @@ public class LocalMusicDiscovery implements DiscoveryService {
         if (!keepIndexing)
             return;
 
-        File localMusicDirectory = settingsService.getUserSettings()
+        List<File> localDirectories = settingsService.getUserSettings()
                 .map(UserSettings::getSynchronization)
-                .map(Synchronization::getLocalMusicDirectory)
-                .orElse(null);
+                .map(Synchronization::getLocalMusicDirectories)
+                .map(Collection::stream)
+                .orElse(Stream.empty())
+                .filter(File::exists)
+                .collect(Collectors.toList());
 
-        if (localMusicDirectory != null && localMusicDirectory.exists()) {
-            log.info("Starting local music discovery in " + localMusicDirectory.getAbsolutePath());
-            discoverDirectory(localMusicDirectory);
-
-            onAsyncDiscoveryCompletion(() -> {
-                this.finished = true;
-
-                //do not execute the callback if the current indexing is being aborted for a new one
-                if (keepIndexing) {
-                    log.info("Discovered " + trackList.size() + " local music tracks");
-                    invokeCallback();
-                }
-            });
+        if (localDirectories.size() == 0) {
+            log.info("Skipping local music discovery as no directories are available for indexing");
+            this.finished = true;
+            invokeCallback();
+            return;
         }
+
+        log.info("Starting local music discovery in {}", localDirectories);
+        localDirectories.forEach(this::discoverDirectory);
+
+        onAsyncDiscoveryCompletion(() -> {
+            this.finished = true;
+
+            //do not execute the callback if the current indexing is being aborted for a new one
+            if (keepIndexing) {
+                log.info("Discovered " + trackList.size() + " local music tracks");
+                invokeCallback();
+            }
+        });
     }
 
     private void discoverDirectory(File directory) {
@@ -137,8 +143,7 @@ public class LocalMusicDiscovery implements DiscoveryService {
     }
 
     private void invokeCallback() {
-        if (callback != null) {
-            this.callback.run();
-        }
+        Optional.ofNullable(callback)
+                .ifPresent(Runnable::run);
     }
 }

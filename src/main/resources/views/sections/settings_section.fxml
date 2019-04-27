@@ -1,49 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import org.synchronizer.spotify.ui.Icons?>
-<GridPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="org.synchronizer.spotify.views.sections.SettingsSection" stylesheets="/styles/settings.css">
-    <columnConstraints>
-        <ColumnConstraints prefWidth="20"/>
-        <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
-        <ColumnConstraints prefWidth="20"/>
-    </columnConstraints>
-    <rowConstraints>
-        <RowConstraints valignment="TOP"/>
-    </rowConstraints>
-    <padding>
-        <Insets top="10" right="10" left="10" bottom="10"/>
-    </padding>
+<StackPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="org.synchronizer.spotify.views.sections.SettingsSection" stylesheets="/styles/settings.css">
+    <!-- SETTINGS CONTENT -->
+    <ScrollPane hbarPolicy="NEVER" fitToWidth="true">
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" halignment="CENTER"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints valignment="TOP"/>
+            </rowConstraints>
+            <padding>
+                <Insets top="10" right="20" bottom="10" left="20" />
+            </padding>
 
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <maxWidth>600</maxWidth>
+
+                <!-- GENERAL -->
+                <Text text="%settings_general" styleClass="setting_section"/>
+                <Separator/>
+                <fx:include source="../components/settings_general_component.fxml"/>
+
+                <Pane minHeight="25"/>
+
+                <!-- SYNC -->
+                <Text text="%settings_sync" styleClass="setting_section"/>
+                <Separator/>
+                <fx:include source="../components/settings_synchronize_component.fxml"/>
+
+                <Pane minHeight="25"/>
+
+                <!-- LOGGING -->
+                <Text text="%settings_logging" styleClass="setting_section"/>
+                <Separator/>
+                <fx:include source="../components/settings_logging_component.fxml"/>
+            </VBox>
+        </GridPane>
+    </ScrollPane>
+
+    <!-- BACK ICON -->
     <Text styleClass="icon, icon-clickable, icon-large" onMouseClicked="#goBack"
-          GridPane.columnIndex="0" GridPane.rowIndex="0">
+          StackPane.alignment="TOP_LEFT">
+        <StackPane.margin>
+            <Insets left="10" top="10"/>
+        </StackPane.margin>
         <Icons fx:constant="ARROW_CIRCLE_LEFT"/>
     </Text>
-
-    <VBox GridPane.columnIndex="1" GridPane.rowIndex="0">
-        <maxWidth>600</maxWidth>
-        <!-- GENERAL -->
-        <Text text="%settings_general" styleClass="setting_section"/>
-        <Separator/>
-        <fx:include source="../components/settings_general_component.fxml"/>
-
-        <Pane minHeight="25"/>
-
-        <!-- SYNC -->
-        <Text text="%settings_sync" styleClass="setting_section"/>
-        <Separator/>
-        <fx:include source="../components/settings_synchronize_component.fxml"/>
-
-        <Pane minHeight="25"/>
-
-        <!-- LOGGING -->
-        <Text text="%settings_logging" styleClass="setting_section"/>
-        <Separator/>
-        <fx:include source="../components/settings_logging_component.fxml"/>
-
-    </VBox>
-</GridPane>
+</StackPane>

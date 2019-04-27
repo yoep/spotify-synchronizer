@@ -52,6 +52,7 @@ public class SettingsLoggingComponent implements Initializable {
     private void updateLogLevel() {
         Level level = Level.valueOf(this.level.getValue());
 
+        log.info("Updating log level to {}", level.name());
         loggingService.setLevel(level);
         getLoggingSettings().setLevel(level);
     }
