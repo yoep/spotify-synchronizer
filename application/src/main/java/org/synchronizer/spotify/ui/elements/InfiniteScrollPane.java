@@ -20,6 +20,7 @@ import javafx.scene.text.Text;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Log4j2
 public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPane implements SearchListener, SortListener {
     private static final int BOX_MIN_HEIGHT = 100;
     private static final int ADDITIONAL_RENDER = 5;
@@ -204,6 +206,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
                         });
             }
 
+            log.debug("Found " + totalMatchingItems.get() + " items for the search value '" + searchValue + "'");
             this.isSearchActive.set(true);
             this.noSearchResultsFound.setVisible(totalMatchingItems.get() == 0);
 

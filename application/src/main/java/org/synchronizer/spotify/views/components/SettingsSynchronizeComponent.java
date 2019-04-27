@@ -62,7 +62,10 @@ public class SettingsSynchronizeComponent implements Initializable {
     }
 
     private void updateLocalMusicDirectory() {
-        getSynchronizationSettings().setLocalMusicDirectory(selectedFileProperty.getValue());
+        File localMusicDirectory = selectedFileProperty.getValue();
+
+        log.debug("Updating local music directory to " + localMusicDirectory.getAbsolutePath());
+        getSynchronizationSettings().setLocalMusicDirectory(localMusicDirectory);
     }
 
     private Synchronization getSynchronizationSettings() {

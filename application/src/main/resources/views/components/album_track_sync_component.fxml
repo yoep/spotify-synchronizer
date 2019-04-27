@@ -5,7 +5,7 @@
 <?import javafx.scene.text.Text?>
 <?import org.synchronizer.spotify.ui.Icons?>
 <StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
-    <ProgressIndicator fx:id="progressIndicator" maxHeight="10" styleClass="progress-indicator"/>
+    <ProgressIndicator fx:id="progressIndicator" maxHeight="10"/>
 
     <Text fx:id="outOfSyncIcon" styleClass="icon, icon-clickable" visible="false">
         <Icons fx:constant="EXCLAMATION"/>

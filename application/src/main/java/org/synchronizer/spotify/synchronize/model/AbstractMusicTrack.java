@@ -24,10 +24,14 @@ public abstract class AbstractMusicTrack extends AbstractObservable implements M
         Assert.notNull(compareTo, "compareTo cannot be null");
 
         //compare against the track number if possible
-        if (this.getTrackNumber() != null)
+        if (this.getTrackNumber() != null) {
+            if (compareTo.getTrackNumber() == null)
+                return 1;
+
             return Objects.compare(this.getTrackNumber(), compareTo.getTrackNumber(), Integer::compareTo);
+        }
 
         //else, compare the title of the track
-        return this.getTitle().compareTo(compareTo.getTitle());
+        return Objects.compare(this.getTitle(), compareTo.getTitle(), String::compareTo);
     }
 }

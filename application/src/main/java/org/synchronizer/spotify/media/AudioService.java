@@ -38,24 +38,29 @@ public class AudioService {
     }
 
     @Async
-    public void updateFileMetadata(SyncTrack track) {
-        Assert.notNull(track, "track cannot be null");
-        LocalTrack localTrack = (LocalTrack) track.getLocalTrack().orElseThrow(() -> new SynchronizeException("Local track is not available for synchronization"));
-        SpotifyTrack spotifyTrack = track.getSpotifyTrack().orElseThrow(() -> new SynchronizeException("Spotify track is not available for synchronization"));
-        LocalAlbum localAlbum = (LocalAlbum) localTrack.getAlbum();
-        SpotifyAlbum spotifyAlbum = (SpotifyAlbum) spotifyTrack.getAlbum();
+    public CompletableFuture<Boolean> updateFileMetadata(SyncTrack track) {
+        try {
+            Assert.notNull(track, "track cannot be null");
+            LocalTrack localTrack = (LocalTrack) track.getLocalTrack().orElseThrow(() -> new SynchronizeException("Local track is not available for synchronization"));
+            SpotifyTrack spotifyTrack = track.getSpotifyTrack().orElseThrow(() -> new SynchronizeException("Spotify track is not available for synchronization"));
+            LocalAlbum localAlbum = (LocalAlbum) localTrack.getAlbum();
+            SpotifyAlbum spotifyAlbum = (SpotifyAlbum) spotifyTrack.getAlbum();
 
-        //update track info
-        localTrack.setTitle(spotifyTrack.getTitle());
-        localTrack.setArtist(spotifyTrack.getArtist());
-        localTrack.setTrackNumber(spotifyTrack.getTrackNumber());
+            //update track info
+            localTrack.setTitle(spotifyTrack.getTitle());
+            localTrack.setArtist(spotifyTrack.getArtist());
+            localTrack.setTrackNumber(spotifyTrack.getTrackNumber());
 
-        //update album info
-        localAlbum.setImage(spotifyAlbum.getImage());
-        localAlbum.setImageMimeType(spotifyAlbum.getImageMimeType());
-        localAlbum.setName(spotifyAlbum.getName());
+            //update album info
+            localAlbum.setImage(spotifyAlbum.getImage());
+            localAlbum.setImageMimeType(spotifyAlbum.getImageMimeType());
+            localAlbum.setName(spotifyAlbum.getName());
 
-        AudioUtils.updateFileMetadata(localTrack);
+            return CompletableFuture.completedFuture(AudioUtils.updateFileMetadata(localTrack));
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+            return CompletableFuture.completedFuture(false);
+        }
     }
 
     private boolean isAudioFile(File file) {

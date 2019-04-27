@@ -52,7 +52,7 @@ public class LocalAlbum extends Observable implements Album {
     }
 
     public void setName(String name) {
-        if (!this.name.equals(name))
+        if (!Objects.equals(this.name, name))
             this.setChanged();
 
         this.name = name;

@@ -53,10 +53,8 @@ public class SynchronisationService {
         spotifyDiscovery.onFinished(this::serviceFinished);
 
         settingsService.getUserSettingsOrDefault().getSynchronization().addObserver((o, arg) -> {
-            if (spotifyDiscovery.isFinished()) {
-                statusComponent.setSynchronizing(true);
-                localMusicDiscovery.start();
-            }
+            statusComponent.setSynchronizing(true);
+            localMusicDiscovery.start();
         });
     }
 

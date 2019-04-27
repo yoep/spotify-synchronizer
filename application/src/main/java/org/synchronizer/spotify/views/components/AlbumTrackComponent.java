@@ -2,7 +2,6 @@ package org.synchronizer.spotify.views.components;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -35,6 +34,7 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     private boolean activeInMediaPlayer;
     private TrackChangeListener trackChangeListener;
     private PlayerStateChangeListener playerStateChangeListener;
+    private AlbumTrackSyncComponent syncComponent;
 
     @FXML
     private GridPane trackRow;
@@ -104,7 +104,7 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
 
     public void syncTrackData() {
         if (isSyncTrackDataAvailable())
-            audioService.updateFileMetadata(syncTrack);
+            audioService.updateFileMetadata(syncTrack).thenAccept(e -> syncComponent.updateCompleted(e));
     }
 
     private void initializeListeners() {
@@ -120,8 +120,7 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     }
 
     private void initializeSyncPane() {
-        AlbumTrackSyncComponent syncComponent = new AlbumTrackSyncComponent(syncTrack, uiText);
-
+        syncComponent = new AlbumTrackSyncComponent(syncTrack, uiText);
         syncComponent.setOnSyncClicked(this::syncTrackData);
 
         syncPane.getChildren().add(viewLoader.loadComponent("album_track_sync_component.fxml", syncComponent));

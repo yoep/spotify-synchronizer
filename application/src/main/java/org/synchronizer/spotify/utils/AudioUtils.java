@@ -1,8 +1,6 @@
 package org.synchronizer.spotify.utils;
 
-import com.mpatric.mp3agic.ID3v1;
-import com.mpatric.mp3agic.ID3v2;
-import com.mpatric.mp3agic.Mp3File;
+import com.mpatric.mp3agic.*;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -48,7 +46,7 @@ public class AudioUtils {
         return null;
     }
 
-    public static void updateFileMetadata(LocalTrack track) {
+    public static boolean updateFileMetadata(LocalTrack track) {
         try {
             File file = track.getFile();
             Mp3File mp3File = new Mp3File(file);
@@ -64,9 +62,12 @@ public class AudioUtils {
             mp3File.save(tempFile);
             replaceFileWithTempFile(file, tempFile);
             log.debug("Updated metadata of " + file);
+            return true;
         } catch (Exception ex) {
             log.error("Failed to update audio file metadata", ex);
         }
+
+        return false;
     }
 
     private static LocalTrack processMetadataV1(File file, Mp3File mp3File) {
@@ -134,6 +135,10 @@ public class AudioUtils {
         ID3v2 metadata = file.getId3v2Tag();
         Album album = track.getAlbum();
 
+        //Windows 7 is unable to read v24 tags, so we downgrade them
+        if (metadata instanceof ID3v24Tag)
+            metadata = downgradeMetadataV2(file);
+
         //update track info
         metadata.setTrack(Optional.ofNullable(track.getTrackNumber())
                 .map(String::valueOf)
@@ -146,6 +151,12 @@ public class AudioUtils {
         metadata.setAlbumImage(album.getImage(), album.getImageMimeType());
     }
 
+    private static ID3v23Tag downgradeMetadataV2(Mp3File file) {
+        file.removeId3v2Tag();
+
+        return new ID3v23Tag();
+    }
+
     private static String getTempFilePath(File file) {
         String path = FilenameUtils.getFullPath(file.getAbsolutePath());
         String name = FilenameUtils.removeExtension(file.getName());
@@ -154,15 +165,21 @@ public class AudioUtils {
         return path + name + "_temp." + extension;
     }
 
-    private static void replaceFileWithTempFile(File file, String tempFilePath) {
+    private static boolean replaceFileWithTempFile(File file, String tempFilePath) {
         File tempFile = new File(tempFilePath);
 
         if (file.delete()) {
             if (!tempFile.renameTo(file)) {
                 throw new SynchronizeException("Rename of file " + tempFilePath + " to " + file + " failed");
             }
+
+            return true;
         } else {
             log.error("Failed to delete file " + file);
+            //delete temp file
+            tempFile.delete();
         }
+
+        return false;
     }
 }

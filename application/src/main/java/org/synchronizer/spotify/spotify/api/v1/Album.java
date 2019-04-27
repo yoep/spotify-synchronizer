@@ -29,6 +29,10 @@ public class Album {
      */
     private Map<String, String> externalUrls;
     /**
+     * A list of the genres used to classify the album.
+     */
+    private List<String> genres;
+    /**
      * A link to the Web API endpoint providing full details of the album.
      */
     private String href;
@@ -44,6 +48,10 @@ public class Album {
      * The name of the album. In case of an album takedown, the value may be an empty string.
      */
     private String name;
+    /**
+     * The tracks of the album.
+     */
+    private Tracks tracks;
     /**
      * The object type: “album”
      */

@@ -25,6 +25,7 @@ public class AlbumTrackSyncComponent implements Initializable {
     private final UIText uiText;
 
     private Runnable onSyncClicked;
+    private boolean updating;
 
     @FXML
     private Text outOfSyncIcon;
@@ -49,6 +50,17 @@ public class AlbumTrackSyncComponent implements Initializable {
         syncTrack.addObserver((o, arg) -> updateSyncState());
     }
 
+    public void updateCompleted(boolean success) {
+        updating = false;
+
+        if (success) {
+            updateSyncState();
+        } else {
+            outOfSyncIcon.setVisible(true);
+            outOfSyncIcon.setStyle("-fx-fill: #f00");
+        }
+    }
+
     private void initializeTooltips() {
         Tooltip tooltipInSync = new Tooltip(uiText.get(SyncMessage.SYNCHRONIZED));
         Tooltip.install(inSyncIcon, tooltipInSync);
@@ -68,6 +80,9 @@ public class AlbumTrackSyncComponent implements Initializable {
     }
 
     private void updateSyncState() {
+        if (updating)
+            return;
+
         log.debug("Updating sync status for track " + syncTrack);
 
         if (syncTrack.isLocalTrackAvailable() && syncTrack.isSpotifyTrackAvailable()) {
@@ -95,6 +110,7 @@ public class AlbumTrackSyncComponent implements Initializable {
         inSyncIcon.setVisible(false);
         outOfSyncIcon.setVisible(false);
 
+        updating = true;
         onSyncClicked.run();
     }
 }

@@ -19,16 +19,16 @@
     </padding>
 
     <!-- LEFT SIDE / IMAGE -->
-    <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0">
-        <HBox fx:id="noAlbum" maxHeight="150" maxWidth="150" minHeight="150" styleClass="album_border" StackPane.alignment="TOP_CENTER">
+    <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="TOP_CENTER">
+        <HBox fx:id="noAlbum" maxHeight="150" maxWidth="150" minHeight="150" styleClass="album_border" alignment="CENTER">
             <Text styleClass="icon-solid, icon-xxlarge">
                 <Icons fx:constant="COMPACT_DISK"/>
             </Text>
         </HBox>
-        <ImageView fx:id="albumImage" fitWidth="150" preserveRatio="true" StackPane.alignment="TOP_CENTER"/>
+        <ImageView fx:id="albumImage" fitWidth="150" preserveRatio="true"/>
 
         <!-- ACTIONS -->
-        <StackPane fx:id="albumOverlay" visible="false" styleClass="album_image_overlay" maxHeight="150" StackPane.alignment="TOP_CENTER">
+        <StackPane fx:id="albumOverlay" visible="false" styleClass="album_image_overlay" maxHeight="150">
             <Text fx:id="albumOptions" styleClass="icon, icon-large, icon-clickable" StackPane.alignment="TOP_RIGHT">
                 <StackPane.margin>
                     <Insets top="5" right="5"/>

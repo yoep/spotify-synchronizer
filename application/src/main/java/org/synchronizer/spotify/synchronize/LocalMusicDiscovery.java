@@ -32,11 +32,12 @@ public class LocalMusicDiscovery implements DiscoveryService {
 
     private final SettingsService settingsService;
     private final AudioService audioService;
-    private final TaskExecutor threadPoolTaskExecutor;
+    private final TaskExecutor taskExecutor;
     private final ObservableList<MusicTrack> trackList = FXCollections.observableArrayList();
     private final List<CompletableFuture<List<MusicTrack>>> asyncDiscoveries = new ArrayList<>();
 
     private Runnable callback;
+    private boolean keepIndexing;
     private boolean finished = true;
 
     @Override
@@ -46,10 +47,23 @@ public class LocalMusicDiscovery implements DiscoveryService {
 
     @Override
     public void start() {
-        if (isFinished()) {
-            this.finished = false;
-            indexLocalFiles();
+        if (!finished) {
+            log.info("Interrupting current indexation of local files");
+            keepIndexing = false;
+
+            while (!finished) {
+                //wait for the thread to exit gracefully
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    log.error(e.getMessage(), e);
+                }
+            }
         }
+
+        this.finished = false;
+        this.keepIndexing = true;
+        indexLocalFiles();
     }
 
     @Override
@@ -58,6 +72,9 @@ public class LocalMusicDiscovery implements DiscoveryService {
     }
 
     private void indexLocalFiles() {
+        if (!keepIndexing)
+            return;
+
         File localMusicDirectory = settingsService.getUserSettings()
                 .map(UserSettings::getSynchronization)
                 .map(Synchronization::getLocalMusicDirectory)
@@ -68,14 +85,21 @@ public class LocalMusicDiscovery implements DiscoveryService {
             discoverDirectory(localMusicDirectory);
 
             onAsyncDiscoveryCompletion(() -> {
-                log.info("Discovered " + trackList.size() + " local music tracks");
                 this.finished = true;
-                invokeCallback();
+
+                //do not execute the callback if the current indexing is being aborted for a new one
+                if (keepIndexing) {
+                    log.info("Discovered " + trackList.size() + " local music tracks");
+                    invokeCallback();
+                }
             });
         }
     }
 
     private void discoverDirectory(File directory) {
+        if (!keepIndexing)
+            return;
+
         File[] files = directory.listFiles();
 
         discoveryAudioFiles(directory);
@@ -95,11 +119,11 @@ public class LocalMusicDiscovery implements DiscoveryService {
     }
 
     private void onAsyncDiscoveryCompletion(Runnable onCompletion) {
-        threadPoolTaskExecutor.execute(() -> {
+        taskExecutor.execute(() -> {
             //check if all completable futures have been completed
             //we don't wan't to chain all the completable futures with CompletableFuture.allOf as we want the results of each individual discovery to be visible
             //immediately in the overview list
-            while (!asyncDiscoveries.stream().allMatch(CompletableFuture::isDone)) {
+            while (!asyncDiscoveries.stream().allMatch(CompletableFuture::isDone) && keepIndexing) {
                 //wait for completion and ask the JVM to not run this thread within the next 50 millis
                 try {
                     Thread.sleep(50);
