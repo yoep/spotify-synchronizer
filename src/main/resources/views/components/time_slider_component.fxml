@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<?import javafx.geometry.Insets?>
-<GridPane xmlns="http://javafx.com/javafx"  xmlns:fx="http://javafx.com/fxml"
+<GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
           fx:controller="org.synchronizer.spotify.views.components.TimeSliderComponent">
     <columnConstraints>
         <ColumnConstraints hgrow="NEVER" maxWidth="50" minWidth="50"/>

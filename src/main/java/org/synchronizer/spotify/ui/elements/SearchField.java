@@ -4,13 +4,13 @@ import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import lombok.extern.log4j.Log4j2;
 import org.synchronizer.spotify.ui.Icons;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Log4j2
@@ -131,27 +131,25 @@ public class SearchField extends StackPane {
     }
 
     private Node createIconGraph() {
-        Label icon = new Label(Icons.SEARCH);
-
-        icon.getStyleClass().add("icon");
-        icon.setPadding(new Insets(-1, 0, 0, 5));
-
-        return icon;
+        return Icon.builder()
+                .unicode(Icons.SEARCH)
+                .padding(new Insets(-1, 0, 0, 5))
+                .build();
     }
 
     private Node createClearGraph() {
-        Label icon = new Label(Icons.CROSS);
+        clearIcon = Icon.builder()
+                .unicode(Icons.CROSS)
+                .padding(new Insets(-1, 5, 0, 5))
+                .styleClasses(Collections.singletonList("icon-clickable"))
+                .visible(false)
+                .onMouseClicked(event -> {
+                    this.searchField.clear();
+                    this.onCleared();
+                })
+                .build();
 
-        icon.getStyleClass().addAll("icon", "icon-clickable");
-        icon.setPadding(new Insets(-1, 5, 0, 5));
-        icon.setVisible(false);
-        icon.setOnMouseClicked(event -> {
-            this.searchField.clear();
-            this.onCleared();
-        });
-        clearIcon = icon;
-
-        return icon;
+        return clearIcon;
     }
 
     private Thread createWaitThread() {

@@ -19,6 +19,7 @@ import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
 import org.synchronizer.spotify.ui.ViewLoader;
+import org.synchronizer.spotify.ui.elements.Icon;
 import org.synchronizer.spotify.ui.lang.SyncMessage;
 import org.synchronizer.spotify.utils.CollectionUtils;
 import org.synchronizer.spotify.utils.UIUtils;
@@ -48,7 +49,7 @@ public class AlbumOverviewComponent implements Initializable {
     @FXML
     private Region albumOverlay;
     @FXML
-    private Text albumOptions;
+    private Icon albumOptions;
     @FXML
     private GridPane trackOverview;
 

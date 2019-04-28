@@ -1,25 +1,10 @@
-.root .icon {
-    -fx-font-family: FontAwesome;
+.root Icon, .root IconSolid, .root IconRegular {
     -fx-font-size: 1em;
     -fx-text-fill: #0c7032;
     -fx-fill: #0c7032;
 }
 
-.root .icon-regular {
-    -fx-font-family: "Font Awesome 5 Free Regular";
-    -fx-font-size: 1em;
-    -fx-text-fill: #0c7032;
-    -fx-fill: #0c7032;
-}
-
-.root .icon-solid {
-    -fx-font-family: "Font Awesome 5 Free Solid";
-    -fx-font-size: 1em;
-    -fx-text-fill: #0c7032;
-    -fx-fill: #0c7032;
-}
-
-.root .icon:disabled {
+.root Icon:disabled, .root IconSolid:disabled, .root IconRegular:disabled {
     -fx-text-fill: gray;
     -fx-fill: gray;
 }

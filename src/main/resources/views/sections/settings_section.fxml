@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
+<?import org.synchronizer.spotify.ui.elements.Icon?>
 <?import org.synchronizer.spotify.ui.Icons?>
 <StackPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="org.synchronizer.spotify.views.sections.SettingsSection" stylesheets="/styles/settings.css">
@@ -47,11 +47,14 @@
     </ScrollPane>
 
     <!-- BACK ICON -->
-    <Text styleClass="icon, icon-clickable, icon-large" onMouseClicked="#goBack"
+    <Icon styleClass="icon-clickable, icon-large" onMouseClicked="#goBack"
           StackPane.alignment="TOP_LEFT">
         <StackPane.margin>
             <Insets left="10" top="10"/>
         </StackPane.margin>
+        <tooltip>
+            <Tooltip text="%settings_back" />
+        </tooltip>
         <Icons fx:constant="ARROW_CIRCLE_LEFT"/>
-    </Text>
+    </Icon>
 </StackPane>

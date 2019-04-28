@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import org.synchronizer.spotify.ui.Icons?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
+<?import org.synchronizer.spotify.ui.elements.Icon?>
+<?import org.synchronizer.spotify.ui.Icons?>
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
           fx:controller="org.synchronizer.spotify.views.components.VolumeComponent"
           stylesheets="/styles/main.css, /styles/volume.css">
     <columnConstraints>
         <ColumnConstraints minWidth="20" maxWidth="20"/>
-        <ColumnConstraints />
+        <ColumnConstraints/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="20" maxHeight="20"/>
     </rowConstraints>
 
-    <Text fx:id="volumeIcon" styleClass="icon" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+    <Icon fx:id="volumeIcon" GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
         <Icons fx:constant="VOLUME_MAX"/>
-    </Text>
+    </Icon>
 
     <Slider fx:id="volumeSlider" styleClass="volume-slider" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.valignment="CENTER">
         <GridPane.margin>

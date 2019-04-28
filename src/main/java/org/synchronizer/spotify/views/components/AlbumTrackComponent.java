@@ -17,6 +17,7 @@ import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
 import org.synchronizer.spotify.ui.ViewLoader;
+import org.synchronizer.spotify.ui.elements.Icon;
 
 import java.net.URL;
 import java.util.Objects;
@@ -41,11 +42,11 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     @FXML
     private Text trackNumber;
     @FXML
-    private Text playTrackIcon;
+    private Icon playTrackIcon;
     @FXML
-    private Text playPauseIcon;
+    private Icon playPauseIcon;
     @FXML
-    private Text playbackUnavailableIcon;
+    private Icon playbackUnavailableIcon;
     @FXML
     private Text title;
     @FXML

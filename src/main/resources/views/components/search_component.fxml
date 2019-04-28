@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
-<?import org.synchronizer.spotify.ui.Icons?>
+<?import org.synchronizer.spotify.ui.elements.Icon?>
 <?import org.synchronizer.spotify.ui.elements.SearchField?>
+<?import org.synchronizer.spotify.ui.Icons?>
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
           fx:controller="org.synchronizer.spotify.views.components.SearchComponent" stylesheets="/styles/search.css" styleClass="search-area">
     <columnConstraints>
@@ -25,13 +26,18 @@
     <SearchField fx:id="searchBox" promptText="%search" styleClass="search"
                  GridPane.columnIndex="0" GridPane.rowIndex="0"/>
 
-    <Text fx:id="sortIcon" styleClass="icon, icon-clickable"
+    <Icon fx:id="sortIcon" styleClass="icon-clickable"
           GridPane.columnIndex="1" GridPane.rowIndex="0">
-        <Icons fx:constant="SORT" />
-    </Text>
+        <tooltip>
+            <Tooltip text="%sort"/>
+        </tooltip>
+        <Icons fx:constant="SORT"/>
+    </Icon>
 
-    <Text fx:id="menuIcon" styleClass="icon, icon-large, icon-clickable"
-          GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.fillWidth="true">
-        <Icons fx:constant="ELLIPSIS_V"/>
-    </Text>
+    <Pane fx:id="menuPane" styleClass="icon-clickable"
+          GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.fillWidth="true" GridPane.valignment="CENTER">
+        <Icon fx:id="menuIcon" styleClass="icon-large, icon-clickable">
+            <Icons fx:constant="ELLIPSIS_V"/>
+        </Icon>
+    </Pane>
 </GridPane>

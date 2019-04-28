@@ -5,6 +5,8 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
+<?import org.synchronizer.spotify.ui.elements.Icon?>
+<?import org.synchronizer.spotify.ui.elements.IconSolid?>
 <?import org.synchronizer.spotify.ui.Icons?>
 <GridPane stylesheets="/styles/main.css,/styles/album_overview.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
@@ -21,23 +23,23 @@
     <!-- LEFT SIDE / IMAGE -->
     <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="TOP_CENTER">
         <HBox fx:id="noAlbum" maxHeight="150" maxWidth="150" minHeight="150" styleClass="album_border" alignment="CENTER">
-            <Text styleClass="icon-solid, icon-xxlarge">
+            <IconSolid styleClass="icon-xxlarge">
                 <Icons fx:constant="COMPACT_DISK"/>
-            </Text>
+            </IconSolid>
         </HBox>
         <ImageView fx:id="albumImage" fitWidth="150" preserveRatio="true"/>
 
         <!-- ACTIONS -->
         <StackPane fx:id="albumOverlay" visible="false" styleClass="album_image_overlay" maxHeight="150">
-            <Text fx:id="albumOptions" styleClass="icon, icon-large, icon-clickable" StackPane.alignment="TOP_RIGHT">
+            <Icon fx:id="albumOptions" styleClass="icon-large, icon-clickable" StackPane.alignment="TOP_RIGHT">
                 <StackPane.margin>
                     <Insets top="5" right="5"/>
                 </StackPane.margin>
                 <Icons fx:constant="ELLIPSIS_V"/>
-            </Text>
-            <Text styleClass="icon, icon-xxlarge, icon-clickable" StackPane.alignment="CENTER" onMouseClicked="#play">
+            </Icon>
+            <Icon styleClass="icon-xxlarge, icon-clickable" StackPane.alignment="CENTER" onMouseClicked="#play">
                 <Icons fx:constant="PLAY_CIRCLE_OPEN"/>
-            </Text>
+            </Icon>
         </StackPane>
     </StackPane>
 

@@ -2,19 +2,18 @@ package org.synchronizer.spotify.views.components;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Tooltip;
-import javafx.scene.text.Text;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
+import org.synchronizer.spotify.ui.elements.Icon;
 import org.synchronizer.spotify.ui.elements.SearchField;
 import org.synchronizer.spotify.ui.elements.SearchListener;
 import org.synchronizer.spotify.ui.elements.SortListener;
-import org.synchronizer.spotify.ui.lang.MainMessage;
 import org.synchronizer.spotify.ui.lang.MenuMessage;
 import org.synchronizer.spotify.utils.UIUtils;
 
@@ -36,9 +35,11 @@ public class SearchComponent implements Initializable {
     private Runnable onSettingsClicked;
 
     @FXML
-    private Text menuIcon;
+    private Icon menuIcon;
     @FXML
-    private Text sortIcon;
+    private Pane menuPane;
+    @FXML
+    private Label sortIcon;
     @FXML
     private SearchField searchBox;
 
@@ -74,17 +75,14 @@ public class SearchComponent implements Initializable {
 
         contextMenu.setWidth(100);
 
-        menuIcon.setOnMouseClicked(event -> contextMenu.show((Node) event.getSource(), event.getScreenX(), event.getScreenY()));
-        menuIcon.setOnContextMenuRequested(event -> contextMenu.show((Node) event.getSource(), event.getScreenX(), event.getScreenY()));
+        menuIcon.setOnMouseClicked(event -> contextMenu.show(menuPane, menuPane.getLayoutX(), menuPane.getLayoutY()));
     }
 
     private void initializeSort() {
-        Tooltip tooltip = new Tooltip(uiText.get(MainMessage.SORT));
-
         sortIcon.setOnMouseClicked(event -> sort());
-        Tooltip.install(sortIcon, tooltip);
     }
 
+    @FXML
     private void openSettings() {
         Optional.ofNullable(onSettingsClicked)
                 .ifPresent(Runnable::run);

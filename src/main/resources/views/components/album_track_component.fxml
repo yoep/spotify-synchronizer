@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.text.Text?>
+<?import org.synchronizer.spotify.ui.elements.Icon?>
 <?import org.synchronizer.spotify.ui.Icons?>
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="/styles/album_overview.css, /styles/main.css"
           fx:id="trackRow">
@@ -20,18 +21,18 @@
         <Text fx:id="trackNumber" text="#"/>
 
         <!-- PLAY ICON -->
-        <Text fx:id="playTrackIcon" styleClass="icon, icon-clickable" visible="false">
+        <Icon fx:id="playTrackIcon" styleClass="icon-clickable" visible="false">
             <Icons fx:constant="PLAY_CIRCLE"/>
-        </Text>
+        </Icon>
         <!-- PAUSE ICON -->
-        <Text fx:id="playPauseIcon" styleClass="icon, icon-clickable" visible="false">
+        <Icon fx:id="playPauseIcon" styleClass="icon-clickable" visible="false">
             <Icons fx:constant="PAUSE"/>
-        </Text>
+        </Icon>
 
         <!-- TRACK UNAVAILABLE -->
-        <Text fx:id="playbackUnavailableIcon" styleClass="icon" disable="true" visible="false">
+        <Icon fx:id="playbackUnavailableIcon" disable="true" visible="false">
             <Icons fx:constant="BAN"/>
-        </Text>
+        </Icon>
     </StackPane>
 
     <!-- MIDDLE SECTION -->

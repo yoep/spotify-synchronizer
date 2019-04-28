@@ -6,12 +6,12 @@ import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tooltip;
-import javafx.scene.text.Text;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
+import org.synchronizer.spotify.ui.elements.Icon;
 import org.synchronizer.spotify.ui.lang.SyncMessage;
 import org.synchronizer.spotify.utils.UIUtils;
 
@@ -28,11 +28,11 @@ public class AlbumTrackSyncComponent implements Initializable {
     private boolean updating;
 
     @FXML
-    private Text outOfSyncIcon;
+    private Icon outOfSyncIcon;
     @FXML
-    private Text inSyncIcon;
+    private Icon inSyncIcon;
     @FXML
-    private Text noSyncIcon;
+    private Icon noSyncIcon;
     @FXML
     private ProgressIndicator progressIndicator;
 

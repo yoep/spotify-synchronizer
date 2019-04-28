@@ -1,6 +1,5 @@
 package org.synchronizer.spotify.authorization;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -18,7 +17,6 @@ import java.util.function.Consumer;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.verify;
 
-@Ignore
 @RunWith(MockitoJUnitRunner.class)
 public class AuthorizationServiceTest {
     @Mock

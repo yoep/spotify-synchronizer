@@ -1,7 +1,7 @@
 package org.synchronizer.spotify.utils;
 
 import javafx.scene.control.MenuItem;
-import javafx.scene.text.Text;
+import org.synchronizer.spotify.ui.elements.Icon;
 
 import java.util.Optional;
 
@@ -15,7 +15,7 @@ public class UIUtils {
 
     public static MenuItem createMenuItem(String text, String iconUnicode, Runnable action) {
         MenuItem menuItem = new MenuItem(text, Optional.ofNullable(iconUnicode)
-                .map(Text::new)
+                .map(Icon::new)
                 .orElse(null));
 
         menuItem.setOnAction(event -> action.run());

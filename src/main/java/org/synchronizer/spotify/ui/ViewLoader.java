@@ -6,7 +6,6 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -31,7 +30,6 @@ import java.io.IOException;
 public class ViewLoader {
     public static final String VIEW_DIRECTORY = "/views/";
     private static final String COMPONENT_DIRECTORY = VIEW_DIRECTORY + "components/";
-    private static final String FONT_DIRECTORY = "/fonts/";
     private static final String IMAGE_DIRECTORY = "/images/";
 
     private final SettingsService settingsService;
@@ -237,9 +235,9 @@ public class ViewLoader {
     }
 
     private void loadFonts() {
-        Font.loadFont(getClass().getResource(FONT_DIRECTORY + "fontawesome-webfont.ttf").toExternalForm(), 10);
-        Font.loadFont(getClass().getResource(FONT_DIRECTORY + "fontawesome-regular.ttf").toExternalForm(), 10);
-        Font.loadFont(getClass().getResource(FONT_DIRECTORY + "fontawesome-solid.ttf").toExternalForm(), 10);
+        FontRegistry.getInstance().loadFont("fontawesome-webfont.ttf", 10);
+        FontRegistry.getInstance().loadFont("fontawesome-regular.ttf", 10);
+        FontRegistry.getInstance().loadFont("fontawesome-solid.ttf", 10);
     }
 
     private void initWindowScale(Scene scene, ScaleAware controller) {
