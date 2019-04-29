@@ -61,6 +61,15 @@ public class AlbumTrackSyncComponent implements Initializable {
         }
     }
 
+    public void setStateToUpdating() {
+        progressIndicator.setVisible(true);
+        noSyncIcon.setVisible(false);
+        inSyncIcon.setVisible(false);
+        outOfSyncIcon.setVisible(false);
+
+        updating = true;
+    }
+
     private void initializeTooltips() {
         Tooltip tooltipInSync = new Tooltip(uiText.get(SyncMessage.SYNCHRONIZED));
         Tooltip.install(inSyncIcon, tooltipInSync);
@@ -105,12 +114,7 @@ public class AlbumTrackSyncComponent implements Initializable {
     }
 
     private void updateMetaData() {
-        progressIndicator.setVisible(true);
-        noSyncIcon.setVisible(false);
-        inSyncIcon.setVisible(false);
-        outOfSyncIcon.setVisible(false);
-
-        updating = true;
+        setStateToUpdating();
         onSyncClicked.run();
     }
 }

@@ -104,8 +104,10 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     }
 
     public void syncTrackData() {
-        if (isSyncTrackDataAvailable())
+        if (isSyncTrackDataAvailable()) {
+            syncComponent.setStateToUpdating();
             audioService.updateFileMetadata(syncTrack).thenAccept(e -> syncComponent.updateCompleted(e));
+        }
     }
 
     private void initializeListeners() {

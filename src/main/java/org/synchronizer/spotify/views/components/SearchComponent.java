@@ -73,8 +73,6 @@ public class SearchComponent implements Initializable {
         ContextMenu contextMenu = new ContextMenu(
                 UIUtils.createMenuItem(uiText.get(MenuMessage.SETTINGS), Icons.COGS, this::openSettings));
 
-        contextMenu.setWidth(100);
-
         menuPane.setOnMouseClicked(event -> contextMenu.show(menuPane, event.getScreenX(), event.getScreenY()));
     }
 
