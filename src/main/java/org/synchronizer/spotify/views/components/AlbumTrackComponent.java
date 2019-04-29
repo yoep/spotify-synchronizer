@@ -17,7 +17,7 @@ import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
 import org.synchronizer.spotify.ui.ViewLoader;
-import org.synchronizer.spotify.ui.elements.Icon;
+import org.synchronizer.spotify.ui.controls.Icon;
 
 import java.net.URL;
 import java.util.Objects;

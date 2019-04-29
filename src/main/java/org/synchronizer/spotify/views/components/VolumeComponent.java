@@ -6,7 +6,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.media.MediaPlayer;
 import org.springframework.stereotype.Component;
 import org.synchronizer.spotify.ui.Icons;
-import org.synchronizer.spotify.ui.elements.Icon;
+import org.synchronizer.spotify.ui.controls.Icon;
 
 import java.net.URL;
 import java.util.ResourceBundle;

@@ -1,4 +1,4 @@
-package org.synchronizer.spotify.ui.elements;
+package org.synchronizer.spotify.ui.controls;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -26,6 +26,6 @@ public class IconRegular extends AbstractIcon {
         setProperty(padding, this::setPadding);
         setProperty(visible, this::setVisible);
         setProperty(onMouseClicked, this::setOnMouseClicked);
-        setProperty(styleClasses, e -> this.getStyleClass().addAll(styleClasses));
+        setProperty(styleClasses, e -> this.getStyleClass().addAll(e));
     }
 }

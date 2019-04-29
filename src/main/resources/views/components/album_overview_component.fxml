@@ -5,8 +5,8 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<?import org.synchronizer.spotify.ui.elements.Icon?>
-<?import org.synchronizer.spotify.ui.elements.IconSolid?>
+<?import org.synchronizer.spotify.ui.controls.Icon?>
+<?import org.synchronizer.spotify.ui.controls.IconSolid?>
 <?import org.synchronizer.spotify.ui.Icons?>
 <GridPane stylesheets="/styles/main.css,/styles/album_overview.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
@@ -23,7 +23,7 @@
     <!-- LEFT SIDE / IMAGE -->
     <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="TOP_CENTER">
         <HBox fx:id="noAlbum" maxHeight="150" maxWidth="150" minHeight="150" styleClass="album_border" alignment="CENTER">
-            <IconSolid styleClass="icon-xxlarge">
+            <IconSolid sizeFactor="4">
                 <Icons fx:constant="COMPACT_DISK"/>
             </IconSolid>
         </HBox>
@@ -31,13 +31,13 @@
 
         <!-- ACTIONS -->
         <StackPane fx:id="albumOverlay" visible="false" styleClass="album_image_overlay" maxHeight="150">
-            <Icon fx:id="albumOptions" styleClass="icon-large, icon-clickable" StackPane.alignment="TOP_RIGHT">
+            <Icon fx:id="albumOptions" sizeFactor="2" styleClass="icon-clickable" StackPane.alignment="TOP_RIGHT">
                 <StackPane.margin>
                     <Insets top="5" right="5"/>
                 </StackPane.margin>
                 <Icons fx:constant="ELLIPSIS_V"/>
             </Icon>
-            <Icon styleClass="icon-xxlarge, icon-clickable" StackPane.alignment="CENTER" onMouseClicked="#play">
+            <Icon sizeFactor="4" styleClass="icon-clickable" StackPane.alignment="CENTER" onMouseClicked="#play">
                 <Icons fx:constant="PLAY_CIRCLE_OPEN"/>
             </Icon>
         </StackPane>

@@ -1,30 +1,14 @@
 .root Icon, .root IconSolid, .root IconRegular {
-    -fx-font-size: 1em;
     -fx-text-fill: #0c7032;
-    -fx-fill: #0c7032;
 }
 
 .root Icon:disabled, .root IconSolid:disabled, .root IconRegular:disabled {
     -fx-text-fill: gray;
-    -fx-fill: gray;
-}
-
-.root .icon-large {
-    -fx-font-size: 2em;
-}
-
-.root .icon-xlarge {
-    -fx-font-size: 3em;
-}
-
-.root .icon-xxlarge {
-    -fx-font-size: 4em;
 }
 
 .root .icon-clickable:hover {
     -fx-cursor: hand;
     -fx-text-fill: #12bc53;
-    -fx-fill: #12bc53;
 }
 
 .root ProgressIndicator {

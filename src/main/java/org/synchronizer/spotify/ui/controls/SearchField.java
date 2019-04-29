@@ -1,4 +1,4 @@
-package org.synchronizer.spotify.ui.elements;
+package org.synchronizer.spotify.ui.controls;
 
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;

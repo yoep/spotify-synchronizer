@@ -10,10 +10,10 @@ import lombok.Setter;
 import org.springframework.stereotype.Component;
 import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
-import org.synchronizer.spotify.ui.elements.Icon;
-import org.synchronizer.spotify.ui.elements.SearchField;
-import org.synchronizer.spotify.ui.elements.SearchListener;
-import org.synchronizer.spotify.ui.elements.SortListener;
+import org.synchronizer.spotify.ui.controls.Icon;
+import org.synchronizer.spotify.ui.controls.SearchField;
+import org.synchronizer.spotify.ui.controls.SearchListener;
+import org.synchronizer.spotify.ui.controls.SortListener;
 import org.synchronizer.spotify.ui.lang.MenuMessage;
 import org.synchronizer.spotify.utils.UIUtils;
 
@@ -75,7 +75,7 @@ public class SearchComponent implements Initializable {
 
         contextMenu.setWidth(100);
 
-        menuIcon.setOnMouseClicked(event -> contextMenu.show(menuPane, menuPane.getLayoutX(), menuPane.getLayoutY()));
+        menuPane.setOnMouseClicked(event -> contextMenu.show(menuPane, event.getScreenX(), event.getScreenY()));
     }
 
     private void initializeSort() {

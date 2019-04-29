@@ -3,7 +3,7 @@
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<?import org.synchronizer.spotify.ui.elements.*?>
+<?import org.synchronizer.spotify.ui.controls.*?>
 <?import org.synchronizer.spotify.ui.*?>
 <GridPane prefHeight="75" prefWidth="800" stylesheets="/styles/main.css,/styles/player.css"
           xmlns="http://javafx.com/javafx/8.0.121"
@@ -20,7 +20,7 @@
 
     <!-- Image -->
     <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0">
-        <IconSolid styleClass="icon-xlarge">
+        <IconSolid sizeFactor="3">
             <Icons fx:constant="COMPACT_DISK"/>
         </IconSolid>
         <ImageView fx:id="image" preserveRatio="true" fitWidth="64"/>
@@ -46,33 +46,29 @@
                 <RowConstraints/>
             </rowConstraints>
 
-            <Icon fx:id="playerPrevious" disable="true" onMouseClicked="#onPrevious"
-                   styleClass="icon-large, icon-clickable, player-button"
-                   GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <Icon fx:id="playerPrevious" disable="true" onMouseClicked="#onPrevious" sizeFactor="2" styleClass="icon-clickable, player-button"
+                  GridPane.columnIndex="0" GridPane.rowIndex="0">
                 <Icons fx:constant="PREVIOUS"/>
                 <tooltip>
                     <Tooltip text="%previous"/>
                 </tooltip>
             </Icon>
-            <Icon fx:id="playerPlay" disable="true" onMouseClicked="#onPlay"
-                   styleClass="icon-large, icon-clickable, player-button"
-                   GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <Icon fx:id="playerPlay" disable="true" onMouseClicked="#onPlay" sizeFactor="2" styleClass="icon-clickable, player-button"
+                  GridPane.columnIndex="1" GridPane.rowIndex="0">
                 <Icons fx:constant="PLAY_CIRCLE"/>
                 <tooltip>
                     <Tooltip text="%play"/>
                 </tooltip>
             </Icon>
-            <Icon fx:id="playerPause" disable="true" onMouseClicked="#onPause"
-                   styleClass="icon-large, icon-clickable, player-button"
-                   GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <Icon fx:id="playerPause" disable="true" onMouseClicked="#onPause" sizeFactor="2" styleClass="icon-clickable, player-button"
+                  GridPane.columnIndex="1" GridPane.rowIndex="0">
                 <Icons fx:constant="PAUSE_CIRCLE"/>
                 <tooltip>
                     <Tooltip text="%pause"/>
                 </tooltip>
             </Icon>
-            <Icon fx:id="playerNext" disable="true" onMouseClicked="#onNext"
-                   styleClass="icon-large, icon-clickable, player-button"
-                   GridPane.columnIndex="2" GridPane.rowIndex="0">
+            <Icon fx:id="playerNext" disable="true" onMouseClicked="#onNext" sizeFactor="2" styleClass="icon-clickable, player-button"
+                  GridPane.columnIndex="2" GridPane.rowIndex="0">
                 <Icons fx:constant="NEXT"/>
                 <tooltip>
                     <Tooltip text="%next"/>

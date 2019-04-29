@@ -1,7 +1,6 @@
 .root .album_title {
     -fx-font-size: 1.5em;
     -fx-text-fill: #0c7032;
-    -fx-fill: #0c7032;
     -fx-font-weight: bold;
 }
 
@@ -12,7 +11,6 @@
 
 .root .artist {
     -fx-text-fill: rgba(12, 110, 48, 0.69);
-    -fx-fill: rgba(12, 110, 48, 0.69);
 }
 
 .root .album_image_overlay {
@@ -21,10 +19,12 @@
 
 .root .album_image_overlay Icon, .root .album_image_overlay IconSolid {
     -fx-text-fill: #d5d5d5;
-    -fx-fill: #d5d5d5;
+}
+
+.root .album_image_overlay .context-menu Icon, .root .album_image_overlay .context-menu IconSolid {
+    -fx-text-fill: #0c7032;
 }
 
 .root .album_image_overlay .icon-clickable:hover {
     -fx-text-fill: #fafafa;
-    -fx-fill: #fafafa;
 }

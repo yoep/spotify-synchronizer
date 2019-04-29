@@ -11,7 +11,7 @@ import lombok.extern.log4j.Log4j2;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
-import org.synchronizer.spotify.ui.elements.Icon;
+import org.synchronizer.spotify.ui.controls.Icon;
 import org.synchronizer.spotify.ui.lang.SyncMessage;
 import org.synchronizer.spotify.utils.UIUtils;
 

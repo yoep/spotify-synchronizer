@@ -3,8 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.*?>
-<?import org.synchronizer.spotify.ui.elements.Icon?>
-<?import org.synchronizer.spotify.ui.elements.SearchField?>
+<?import org.synchronizer.spotify.ui.controls.Icon?>
+<?import org.synchronizer.spotify.ui.controls.SearchField?>
 <?import org.synchronizer.spotify.ui.Icons?>
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
           fx:controller="org.synchronizer.spotify.views.components.SearchComponent" stylesheets="/styles/search.css" styleClass="search-area">
@@ -36,7 +36,7 @@
 
     <Pane fx:id="menuPane" styleClass="icon-clickable"
           GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.fillWidth="true" GridPane.valignment="CENTER">
-        <Icon fx:id="menuIcon" styleClass="icon-large, icon-clickable">
+        <Icon fx:id="menuIcon" sizeFactor="2" styleClass="icon-clickable">
             <Icons fx:constant="ELLIPSIS_V"/>
         </Icon>
     </Pane>

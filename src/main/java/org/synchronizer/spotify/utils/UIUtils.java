@@ -1,7 +1,7 @@
 package org.synchronizer.spotify.utils;
 
 import javafx.scene.control.MenuItem;
-import org.synchronizer.spotify.ui.elements.Icon;
+import org.synchronizer.spotify.ui.controls.Icon;
 
 import java.util.Optional;
 

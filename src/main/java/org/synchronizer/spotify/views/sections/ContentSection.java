@@ -6,7 +6,7 @@ import javafx.scene.layout.Pane;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.synchronizer.spotify.ui.elements.InfiniteScrollPane;
+import org.synchronizer.spotify.ui.controls.InfiniteScrollPane;
 import org.synchronizer.spotify.views.components.SearchComponent;
 import org.synchronizer.spotify.views.model.AlbumOverview;
 

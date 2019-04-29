@@ -1,4 +1,4 @@
-package org.synchronizer.spotify.ui.elements;
+package org.synchronizer.spotify.ui.controls;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
