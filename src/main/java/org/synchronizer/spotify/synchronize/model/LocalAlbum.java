@@ -2,11 +2,9 @@ package org.synchronizer.spotify.synchronize.model;
 
 import javafx.scene.image.Image;
 import lombok.*;
-import org.springframework.util.Assert;
 
 import java.io.ByteArrayInputStream;
 import java.util.Objects;
-import java.util.Observable;
 import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = false)
@@ -14,7 +12,7 @@ import java.util.Optional;
 @Getter
 @Builder
 @AllArgsConstructor
-public class LocalAlbum extends Observable implements Album {
+public class LocalAlbum extends AbstractAlbum {
     private String name;
     private String imageMimeType;
     @EqualsAndHashCode.Exclude
@@ -44,12 +42,6 @@ public class LocalAlbum extends Observable implements Album {
                 .orElse(null);
     }
 
-    @Override
-    public int compareTo(Album compareTo) {
-        Assert.notNull(compareTo, "compareTo cannot be null");
-
-        return getName().compareTo(compareTo.getName());
-    }
 
     public void setName(String name) {
         if (!Objects.equals(this.name, name))

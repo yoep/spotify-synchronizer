@@ -14,7 +14,7 @@ public class CollectionUtils extends org.springframework.util.CollectionUtils {
      * @return Returns a new {@link List} instance with the same original elements.
      */
     @SuppressWarnings("unchecked")
-    public static <T> List<T> copy(List<T> originalList) {
+    public static <T> Collection<T> copy(Collection<T> originalList) {
         Object[] items;
 
         synchronized (originalList) {
@@ -39,7 +39,7 @@ public class CollectionUtils extends org.springframework.util.CollectionUtils {
         Object[] items;
 
         synchronized (originalSet) {
-           items = originalSet.toArray();
+            items = originalSet.toArray();
         }
 
         return Optional.of(items)

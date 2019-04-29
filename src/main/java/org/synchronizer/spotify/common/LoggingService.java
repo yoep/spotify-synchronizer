@@ -117,8 +117,8 @@ public class LoggingService {
                         .withPattern("%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${sys:PID} --- [%t] %-40.40c{1.} : %m%n%xwEx")
                         .build())
                 .build();
-        fileAppender.start();
 
+        fileAppender.start();
         return fileAppender;
     }
 

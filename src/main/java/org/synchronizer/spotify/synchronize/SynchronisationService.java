@@ -1,5 +1,6 @@
 package org.synchronizer.spotify.synchronize;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -7,6 +8,8 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+import org.synchronizer.spotify.cache.CacheService;
 import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.synchronize.model.LocalTrack;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
@@ -17,6 +20,7 @@ import org.synchronizer.spotify.utils.CollectionUtils;
 import org.synchronizer.spotify.views.components.SynchronizeStatusComponent;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Log4j2
@@ -30,14 +34,33 @@ public class SynchronisationService {
     private final SynchronizeDatabaseService synchronizeDatabaseService;
     private final UIText uiText;
     private final SynchronizeStatusComponent statusComponent;
-    private final ObservableList<SyncTrack> tracks = FXCollections.observableArrayList();
+    private final CacheService cacheService;
 
-    /**
-     * Initialize the synchronizer and start the synchronisation.
-     */
+    private final ObservableList<SyncTrack> tracks = FXCollections.observableArrayList();
+    private final List<TracksListener> listeners = new ArrayList<>();
+
     public void init() {
+        Platform.runLater(() -> {
+            //load cache if available
+            tracks.addAll(cacheService.getCachedSyncTracks());
+        });
+
         addListeners();
         startDiscovery();
+    }
+
+    public void addListener(TracksListener listener) {
+        Assert.notNull(listener, "listener cannot be null");
+        synchronized (listeners) {
+            listeners.add(listener);
+        }
+    }
+
+    public void removeListener(TracksListener listener) {
+        Assert.notNull(listener, "listener cannot be null");
+        synchronized (listeners) {
+            listeners.remove(listener);
+        }
     }
 
     private void startDiscovery() {
@@ -49,8 +72,8 @@ public class SynchronisationService {
     private void addListeners() {
         localMusicDiscovery.getTrackList().addListener(this::synchronizeList);
         spotifyDiscovery.getTrackList().addListener(this::synchronizeList);
-        localMusicDiscovery.onFinished(this::serviceFinished);
-        spotifyDiscovery.onFinished(this::serviceFinished);
+        localMusicDiscovery.addListener(this::localDiscoveryFinished);
+        spotifyDiscovery.addListener(e -> this.serviceFinished());
 
         settingsService.getUserSettingsOrDefault().getSynchronization().addObserver((o, arg) -> {
             statusComponent.setSynchronizing(true);
@@ -58,15 +81,21 @@ public class SynchronisationService {
         });
     }
 
+    private void localDiscoveryFinished(Collection<MusicTrack> tracks) {
+        cacheService.cacheLocalTracks(tracks);
+        this.serviceFinished();
+    }
+
     private void serviceFinished() {
         if (localMusicDiscovery.isFinished() && spotifyDiscovery.isFinished()) {
             statusComponent.setSynchronizing(false);
+            cacheService.cacheSync(tracks);
         }
     }
 
     private void synchronizeList(ListChangeListener.Change<? extends MusicTrack> changeList) {
         while (changeList.next()) {
-            List<? extends MusicTrack> addedTracks = CollectionUtils.copy(changeList.getAddedSubList());
+            Collection<? extends MusicTrack> addedTracks = CollectionUtils.copy(changeList.getAddedSubList());
             List<SyncTrack> newSyncTracks = new ArrayList<>();
 
             for (MusicTrack newTrack : addedTracks) {
@@ -95,9 +124,10 @@ public class SynchronisationService {
                 }
             }
 
-            synchronized (tracks) {
+            Platform.runLater(() -> {
+                //load cache if available
                 tracks.addAll(newSyncTracks);
-            }
+            });
         }
     }
 }

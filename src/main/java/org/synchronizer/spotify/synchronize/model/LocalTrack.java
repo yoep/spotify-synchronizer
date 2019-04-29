@@ -3,7 +3,9 @@ package org.synchronizer.spotify.synchronize.model;
 import lombok.*;
 
 import java.io.File;
+import java.net.URI;
 import java.util.Objects;
+import java.util.Optional;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
@@ -19,7 +21,10 @@ public class LocalTrack extends AbstractMusicTrack {
 
     @Override
     public String getUri() {
-        return file.toURI().toString();
+        return Optional.ofNullable(file)
+                .map(File::toURI)
+                .map(URI::toString)
+                .orElse(null);
     }
 
     public void setTitle(String title) {

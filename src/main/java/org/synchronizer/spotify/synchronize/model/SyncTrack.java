@@ -21,18 +21,18 @@ public interface SyncTrack extends MusicTrack {
     boolean isSpotifyTrackAvailable();
 
     /**
-     * Verify if the metadata from the local track is the same as the spotify track.
+     * Get the current sync status.
      *
-     * @return Returns true if the local track is in sync, else false.
+     * @return Returns the current sync status of the local- and spotify track.
      */
-    boolean isMetaDataSynchronized();
+    SyncState getSyncState();
 
     /**
      * Get the found spotify track.
      *
      * @return Returns the found spotify track info.
      */
-    Optional<SpotifyTrack> getSpotifyTrack();
+    Optional<MusicTrack> getSpotifyTrack();
 
     /**
      * Get the local track if available.

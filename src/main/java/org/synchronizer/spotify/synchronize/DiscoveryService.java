@@ -23,15 +23,22 @@ public interface DiscoveryService {
     ObservableList<MusicTrack> getTrackList();
 
     /**
+     * Add the given listener to this service.
+     *
+     * @param listener The listener to add.
+     */
+    void addListener(DiscoveryListener listener);
+
+    /**
+     * The listener to remove from the service.
+     *
+     * @param listener The listener to remove.
+     */
+    void removeListener(DiscoveryListener listener);
+
+    /**
      * Start the discovery service on an asynchronous thread.
      */
     @Async
     void start() throws RuntimeException;
-
-    /**
-     * Is invoked when the synchronisation process if finished.
-     *
-     * @param callback Set the callback function.
-     */
-    void onFinished(Runnable callback);
 }

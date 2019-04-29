@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 import org.synchronizer.spotify.spotify.SpotifyService;
 import org.synchronizer.spotify.spotify.api.v1.SavedTrack;
@@ -18,6 +19,8 @@ import org.synchronizer.spotify.synchronize.model.SpotifyTrack;
 
 import javax.annotation.PostConstruct;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -28,10 +31,11 @@ import java.util.stream.Collectors;
 public class SpotifyDiscovery implements DiscoveryService {
     private final SpotifyService spotifyService;
     private final RestTemplate restTemplate;
+
     private final ObservableList<MusicTrack> trackList = FXCollections.observableArrayList();
     private final ObservableList<SavedTrack> savedTrackList = FXCollections.observableArrayList();
+    private final List<DiscoveryListener> listeners = new ArrayList<>();
 
-    private Runnable callback;
     private boolean finished = true;
 
     @PostConstruct
@@ -49,6 +53,24 @@ public class SpotifyDiscovery implements DiscoveryService {
     @Override
     public boolean isFinished() {
         return this.finished;
+    }
+
+    @Override
+    public void addListener(DiscoveryListener listener) {
+        Assert.notNull(listener, "listener cannot be null");
+
+        synchronized (listeners) {
+            listeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeListener(DiscoveryListener listener) {
+        Assert.notNull(listener, "listener cannot be null");
+
+        synchronized (listeners) {
+            listeners.remove(listener);
+        }
     }
 
     @Override
@@ -76,17 +98,6 @@ public class SpotifyDiscovery implements DiscoveryService {
         }
     }
 
-    @Override
-    public void onFinished(Runnable callback) {
-        this.callback = callback;
-    }
-
-    private void invokeCallback() {
-        if (callback != null) {
-            this.callback.run();
-        }
-    }
-
     private SpotifyTrack retrieveMimeType(SpotifyTrack track) {
         try {
             URI uri = new URI(track.getAlbum().getHighResImageUri());
@@ -109,5 +120,9 @@ public class SpotifyDiscovery implements DiscoveryService {
 
     private byte[] getImageForUri(URI uri) {
         return restTemplate.getForObject(uri, byte[].class);
+    }
+
+    private void invokeCallback() {
+        listeners.forEach(e -> e.onFinish(trackList));
     }
 }

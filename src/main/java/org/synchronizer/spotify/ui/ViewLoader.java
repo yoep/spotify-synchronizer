@@ -22,7 +22,6 @@ import org.synchronizer.spotify.settings.model.UserSettings;
 import org.synchronizer.spotify.ui.exceptions.PrimaryWindowNotAvailableException;
 import org.synchronizer.spotify.ui.exceptions.ViewNotFoundException;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 
 @Log4j2
@@ -50,11 +49,6 @@ public class ViewLoader {
         this.applicationContext = applicationContext;
         this.viewManager = viewManager;
         this.uiText = uiText;
-    }
-
-    @PostConstruct
-    public void init() {
-        loadFonts();
     }
 
     /**
@@ -232,12 +226,6 @@ public class ViewLoader {
 
     private Image loadWindowIcon(String iconName) {
         return new Image(getClass().getResourceAsStream(IMAGE_DIRECTORY + iconName));
-    }
-
-    private void loadFonts() {
-        FontRegistry.getInstance().loadFont("fontawesome-webfont.ttf", 10);
-        FontRegistry.getInstance().loadFont("fontawesome-regular.ttf", 10);
-        FontRegistry.getInstance().loadFont("fontawesome-solid.ttf", 10);
     }
 
     private void initWindowScale(Scene scene, ScaleAware controller) {

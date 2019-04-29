@@ -2,10 +2,12 @@ package org.synchronizer.spotify.synchronize.model;
 
 import org.synchronizer.spotify.common.IObservable;
 
+import java.io.Serializable;
+
 /**
  * Defines the information about a music track which generalizes the info between local and Spotify music tracks.
  */
-public interface MusicTrack extends TrackInfo, IObservable, Comparable<MusicTrack> {
+public interface MusicTrack extends TrackInfo, IObservable, Comparable<MusicTrack>, Serializable {
     /**
      * Get the album of the track.
      *

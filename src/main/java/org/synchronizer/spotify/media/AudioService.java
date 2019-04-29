@@ -42,9 +42,9 @@ public class AudioService {
         try {
             Assert.notNull(track, "track cannot be null");
             LocalTrack localTrack = (LocalTrack) track.getLocalTrack().orElseThrow(() -> new SynchronizeException("Local track is not available for synchronization"));
-            SpotifyTrack spotifyTrack = track.getSpotifyTrack().orElseThrow(() -> new SynchronizeException("Spotify track is not available for synchronization"));
+            MusicTrack spotifyTrack = track.getSpotifyTrack().orElseThrow(() -> new SynchronizeException("Spotify track is not available for synchronization"));
             LocalAlbum localAlbum = (LocalAlbum) localTrack.getAlbum();
-            SpotifyAlbum spotifyAlbum = (SpotifyAlbum) spotifyTrack.getAlbum();
+            Album spotifyAlbum = spotifyTrack.getAlbum();
 
             //update track info
             localTrack.setTitle(spotifyTrack.getTitle());

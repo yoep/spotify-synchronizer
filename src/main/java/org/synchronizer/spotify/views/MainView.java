@@ -26,7 +26,7 @@ import org.synchronizer.spotify.views.model.AlbumOverview;
 import org.synchronizer.spotify.views.sections.ContentSection;
 
 import java.net.URL;
-import java.util.List;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -47,7 +47,7 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
 
         synchronisationService.getTracks().addListener((ListChangeListener<SyncTrack>) c -> {
             while (c.next()) {
-                List<? extends SyncTrack> addedTracks = CollectionUtils.copy(c.getAddedSubList());
+                Collection<? extends SyncTrack> addedTracks = CollectionUtils.copy(c.getAddedSubList());
 
                 addedTracks.forEach(track -> {
                     Album album = track.getAlbum();

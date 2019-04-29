@@ -34,7 +34,7 @@ public class FontRegistry {
         Assert.notNull(filename, "filename cannot be null");
 
         if (loadedFonts.containsKey(filename))
-            return loadedFonts.get(filename);
+            return createFontFromAlreadyLoadedFont(loadedFonts.get(filename), size);
 
         return loadFontResource(filename, size);
     }
@@ -46,5 +46,9 @@ public class FontRegistry {
         loadedFonts.put(filename, font);
 
         return font;
+    }
+
+    private Font createFontFromAlreadyLoadedFont(Font font, double size) {
+        return new Font(font.getFamily(), size);
     }
 }

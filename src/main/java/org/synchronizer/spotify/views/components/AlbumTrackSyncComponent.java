@@ -56,16 +56,12 @@ public class AlbumTrackSyncComponent implements Initializable {
         if (success) {
             updateSyncState();
         } else {
-            outOfSyncIcon.setVisible(true);
-            outOfSyncIcon.setStyle("-fx-fill: #f00");
+            showErrorIcon();
         }
     }
 
     public void setStateToUpdating() {
-        progressIndicator.setVisible(true);
-        noSyncIcon.setVisible(false);
-        inSyncIcon.setVisible(false);
-        outOfSyncIcon.setVisible(false);
+        showProgressIndicator();
 
         updating = true;
     }
@@ -94,23 +90,45 @@ public class AlbumTrackSyncComponent implements Initializable {
 
         log.debug("Updating sync status for track " + syncTrack);
 
-        if (syncTrack.isLocalTrackAvailable() && syncTrack.isSpotifyTrackAvailable()) {
-            if (syncTrack.isMetaDataSynchronized()) {
-                inSyncIcon.setVisible(true);
+        switch (syncTrack.getSyncState()) {
+            case UNKNOWN:
+            case UPDATING:
+                showProgressIndicator();
+                break;
+            case LOCAL_TRACK_MISSING:
+            case SPOTIFY_TRACK_MISSING:
+                noSyncIcon.setVisible(true);
+                inSyncIcon.setVisible(false);
                 outOfSyncIcon.setVisible(false);
-            } else {
+                progressIndicator.setVisible(false);
+                break;
+            case OUT_OF_SYNC:
                 outOfSyncIcon.setVisible(true);
                 inSyncIcon.setVisible(false);
-            }
-
-            noSyncIcon.setVisible(false);
-        } else {
-            noSyncIcon.setVisible(true);
-            inSyncIcon.setVisible(false);
-            outOfSyncIcon.setVisible(false);
+                progressIndicator.setVisible(false);
+                break;
+            case SYNCED:
+                inSyncIcon.setVisible(true);
+                outOfSyncIcon.setVisible(false);
+                progressIndicator.setVisible(false);
+                break;
+            default:
+                showErrorIcon();
+                progressIndicator.setVisible(false);
+                break;
         }
+    }
 
-        progressIndicator.setVisible(false);
+    private void showProgressIndicator() {
+        progressIndicator.setVisible(true);
+        noSyncIcon.setVisible(false);
+        inSyncIcon.setVisible(false);
+        outOfSyncIcon.setVisible(false);
+    }
+
+    private void showErrorIcon() {
+        outOfSyncIcon.setVisible(true);
+        outOfSyncIcon.setStyle("-fx-fill: #f00");
     }
 
     private void updateMetaData() {

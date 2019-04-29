@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.synchronizer.spotify.media.AudioService;
 import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.Synchronization;
@@ -31,16 +32,35 @@ public class LocalMusicDiscovery implements DiscoveryService {
     private final SettingsService settingsService;
     private final AudioService audioService;
     private final TaskExecutor taskExecutor;
+
     private final ObservableList<MusicTrack> trackList = FXCollections.observableArrayList();
     private final List<CompletableFuture<List<MusicTrack>>> asyncDiscoveries = new ArrayList<>();
+    private final List<DiscoveryListener> listeners = new ArrayList<>();
 
-    private Runnable callback;
     private boolean keepIndexing;
     private boolean finished = true;
 
     @Override
     public boolean isFinished() {
         return this.finished;
+    }
+
+    @Override
+    public void addListener(DiscoveryListener listener) {
+        Assert.notNull(listener, "listener cannot be null");
+
+        synchronized (listeners) {
+            listeners.add(listener);
+        }
+    }
+
+    @Override
+    public void removeListener(DiscoveryListener listener) {
+        Assert.notNull(listener, "listener cannot be null");
+
+        synchronized (listeners) {
+            listeners.remove(listener);
+        }
     }
 
     @Override
@@ -62,11 +82,6 @@ public class LocalMusicDiscovery implements DiscoveryService {
         this.finished = false;
         this.keepIndexing = true;
         indexLocalFiles();
-    }
-
-    @Override
-    public void onFinished(Runnable callback) {
-        this.callback = callback;
     }
 
     private void indexLocalFiles() {
@@ -143,7 +158,6 @@ public class LocalMusicDiscovery implements DiscoveryService {
     }
 
     private void invokeCallback() {
-        Optional.ofNullable(callback)
-                .ifPresent(Runnable::run);
+        listeners.forEach(e -> e.onFinish(trackList));
     }
 }

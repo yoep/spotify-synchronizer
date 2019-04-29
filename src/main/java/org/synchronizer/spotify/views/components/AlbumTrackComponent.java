@@ -13,6 +13,7 @@ import org.synchronizer.spotify.media.AudioService;
 import org.synchronizer.spotify.media.MediaPlayerService;
 import org.synchronizer.spotify.media.PlayerStateChangeListener;
 import org.synchronizer.spotify.media.TrackChangeListener;
+import org.synchronizer.spotify.synchronize.model.SyncState;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
@@ -91,7 +92,7 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     }
 
     public boolean isSyncTrackDataAvailable() {
-        return !syncTrack.isMetaDataSynchronized() && syncTrack.isLocalTrackAvailable() && syncTrack.isSpotifyTrackAvailable();
+        return syncTrack.getSyncState() == SyncState.OUT_OF_SYNC;
     }
 
     public void play() {

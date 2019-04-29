@@ -5,14 +5,17 @@ import lombok.*;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
 @Builder
 @AllArgsConstructor
-public class SpotifyAlbum extends Observable implements Album {
+public class SpotifyAlbum extends AbstractAlbum {
     private String name;
     private String lowResImageUri;
     private String highResImageUri;
@@ -22,6 +25,9 @@ public class SpotifyAlbum extends Observable implements Album {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Supplier<byte[]> imageSupplier;
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private byte[] bufferedImage;
 
     @Override
     public Image getLowResImage() {
@@ -41,13 +47,6 @@ public class SpotifyAlbum extends Observable implements Album {
     @Override
     public byte[] getImage() {
         return imageSupplier.get();
-    }
-
-    @Override
-    public int compareTo(Album compareTo) {
-        Assert.notNull(compareTo, "compareTo cannot be null");
-
-        return getName().compareTo(compareTo.getName());
     }
 
     /**

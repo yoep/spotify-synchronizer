@@ -2,8 +2,8 @@ package org.synchronizer.spotify.synchronize.model;
 
 import lombok.*;
 
+import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 
 import static java.util.Optional.ofNullable;
 
@@ -11,65 +11,17 @@ import static java.util.Optional.ofNullable;
  * Implementation of the {@link SyncTrack}.
  */
 @EqualsAndHashCode(callSuper = false)
-@Data
+@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
-    private MusicTrack spotifyTrack;
-    private MusicTrack localTrack;
+public class SyncTrackImpl extends AbstractSyncTrack {
+    @Builder.Default
+    private SyncState syncState = SyncState.UNKNOWN;
 
     @Override
-    public String getTitle() {
-        return getProperty(MusicTrack::getTitle);
-    }
-
-    @Override
-    public String getArtist() {
-        return getProperty(MusicTrack::getArtist);
-    }
-
-    @Override
-    public Album getAlbum() {
-        return getProperty(MusicTrack::getAlbum);
-    }
-
-    @Override
-    public String getUri() {
-        return getProperty(MusicTrack::getUri);
-    }
-
-    @Override
-    public Integer getTrackNumber() {
-        return getProperty(MusicTrack::getTrackNumber);
-    }
-
-    @Override
-    public boolean isLocalTrackAvailable() {
-        return localTrack != null;
-    }
-
-    @Override
-    public boolean isSpotifyTrackAvailable() {
-        return spotifyTrack != null;
-    }
-
-    @Override
-    public boolean isMetaDataSynchronized() {
-        return isLocalTrackAvailable() && isSpotifyTrackAvailable() &&
-                spotifyTrack.getTitle().equalsIgnoreCase(localTrack.getTitle()) &&
-                spotifyTrack.getArtist().equalsIgnoreCase(localTrack.getArtist()) &&
-                isAlbumInSync();
-    }
-
-    @Override
-    public Optional<SpotifyTrack> getSpotifyTrack() {
-        return ofNullable((SpotifyTrack) this.spotifyTrack);
-    }
-
-    @Override
-    public Optional<MusicTrack> getLocalTrack() {
-        return ofNullable(this.localTrack);
+    public SyncState getSyncState() {
+        return syncState;
     }
 
     public void setSpotifyTrack(MusicTrack spotifyTrack) {
@@ -77,6 +29,7 @@ public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
             this.setChanged();
 
         this.spotifyTrack = spotifyTrack;
+        updateSyncStatus();
         this.notifyObservers();
         addChildObserver(this.spotifyTrack);
     }
@@ -86,20 +39,42 @@ public class SyncTrackImpl extends AbstractMusicTrack implements SyncTrack {
             this.setChanged();
 
         this.localTrack = localTrack;
+        updateSyncStatus();
         this.notifyObservers();
         addChildObserver(this.localTrack);
     }
 
-    private <T> T getProperty(Function<MusicTrack, T> mapProperty) {
-        return ofNullable(localTrack)
-                .map(mapProperty)
-                .orElse(ofNullable(spotifyTrack)
-                        .map(mapProperty)
-                        .orElse(null));
+    private void setSyncState(SyncState syncState) {
+        if (!Objects.equals(this.syncState, syncState))
+            this.setChanged();
+
+        this.syncState = syncState;
+        this.notifyObservers();
+
     }
 
-    private boolean isAlbumInSync() {
-        return spotifyTrack.getAlbum().getName().equals(localTrack.getAlbum().getName()) &&
+    private void updateSyncStatus() {
+        if (!isLocalTrackAvailable())
+            setSyncState(SyncState.LOCAL_TRACK_MISSING);
+        if (!isSpotifyTrackAvailable())
+            setSyncState(SyncState.SPOTIFY_TRACK_MISSING);
+
+        if (isLocalTrackAvailable() && isSpotifyTrackAvailable()) {
+            if (areTracksInSync() && areAlbumsInSync()) {
+                setSyncState(SyncState.SYNCED);
+            } else {
+                setSyncState(SyncState.OUT_OF_SYNC);
+            }
+        }
+    }
+
+    private boolean areTracksInSync() {
+        return spotifyTrack.getTitle().equalsIgnoreCase(localTrack.getTitle()) &&
+                spotifyTrack.getArtist().equalsIgnoreCase(localTrack.getArtist());
+    }
+
+    private boolean areAlbumsInSync() {
+        return spotifyTrack.getAlbum().getName().equalsIgnoreCase(localTrack.getAlbum().getName()) &&
                 localTrack.getAlbum().getImage() != null;
     }
 }
