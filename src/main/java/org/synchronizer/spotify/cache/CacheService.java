@@ -2,24 +2,18 @@ package org.synchronizer.spotify.cache;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.synchronizer.spotify.SpotifySynchronizer;
 import org.synchronizer.spotify.cache.model.CachedAlbum;
-import org.synchronizer.spotify.cache.model.CachedSync;
-import org.synchronizer.spotify.cache.model.CachedTrack;
+import org.synchronizer.spotify.cache.model.CachedLocalTrack;
+import org.synchronizer.spotify.cache.model.CachedSyncTrack;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
+import org.synchronizer.spotify.utils.CacheUtils;
 import org.synchronizer.spotify.utils.CollectionUtils;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -35,7 +29,6 @@ public class CacheService {
     private static final String LOCAL_TRACK_CACHE_NAME = "local-tracks";
     private static final String SPOTIFY_CACHE_NAME = "spotify-tracks";
     private static final String SYNC_CACHE_NAME = "sync";
-    private static final Charset CHARSET = Charset.defaultCharset();
 
     @Async
     public void cacheLocalTracks(Collection<MusicTrack> localTracks) {
@@ -45,16 +38,15 @@ public class CacheService {
         log.debug("Caching local music tracks...");
 
         try {
-            FileWriter localCacheWriter = new FileWriter(getLocalTracksCacheFile(), false);
-            List<CachedTrack> cachedTracks = localTracks.stream()
-                    .map(CachedTrack::from)
+            List<CachedLocalTrack> cachedTracks = localTracks.stream()
+                    .map(CachedLocalTrack::from)
                     .collect(Collectors.toList());
 
-            for (CachedTrack cachedTrack : cachedTracks) {
-                cacheImage(cachedTrack.getAlbum());
+            for (CachedLocalTrack cachedTrack : cachedTracks) {
+                ((CachedAlbum) cachedTrack.getAlbum()).cacheImage(getCacheDirectory());
             }
 
-            IOUtils.write(SerializationUtils.serialize(cachedTracks.toArray(new CachedTrack[0])), localCacheWriter, CHARSET);
+            CacheUtils.writeToCache(getLocalTracksCacheFile(), cachedTracks.toArray(new CachedLocalTrack[0]), false);
             log.debug("Local music tracks cached");
         } catch (Exception ex) {
             log.error("Failed to create cache of local tracks with error " + ex.getMessage(), ex);
@@ -66,28 +58,38 @@ public class CacheService {
         if (CollectionUtils.isEmpty(syncTracks))
             return;
 
-        log.debug("Caching {} sync tracks...", syncTracks.size());
+        log.debug("Caching sync tracks...");
 
         try {
-            FileWriter localCacheWriter = new FileWriter(getSyncTracksCacheFile(), false);
-            CachedSync[] cachedSyncs = CollectionUtils.copy(syncTracks).stream()
-                    .map(CachedSync::from)
-                    .toArray(CachedSync[]::new);
+            List<CachedSyncTrack> cachedSyncs = CollectionUtils.copy(syncTracks).stream()
+                    .map(CachedSyncTrack::from)
+                    .collect(Collectors.toList());
 
-            IOUtils.write(SerializationUtils.serialize(cachedSyncs), localCacheWriter, CHARSET);
-            log.debug("{} sync tracks have been cached", cachedSyncs.length);
+            for (CachedSyncTrack cachedTrack : cachedSyncs) {
+                cachedTrack.getLocalTrack()
+                        .ifPresent(e -> ((CachedAlbum) e.getAlbum()).cacheImage(getCacheDirectory()));
+                cachedTrack.getSpotifyTrack()
+                        .ifPresent(e -> ((CachedAlbum) e.getAlbum()).cacheImage(getCacheDirectory()));
+
+                ((CachedAlbum) cachedTrack.getAlbum()).cacheImage(getCacheDirectory());
+            }
+
+            CacheUtils.writeToCache(getSyncTracksCacheFile(), cachedSyncs.toArray(new CachedSyncTrack[0]), false);
+            log.debug("{} sync tracks have been cached", cachedSyncs.size());
         } catch (Exception ex) {
             log.error("Failed to create cache of sync tracks with error " + ex.getMessage(), ex);
         }
     }
 
-    public Collection<CachedTrack> getCachedLocalTracks() {
+    public Collection<CachedLocalTrack> getCachedLocalTracks() {
+        File localTracksCacheFile = getLocalTracksCacheFile();
+
+        if (!localTracksCacheFile.exists())
+            return Collections.emptyList();
 
         try {
-            File localTracksCacheFile = getLocalTracksCacheFile();
             log.info("Loading cached local tracks from {}", localTracksCacheFile.getAbsolutePath());
-            byte[] cache = IOUtils.toByteArray(localTracksCacheFile.toURI());
-            CachedTrack[] cachedTracks = SerializationUtils.deserialize(cache);
+            CachedLocalTrack[] cachedTracks = CacheUtils.readFromCache(localTracksCacheFile);
 
             return Arrays.asList(cachedTracks);
         } catch (Exception ex) {
@@ -96,73 +98,30 @@ public class CacheService {
         }
     }
 
-    public Collection<CachedSync> getCachedSyncTracks() {
-        try {
-            File syncTracksCacheFile = getSyncTracksCacheFile();
-            log.info("Loading cached sync tracks from {}", syncTracksCacheFile.getAbsolutePath());
-            byte[] cache = IOUtils.toByteArray(syncTracksCacheFile.toURI());
+    public Collection<CachedSyncTrack> getCachedSyncTracks() {
+        File syncTracksCacheFile = getSyncTracksCacheFile();
 
-            if (ArrayUtils.isNotEmpty(cache)) {
-                CachedSync[] cachedSyncs = SerializationUtils.deserialize(cache);
-
-                log.info("Loaded {} syncs from cache", cachedSyncs.length);
-                return Arrays.asList(cachedSyncs);
-            }
-
+        if (!syncTracksCacheFile.exists())
             return Collections.emptyList();
+
+        try {
+            log.info("Loading cached sync tracks from {}", syncTracksCacheFile.getAbsolutePath());
+            CachedSyncTrack[] cachedSyncs = CacheUtils.readFromCache(syncTracksCacheFile);
+
+            log.info("Loaded {} syncs from cache", cachedSyncs.length);
+            return Arrays.asList(cachedSyncs);
         } catch (Exception ex) {
             log.error("Failed to read cache of local tracks with error " + ex.getMessage(), ex);
             return null;
         }
     }
 
-    private void cacheImage(CachedAlbum album) throws IOException {
-        if (StringUtils.isEmpty(album.getImageCacheName()))
-            return;
-
-        FileWriter fileWriter = new FileWriter(getImageCacheFile(album), false);
-        byte[] image = album.getImage();
-
-        IOUtils.write(image, fileWriter, CHARSET);
+    private File getLocalTracksCacheFile() {
+        return new File(getCacheDirectory() + getFilename(LOCAL_TRACK_CACHE_NAME));
     }
 
-    private File getLocalTracksCacheFile() throws IOException {
-        File file = new File(getCacheDirectory() + getFilename(LOCAL_TRACK_CACHE_NAME));
-
-        ensureFileExists(file);
-
-        return file;
-    }
-
-    private File getSyncTracksCacheFile() throws IOException {
-        File file = new File(getCacheDirectory() + getFilename(SYNC_CACHE_NAME));
-
-        ensureFileExists(file);
-
-        return file;
-    }
-
-    private File getImageCacheFile(CachedAlbum album) throws IOException {
-        File file = new File(getCacheDirectory() + getFilename(album.getImageCacheName()));
-
-        ensureFileExists(file);
-
-        return file;
-    }
-
-    private void ensureFileExists(File file) throws IOException {
-        if (file.exists())
-            return;
-
-        File parentDirectory = file.getParentFile();
-
-        if (!parentDirectory.exists() && !parentDirectory.mkdirs()) {
-            throw new IOException("Unable to create parent directories for " + file);
-        }
-
-        if (!file.createNewFile()) {
-            throw new IOException("Unable to create cache file " + file);
-        }
+    private File getSyncTracksCacheFile() {
+        return new File(getCacheDirectory() + getFilename(SYNC_CACHE_NAME));
     }
 
     private static String getFilename(String filename) {

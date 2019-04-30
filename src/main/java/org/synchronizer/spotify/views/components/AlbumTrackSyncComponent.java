@@ -103,14 +103,10 @@ public class AlbumTrackSyncComponent implements Initializable {
                 progressIndicator.setVisible(false);
                 break;
             case OUT_OF_SYNC:
-                outOfSyncIcon.setVisible(true);
-                inSyncIcon.setVisible(false);
-                progressIndicator.setVisible(false);
+                showSyncIcon(false);
                 break;
             case SYNCED:
-                inSyncIcon.setVisible(true);
-                outOfSyncIcon.setVisible(false);
-                progressIndicator.setVisible(false);
+                showSyncIcon(true);
                 break;
             default:
                 showErrorIcon();
@@ -129,6 +125,13 @@ public class AlbumTrackSyncComponent implements Initializable {
     private void showErrorIcon() {
         outOfSyncIcon.setVisible(true);
         outOfSyncIcon.setStyle("-fx-fill: #f00");
+    }
+
+    private void showSyncIcon(boolean isInSync) {
+        inSyncIcon.setVisible(isInSync);
+        outOfSyncIcon.setVisible(!isInSync);
+        noSyncIcon.setVisible(false);
+        progressIndicator.setVisible(false);
     }
 
     private void updateMetaData() {

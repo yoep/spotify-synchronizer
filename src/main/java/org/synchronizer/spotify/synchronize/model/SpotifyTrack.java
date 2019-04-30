@@ -1,6 +1,7 @@
 package org.synchronizer.spotify.synchronize.model;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 import org.synchronizer.spotify.spotify.api.v1.SavedTrack;

@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.synchronizer.spotify.common.AbstractObservable;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
+import org.synchronizer.spotify.utils.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,21 +24,27 @@ public class AlbumOverview extends AbstractObservable implements Comparable<Albu
     }
 
     public Set<SyncTrack> getTracks() {
-        return Collections.unmodifiableSet(tracks);
+        synchronized (tracks) {
+            return Collections.unmodifiableSet(tracks);
+        }
     }
 
     public void addTracks(SyncTrack... tracks) {
-        List<SyncTrack> newTracks = Arrays.stream(tracks)
-                .filter(e -> !this.tracks.contains(e))
-                .collect(Collectors.toList());
+        List<SyncTrack> newTracks;
 
-        if (newTracks.size() > 0)
-            this.setChanged();
+        synchronized (this.tracks) {
+            newTracks = Arrays.stream(tracks)
+                    .filter(e -> !this.tracks.contains(e))
+                    .collect(Collectors.toList());
 
-        log.debug("Adding " + newTracks.size() + " new track(s) to album overview of " + album);
-        this.tracks.addAll(newTracks);
+            if (newTracks.size() > 0)
+                this.setChanged();
+
+            log.debug("Adding " + newTracks.size() + " new track(s) to album overview of " + album);
+            this.tracks.addAll(newTracks);
+        }
+
         this.notifyObservers();
-
         newTracks.forEach(this::addChildObserver);
     }
 

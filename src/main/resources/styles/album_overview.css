@@ -12,6 +12,7 @@
 
 .root .artist {
     -fx-text-fill: rgba(12, 110, 48, 0.69);
+    -fx-fill: rgba(12, 110, 48, 0.69);
 }
 
 .root .album_image_overlay {

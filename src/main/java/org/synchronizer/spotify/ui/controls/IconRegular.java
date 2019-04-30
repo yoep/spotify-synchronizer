@@ -9,19 +9,18 @@ import java.util.List;
 
 public class IconRegular extends AbstractIcon {
     private static final String FILENAME = "fontawesome-regular.ttf";
-    private static final int DEFAULT_FONT_SIZE = 10;
 
     public IconRegular() {
-        super(FILENAME, DEFAULT_FONT_SIZE);
+        super(FILENAME);
     }
 
     public IconRegular(String unicode) {
-        super(FILENAME, DEFAULT_FONT_SIZE, unicode);
+        super(FILENAME, unicode);
     }
 
     @Builder
     public IconRegular(String unicode, Insets padding, Boolean visible, EventHandler<? super MouseEvent> onMouseClicked, List<String> styleClasses) {
-        super(FILENAME, DEFAULT_FONT_SIZE);
+        super(FILENAME);
         setProperty(unicode, this::setText);
         setProperty(padding, this::setPadding);
         setProperty(visible, this::setVisible);

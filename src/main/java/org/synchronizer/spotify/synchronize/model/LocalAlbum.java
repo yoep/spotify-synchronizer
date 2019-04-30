@@ -11,13 +11,14 @@ import java.util.Optional;
 @ToString
 @Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class LocalAlbum extends AbstractAlbum {
     private String name;
-    private String imageMimeType;
+    private transient String imageMimeType;
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private byte[] image;
+    protected transient byte[] image;
 
     @Override
     public String getLowResImageUri() {

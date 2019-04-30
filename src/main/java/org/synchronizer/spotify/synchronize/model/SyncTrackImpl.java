@@ -1,23 +1,28 @@
 package org.synchronizer.spotify.synchronize.model;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.Objects;
 import java.util.Optional;
-
-import static java.util.Optional.ofNullable;
 
 /**
  * Implementation of the {@link SyncTrack}.
  */
 @EqualsAndHashCode(callSuper = false)
 @ToString
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class SyncTrackImpl extends AbstractSyncTrack {
-    @Builder.Default
-    private SyncState syncState = SyncState.UNKNOWN;
+    private SyncState syncState;
+
+    @Builder
+    public SyncTrackImpl(MusicTrack spotifyTrack, MusicTrack localTrack, SyncState syncState) {
+        super(spotifyTrack, localTrack);
+        this.syncState = Optional.ofNullable(syncState)
+                .orElse(SyncState.UNKNOWN);
+    }
 
     @Override
     public SyncState getSyncState() {

@@ -2,6 +2,7 @@ package org.synchronizer.spotify.synchronize.model;
 
 import javafx.scene.image.Image;
 import lombok.*;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
@@ -14,6 +15,7 @@ import java.util.function.Supplier;
 @EqualsAndHashCode(callSuper = false)
 @Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class SpotifyAlbum extends AbstractAlbum {
     private String name;
@@ -21,13 +23,18 @@ public class SpotifyAlbum extends AbstractAlbum {
     private String highResImageUri;
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Supplier<String> imageMimeTypeSupplier;
+    private transient Supplier<String> imageMimeTypeSupplier;
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Supplier<byte[]> imageSupplier;
+    @Nullable
+    private transient String bufferedImageMimeType;
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private byte[] bufferedImage;
+    private transient Supplier<byte[]> imageSupplier;
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @Nullable
+    protected transient byte[] bufferedImage;
 
     @Override
     public Image getLowResImage() {
@@ -41,12 +48,18 @@ public class SpotifyAlbum extends AbstractAlbum {
 
     @Override
     public String getImageMimeType() {
-        return imageMimeTypeSupplier.get();
+        if (bufferedImageMimeType == null)
+            bufferedImageMimeType = imageMimeTypeSupplier.get();
+
+        return bufferedImageMimeType;
     }
 
     @Override
     public byte[] getImage() {
-        return imageSupplier.get();
+        if (bufferedImage == null)
+            bufferedImage = imageSupplier.get();
+
+        return bufferedImage;
     }
 
     /**

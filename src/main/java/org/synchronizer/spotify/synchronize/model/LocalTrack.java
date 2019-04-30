@@ -16,7 +16,7 @@ public class LocalTrack extends AbstractMusicTrack {
     private String title;
     private String artist;
     private Album album;
-    private File file;
+    private transient File file;
     private Integer trackNumber;
 
     @Override

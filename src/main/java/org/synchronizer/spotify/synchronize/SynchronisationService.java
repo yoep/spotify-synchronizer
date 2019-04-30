@@ -1,21 +1,16 @@
 package org.synchronizer.spotify.synchronize;
 
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import org.synchronizer.spotify.cache.CacheService;
 import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.synchronize.model.LocalTrack;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.synchronize.model.SyncTrackImpl;
-import org.synchronizer.spotify.ui.UIText;
 import org.synchronizer.spotify.utils.CollectionUtils;
 import org.synchronizer.spotify.views.components.SynchronizeStatusComponent;
 
@@ -24,43 +19,53 @@ import java.util.Collection;
 import java.util.List;
 
 @Log4j2
-@Data
 @Service
-@RequiredArgsConstructor
 public class SynchronisationService {
     private final DiscoveryService spotifyDiscovery;
     private final DiscoveryService localMusicDiscovery;
     private final SettingsService settingsService;
     private final SynchronizeDatabaseService synchronizeDatabaseService;
-    private final UIText uiText;
     private final SynchronizeStatusComponent statusComponent;
     private final CacheService cacheService;
+    private final SyncTracksWrapper tracks;
 
-    private final ObservableList<SyncTrack> tracks = FXCollections.observableArrayList();
-    private final List<TracksListener> listeners = new ArrayList<>();
+    public SynchronisationService(DiscoveryService spotifyDiscovery,
+                                  DiscoveryService localMusicDiscovery,
+                                  SettingsService settingsService,
+                                  SynchronizeDatabaseService synchronizeDatabaseService,
+                                  SynchronizeStatusComponent statusComponent,
+                                  CacheService cacheService,
+                                  TaskExecutor taskExecutor) {
+        this.spotifyDiscovery = spotifyDiscovery;
+        this.localMusicDiscovery = localMusicDiscovery;
+        this.settingsService = settingsService;
+        this.synchronizeDatabaseService = synchronizeDatabaseService;
+        this.statusComponent = statusComponent;
+        this.cacheService = cacheService;
+        this.tracks = new SyncTracksWrapper(taskExecutor);
+    }
 
     public void init() {
-        Platform.runLater(() -> {
-            //load cache if available
-            tracks.addAll(cacheService.getCachedSyncTracks());
-        });
+        //TODO: Fix caching as the album names are currently missing
+//        Platform.runLater(() -> {
+//            //load cache if available
+//            tracks.addAll(cacheService.getCachedSyncTracks());
+//        });
 
         addListeners();
         startDiscovery();
     }
 
     public void addListener(TracksListener listener) {
-        Assert.notNull(listener, "listener cannot be null");
-        synchronized (listeners) {
-            listeners.add(listener);
-        }
+        tracks.addListener(listener);
     }
 
     public void removeListener(TracksListener listener) {
-        Assert.notNull(listener, "listener cannot be null");
-        synchronized (listeners) {
-            listeners.remove(listener);
-        }
+        tracks.removeListener(listener);
+    }
+
+    public Collection<SyncTrack> getTracks() {
+        return tracks.getAll();
     }
 
     private void startDiscovery() {
@@ -89,7 +94,7 @@ public class SynchronisationService {
     private void serviceFinished() {
         if (localMusicDiscovery.isFinished() && spotifyDiscovery.isFinished()) {
             statusComponent.setSynchronizing(false);
-            cacheService.cacheSync(tracks);
+            cacheService.cacheSync(tracks.getAll());
         }
     }
 
@@ -100,14 +105,14 @@ public class SynchronisationService {
 
             for (MusicTrack newTrack : addedTracks) {
                 try {
-                    List<SyncTrack> allTracks = new ArrayList<>(tracks);
+                    List<SyncTrack> allTracks = new ArrayList<>(tracks.getAll());
                     allTracks.addAll(newSyncTracks);
 
                     SyncTrack syncTrack = allTracks.stream()
                             .filter(e -> e.matches(newTrack))
                             .findFirst()
                             .orElseGet(() -> {
-                                SyncTrackImpl track = new SyncTrackImpl();
+                                SyncTrackImpl track = SyncTrackImpl.builder().build();
                                 newSyncTracks.add(track);
                                 return track;
                             });
@@ -124,10 +129,7 @@ public class SynchronisationService {
                 }
             }
 
-            Platform.runLater(() -> {
-                //load cache if available
-                tracks.addAll(newSyncTracks);
-            });
+            tracks.addAll(newSyncTracks);
         }
     }
 }

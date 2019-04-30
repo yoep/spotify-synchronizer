@@ -36,6 +36,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
     private static final int BOX_MIN_HEIGHT = 100;
     private static final int ADDITIONAL_RENDER = 5;
     private static final int SCROLLBAR_THRESHOLD = 97;
+    private static final int TIME_BETWEEN_UPDATES = 200;
 
     private final List<ItemWrapper<T>> items = new ArrayList<>();
     private final ScrollPane scrollPane = new ScrollPane();
@@ -60,6 +61,8 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
     private Executor threadExecutor;
     private Pane header;
     private long lastUpdated;
+    private long lastEvent;
+    private boolean keepWatcherAlive;
 
     public InfiniteScrollPane() {
         initializeScrollBars();
@@ -102,8 +105,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
             items.add(new ItemWrapper<>(item));
         }
 
-        if (isAllowedToUpdate() && !isSearchActive.get())
-            this.updateRendering();
+        startWatcher();
     }
 
     /**
@@ -286,7 +288,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
     }
 
     private boolean isAllowedToUpdate() {
-        return !updating.get() && System.currentTimeMillis() - lastUpdated > 200;
+        return !updating.get() && System.currentTimeMillis() - lastUpdated > TIME_BETWEEN_UPDATES;
     }
 
     private void initializeScrollBars() {
@@ -333,6 +335,33 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
         Insets currentPadding = contentPane.getPadding();
 
         contentPane.setPadding(new Insets(headerHeight * 0.75, currentPadding.getRight(), currentPadding.getBottom(), currentPadding.getLeft()));
+    }
+
+    private void startWatcher() {
+        this.lastEvent = System.currentTimeMillis();
+
+        //check if a watcher is already running
+        if (keepWatcherAlive)
+            return;
+
+        keepWatcherAlive = true;
+
+        runTask(() -> {
+            try {
+                while (keepWatcherAlive) {
+                    Thread.sleep(100);
+
+                    if (isAllowedToUpdate() && !isSearchActive.get())
+                        this.updateRendering();
+
+                    // if last event was more than a minute ago, stop the watcher
+                    if (System.currentTimeMillis() - lastEvent > 60000)
+                        keepWatcherAlive = false;
+                }
+            } catch (InterruptedException ex) {
+                //ignore
+            }
+        });
     }
 
 

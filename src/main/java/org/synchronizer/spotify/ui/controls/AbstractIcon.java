@@ -13,17 +13,15 @@ import java.util.function.Consumer;
 @Log4j2
 public abstract class AbstractIcon extends Label {
     protected final DoubleProperty sizeFactorProperty = new SimpleDoubleProperty();
-    protected final double defaultSize;
+    protected double defaultSize;
 
-    public AbstractIcon(String filename, double size) {
-        this.defaultSize = size;
-        init(filename, size);
+    public AbstractIcon(String filename) {
+        init(filename);
     }
 
-    public AbstractIcon(String filename, double size, String text) {
+    public AbstractIcon(String filename, String text) {
         super(text);
-        this.defaultSize = size;
-        init(filename, size);
+        init(filename);
     }
 
     public double getSizeFactor() {
@@ -39,13 +37,14 @@ public abstract class AbstractIcon extends Label {
                 .ifPresent(mapping);
     }
 
-    private void init(String filename, double size) {
-        initializeFont(filename, size);
+    private void init(String filename) {
+        initializeFont(filename);
         initializeSizeFactor();
     }
 
-    private void initializeFont(String filename, double size) {
-        Font font = FontRegistry.getInstance().loadFont(filename, size);
+    private void initializeFont(String filename) {
+        Font font = FontRegistry.getInstance().loadFont(filename);
+        this.defaultSize = font.getSize();
 
         setFont(font);
     }

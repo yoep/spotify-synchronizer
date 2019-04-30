@@ -25,6 +25,19 @@ public class FontRegistry {
     }
 
     /**
+     * Load the given font file and use the size of the system default font.
+     *
+     * @param filename The font filename to load from the {@link #FONT_DIRECTORY}.
+     * @return Returns the loaded font.
+     */
+    public Font loadFont(String filename) {
+        Assert.notNull(filename, "filename cannot be null");
+        Font defaultFont = Font.getDefault();
+
+        return loadFont(filename, defaultFont.getSize());
+    }
+
+    /**
      * Load the given font file.
      *
      * @param filename The font filename to load from the {@link #FONT_DIRECTORY}.

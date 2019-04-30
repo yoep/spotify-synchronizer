@@ -1,6 +1,5 @@
 package org.synchronizer.spotify.views;
 
-import javafx.collections.ListChangeListener;
 import javafx.fxml.Initializable;
 import javafx.stage.Stage;
 import lombok.RequiredArgsConstructor;
@@ -19,21 +18,21 @@ import org.synchronizer.spotify.ui.ViewLoader;
 import org.synchronizer.spotify.ui.controls.InfiniteScrollPane;
 import org.synchronizer.spotify.ui.controls.SearchListener;
 import org.synchronizer.spotify.ui.controls.SortListener;
-import org.synchronizer.spotify.utils.CollectionUtils;
 import org.synchronizer.spotify.views.components.AlbumOverviewComponent;
 import org.synchronizer.spotify.views.components.SearchComponent;
 import org.synchronizer.spotify.views.model.AlbumOverview;
 import org.synchronizer.spotify.views.sections.ContentSection;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Controller
 @RequiredArgsConstructor
 public class MainView extends ScaleAwareImpl implements Initializable, SizeAware {
+    private static final String UNKNOWN_ALBUM_NAME = "UNKNOWN";
+
     private final SynchronisationService synchronisationService;
     private final SettingsService settingsService;
     private final ViewLoader viewLoader;
@@ -41,25 +40,37 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
     private final TaskExecutor uiTaskExecutor;
     private final ContentSection contentSection;
 
+    private final Map<String, AlbumOverview> albumOverviews = new HashMap<>();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initializeTrackOverview();
 
-        synchronisationService.getTracks().addListener((ListChangeListener<SyncTrack>) c -> {
-            while (c.next()) {
-                Collection<? extends SyncTrack> addedTracks = CollectionUtils.copy(c.getAddedSubList());
+        synchronisationService.addListener(addedTracks -> {
+            String lastAlbumName = null;
+            AlbumOverview lastAlbumOverview = null;
+            List<SyncTrack> sortedTracks = addedTracks.stream()
+                    //sort by album name
+                    .sorted((o1, o2) -> Objects.compare(o1.getAlbum().getName(), o2.getAlbum().getName(), String::compareTo))
+                    .collect(Collectors.toList());
+            List<SyncTrack> albumTracks = new ArrayList<>();
 
-                addedTracks.forEach(track -> {
-                    Album album = track.getAlbum();
+            for (SyncTrack track : sortedTracks) {
+                String albumName = Optional.ofNullable(track.getAlbum().getName())
+                        .orElse(UNKNOWN_ALBUM_NAME);
 
-                    AlbumOverview albumOverview = CollectionUtils.copy(contentSection.getOverviewPane().getItems()).stream()
-                            .filter(e -> Objects.equals(album.getName(), e.getAlbum().getName()))
-                            .findFirst()
-                            .orElseGet(() -> createNewAlbumOverview(album));
+                if (!albumName.equalsIgnoreCase(lastAlbumName)) {
+                    if (lastAlbumOverview != null)
+                        lastAlbumOverview.addTracks(albumTracks.toArray(new SyncTrack[0]));
 
-                    albumOverview.addTracks(track);
-                });
+                    lastAlbumName = albumName;
+                    lastAlbumOverview = getAlbumOverviewForAlbum(track.getAlbum());
+                    albumTracks.clear();
+                }
+
+                albumTracks.add(track);
             }
+
         });
         synchronisationService.init();
     }
@@ -93,6 +104,20 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
         overviewPane.setHeader(viewLoader.loadComponent("search_component.fxml"));
         searchComponent.addListener((SearchListener) overviewPane);
         searchComponent.addListener((SortListener) overviewPane);
+    }
+
+    private AlbumOverview getAlbumOverviewForAlbum(Album album) {
+        String albumName = Optional.ofNullable(album.getName())
+                .map(String::toLowerCase)
+                .orElse(UNKNOWN_ALBUM_NAME);
+
+        if (albumOverviews.containsKey(albumName))
+            return albumOverviews.get(albumName);
+
+        AlbumOverview albumOverview = createNewAlbumOverview(album);
+
+        albumOverviews.put(albumName, albumOverview);
+        return albumOverview;
     }
 
     private AlbumOverview createNewAlbumOverview(Album album) {
