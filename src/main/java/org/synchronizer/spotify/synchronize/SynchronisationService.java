@@ -5,16 +5,13 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.synchronizer.spotify.cache.CacheService;
 import org.synchronizer.spotify.config.properties.CacheMode;
-import org.synchronizer.spotify.config.properties.SynchronizerConfiguration;
+import org.synchronizer.spotify.config.properties.SynchronizerProperties;
 import org.synchronizer.spotify.settings.SettingsService;
-import org.synchronizer.spotify.synchronize.model.LocalTrack;
-import org.synchronizer.spotify.synchronize.model.MusicTrack;
-import org.synchronizer.spotify.synchronize.model.SyncTrack;
-import org.synchronizer.spotify.synchronize.model.SyncTrackImpl;
+import org.synchronizer.spotify.synchronize.model.*;
 import org.synchronizer.spotify.utils.CollectionUtils;
-import org.synchronizer.spotify.views.components.SynchronizeStatusComponent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,28 +23,25 @@ public class SynchronisationService {
     private final DiscoveryService spotifyDiscovery;
     private final DiscoveryService localMusicDiscovery;
     private final SettingsService settingsService;
-    private final SynchronizeDatabaseService synchronizeDatabaseService;
-    private final SynchronizeStatusComponent statusComponent;
     private final CacheService cacheService;
     private final SyncTracksWrapper tracks;
-    private final SynchronizerConfiguration synchronizerConfiguration;
+    private final SynchronizerProperties synchronizerProperties;
+
+    private final List<SynchronisationStateListener> listeners = new ArrayList<>();
+    private SynchronisationState state = SynchronisationState.COMPLETED;
 
     public SynchronisationService(DiscoveryService spotifyDiscovery,
                                   DiscoveryService localMusicDiscovery,
                                   SettingsService settingsService,
-                                  SynchronizeDatabaseService synchronizeDatabaseService,
-                                  SynchronizeStatusComponent statusComponent,
                                   CacheService cacheService,
-                                  TaskExecutor taskExecutor,
-                                  SynchronizerConfiguration synchronizerConfiguration) {
+                                  SynchronizerProperties synchronizerProperties,
+                                  TaskExecutor taskExecutor) {
         this.spotifyDiscovery = spotifyDiscovery;
         this.localMusicDiscovery = localMusicDiscovery;
         this.settingsService = settingsService;
-        this.synchronizeDatabaseService = synchronizeDatabaseService;
-        this.statusComponent = statusComponent;
         this.cacheService = cacheService;
+        this.synchronizerProperties = synchronizerProperties;
         this.tracks = new SyncTracksWrapper(taskExecutor);
-        this.synchronizerConfiguration = synchronizerConfiguration;
     }
 
     @Async
@@ -55,12 +49,12 @@ public class SynchronisationService {
         addListeners();
 
         // check if caching is enabled, if so, load the cache if available
-        if (synchronizerConfiguration.getCacheMode().isActive())
+        if (synchronizerProperties.getCacheMode().isActive())
             cacheService.getCachedSyncTracks()
                     .ifPresent(tracks::addAll);
 
         // check if the current cache mode state is not cache only
-        if (synchronizerConfiguration.getCacheMode() != CacheMode.CACHE_ONLY)
+        if (synchronizerProperties.getCacheMode() != CacheMode.CACHE_ONLY)
             startDiscovery();
     }
 
@@ -72,38 +66,71 @@ public class SynchronisationService {
         tracks.removeListener(listener);
     }
 
+    public void addListener(SynchronisationStateListener listener) {
+        Assert.notNull(listener, "listener cannot be null");
+
+        synchronized (listeners) {
+            listeners.add(listener);
+        }
+    }
+
+    public void removeListener(SynchronisationStateListener listener) {
+        Assert.notNull(listener, "listener cannot be null");
+
+        synchronized (listeners) {
+            listeners.remove(listener);
+        }
+    }
+
     public Collection<SyncTrack> getTracks() {
         return tracks.getAll();
     }
 
     private void startDiscovery() {
+        updateSyncState(SynchronisationState.SYNCHRONIZING);
         spotifyDiscovery.start();
         localMusicDiscovery.start();
-        statusComponent.setSynchronizing(true);
     }
 
     private void addListeners() {
         localMusicDiscovery.getTrackList().addListener(this::synchronizeList);
         spotifyDiscovery.getTrackList().addListener(this::synchronizeList);
         localMusicDiscovery.addListener(this::localDiscoveryFinished);
-        spotifyDiscovery.addListener(e -> this.serviceFinished());
+        spotifyDiscovery.addListener(this::spotifyDiscoveryFinished);
 
         settingsService.getUserSettingsOrDefault().getSynchronization().addObserver((o, arg) -> {
-            statusComponent.setSynchronizing(true);
+            updateSyncState(SynchronisationState.SYNCHRONIZING);
             localMusicDiscovery.start();
         });
     }
 
     private void localDiscoveryFinished(Collection<MusicTrack> tracks) {
-        cacheService.cacheLocalTracks(tracks);
+        if (synchronizerProperties.getCacheMode().isActive())
+            cacheService.cacheLocalTracks(tracks);
+
+        this.serviceFinished();
+    }
+
+    private void spotifyDiscoveryFinished(Collection<MusicTrack> tracks) {
+        boolean spotifyTrackMissing = this.getTracks().stream()
+                .anyMatch(e -> e.getSyncState() == SyncState.SPOTIFY_TRACK_MISSING);
+
+//        if (spotifyTrackMissing) {
+//
+//            return;
+//        }
+
+        if (synchronizerProperties.getCacheMode().isActive())
+            cacheService.cacheSpotifyTracks(tracks);
+
         this.serviceFinished();
     }
 
     private void serviceFinished() {
         if (localMusicDiscovery.isFinished() && spotifyDiscovery.isFinished()) {
-            statusComponent.setSynchronizing(false);
+            updateSyncState(SynchronisationState.COMPLETED);
 
-            if (synchronizerConfiguration.getCacheMode().isActive())
+            if (synchronizerProperties.getCacheMode().isActive())
                 cacheService.cacheSync(tracks.getAll());
         }
     }
@@ -132,14 +159,21 @@ public class SynchronisationService {
                     } else {
                         syncTrack.setSpotifyTrack(newTrack);
                     }
-
-                    synchronizeDatabaseService.sync(newTrack);
                 } catch (Exception ex) {
                     log.error(ex.getMessage(), ex);
                 }
             }
 
             tracks.addAll(newSyncTracks);
+        }
+    }
+
+    private void updateSyncState(final SynchronisationState state) {
+        log.debug("Synchronisation state is being changed from " + this.state + " to " + state);
+        this.state = state;
+
+        synchronized (listeners) {
+            listeners.forEach(e -> e.onChanged(this.state));
         }
     }
 }

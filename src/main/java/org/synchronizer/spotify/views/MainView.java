@@ -10,6 +10,7 @@ import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.UserInterface;
 import org.synchronizer.spotify.settings.model.UserSettings;
 import org.synchronizer.spotify.synchronize.SynchronisationService;
+import org.synchronizer.spotify.synchronize.TracksListener;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.ui.ScaleAwareImpl;
@@ -46,7 +47,7 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
     public void initialize(URL location, ResourceBundle resources) {
         initializeTrackOverview();
 
-        synchronisationService.addListener(addedTracks -> {
+        synchronisationService.addListener((TracksListener) addedTracks -> {
             String lastAlbumName = null;
             AlbumOverview lastAlbumOverview = null;
             List<SyncTrack> sortedTracks = addedTracks.stream()

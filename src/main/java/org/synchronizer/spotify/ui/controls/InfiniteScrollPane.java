@@ -385,7 +385,6 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable> ex
         });
     }
 
-
     private void runTask(Runnable task) {
         if (threadExecutor != null) {
             threadExecutor.execute(task);

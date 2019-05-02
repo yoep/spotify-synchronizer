@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.synchronizer.spotify.cache.model.CachedAlbum;
 import org.synchronizer.spotify.cache.model.CachedLocalTrack;
+import org.synchronizer.spotify.cache.model.CachedSpotifyTrack;
 import org.synchronizer.spotify.cache.model.CachedSyncTrack;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
@@ -48,6 +49,29 @@ public class CacheService {
             log.debug("Local music tracks cached");
         } catch (Exception ex) {
             log.error("Failed to create cache of local tracks with error " + ex.getMessage(), ex);
+        }
+    }
+
+    @Async
+    public void cacheSpotifyTracks(Collection<MusicTrack> spotifyTracks) {
+        if (CollectionUtils.isEmpty(spotifyTracks))
+            return;
+
+        log.debug("Caching spotify music tracks...");
+
+        try {
+            List<CachedSpotifyTrack> cachedTracks = spotifyTracks.stream()
+                    .map(CachedSpotifyTrack::from)
+                    .collect(Collectors.toList());
+
+            for (CachedSpotifyTrack cachedTrack : cachedTracks) {
+                ((CachedAlbum) cachedTrack.getAlbum()).cacheImage();
+            }
+
+            CacheUtils.writeToCache(getSpotifyTracksCacheFile(), cachedTracks.toArray(new CachedSpotifyTrack[0]), false);
+            log.debug("Spotify music tracks cached");
+        } catch (Exception ex) {
+            log.error("Failed to create cache of spotify tracks with error " + ex.getMessage(), ex);
         }
     }
 
@@ -116,6 +140,10 @@ public class CacheService {
 
     private File getLocalTracksCacheFile() {
         return new File(CacheUtils.getCacheDirectory() + getFilename(LOCAL_TRACK_CACHE_NAME));
+    }
+
+    private File getSpotifyTracksCacheFile() {
+        return new File(CacheUtils.getCacheDirectory() + getFilename(SPOTIFY_CACHE_NAME));
     }
 
     private File getSyncTracksCacheFile() {

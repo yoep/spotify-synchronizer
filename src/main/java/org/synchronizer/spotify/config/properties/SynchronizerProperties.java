@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @Validated
 @Configuration
 @ConfigurationProperties("synchronizer")
-public class SynchronizerConfiguration {
+public class SynchronizerProperties {
     /**
      * The caching mode of the application.
      */
