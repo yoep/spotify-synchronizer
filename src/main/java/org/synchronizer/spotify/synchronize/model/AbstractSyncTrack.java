@@ -2,6 +2,7 @@ package org.synchronizer.spotify.synchronize.model;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -11,6 +12,7 @@ import static java.util.Optional.ofNullable;
 /**
  * Abstract implementation of {@link SyncTrack}.
  */
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class AbstractSyncTrack extends AbstractMusicTrack implements SyncTrack {

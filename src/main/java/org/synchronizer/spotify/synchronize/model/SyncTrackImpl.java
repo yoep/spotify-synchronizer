@@ -12,7 +12,7 @@ import java.util.Optional;
  * Implementation of the {@link SyncTrack}.
  */
 @EqualsAndHashCode(callSuper = false)
-@ToString
+@ToString(callSuper = true)
 @NoArgsConstructor
 public class SyncTrackImpl extends AbstractSyncTrack {
     private SyncState syncState;

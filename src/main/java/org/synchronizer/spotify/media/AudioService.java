@@ -55,6 +55,8 @@ public class AudioService {
             localAlbum.setImage(spotifyAlbum.getImage());
             localAlbum.setImageMimeType(spotifyAlbum.getImageMimeType());
             localAlbum.setName(spotifyAlbum.getName());
+            localAlbum.setGenre(Optional.ofNullable(spotifyAlbum.getGenre())
+                    .orElse(localAlbum.getGenre()));
 
             return CompletableFuture.completedFuture(AudioUtils.updateFileMetadata(localTrack));
         } catch (Exception ex) {

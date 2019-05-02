@@ -51,9 +51,10 @@ public class AudioUtils {
             File file = track.getFile();
             Mp3File mp3File = new Mp3File(file);
 
-            if (mp3File.hasId3v2Tag()) {
-                updateMetadataV2(mp3File, track);
-            }
+            // always add or update the V2 tag
+            updateMetadataV2(mp3File, track);
+
+            // only update the V1 tag if it's already present, otherwise, ignore this tag
             if (mp3File.hasId3v1Tag()) {
                 updateMetadataV1(mp3File, track);
             }
@@ -77,6 +78,7 @@ public class AudioUtils {
                 .artist(metadata.getArtist())
                 .album(LocalAlbum.builder()
                         .name(metadata.getAlbum())
+                        .genre(getGenre(metadata.getGenre()))
                         .build())
                 .title(metadata.getTitle())
                 .trackNumber(getTrackNumberV1(metadata))
@@ -90,6 +92,7 @@ public class AudioUtils {
                 .artist(metadata.getArtist())
                 .album(LocalAlbum.builder()
                         .name(metadata.getAlbum())
+                        .genre(getGenre(metadata.getGenre()))
                         .image(metadata.getAlbumImage())
                         .imageMimeType(metadata.getAlbumImageMimeType())
                         .build())
@@ -115,46 +118,70 @@ public class AudioUtils {
     }
 
     private static void updateMetadataV1(Mp3File file, LocalTrack track) {
+        log.debug("Updating ID3v1 tag information for " + track);
         ID3v1 metadata = file.getId3v1Tag();
+        Album album = track.getAlbum();
 
         //update track info
-        metadata.setTrack(Optional.ofNullable(track.getTrackNumber())
-                .map(String::valueOf)
-                .orElse(null));
+        metadata.setTrack(getTrackNumber(track));
         metadata.setArtist(track.getArtist());
         metadata.setTitle(track.getTitle());
 
         //update album info
-        metadata.setAlbum(track.getAlbum().getName());
-        metadata.setTrack(Optional.ofNullable(track.getTrackNumber())
-                .map(String::valueOf)
-                .orElse(null));
+        metadata.setAlbum(album.getName());
+        metadata.setTrack(getTrackNumber(track));
+        metadata.setGenre(getGenre(album));
     }
 
     private static void updateMetadataV2(Mp3File file, LocalTrack track) {
-        ID3v2 metadata = file.getId3v2Tag();
+        log.debug("Updating ID3v2 tag information for " + track);
+        ID3v2 metadata = Optional.ofNullable(file.getId3v2Tag())
+                .orElseGet(AudioUtils::createMetadataV2Tag);
         Album album = track.getAlbum();
 
-        //Windows 7 is unable to read v24 tags, so we downgrade them
+        //Windows 7 is unable to read v24 tags, so we downgrade them to v23
         if (metadata instanceof ID3v24Tag)
             metadata = downgradeMetadataV2(file);
 
         //update track info
-        metadata.setTrack(Optional.ofNullable(track.getTrackNumber())
-                .map(String::valueOf)
-                .orElse(null));
+        metadata.setTrack(getTrackNumber(track));
         metadata.setArtist(track.getArtist());
         metadata.setTitle(track.getTitle());
 
         //update album info
         metadata.setAlbum(album.getName());
         metadata.setAlbumImage(album.getImage(), album.getImageMimeType());
+        metadata.setGenre(getGenre(album));
     }
 
-    private static ID3v23Tag downgradeMetadataV2(Mp3File file) {
+    private static ID3v2 downgradeMetadataV2(Mp3File file) {
         file.removeId3v2Tag();
 
         return new ID3v23Tag();
+    }
+
+    private static ID3v2 createMetadataV2Tag() {
+        log.debug("Creating ID3v2 tag as it didn't yet exist for the audio file");
+        return new ID3v23Tag();
+    }
+
+    private static String getTrackNumber(LocalTrack track) {
+        return Optional.ofNullable(track.getTrackNumber())
+                .map(String::valueOf)
+                .orElse(null);
+    }
+
+    private static Integer getGenre(Album album) {
+        return Optional.ofNullable(album.getGenre())
+                .map(ID3v1Genres::matchGenreDescription)
+                .orElse(-1);
+    }
+
+    private static String getGenre(int genre) {
+        if (genre == -1 || genre > ID3v1Genres.GENRES.length)
+            return null;
+
+        return ID3v1Genres.GENRES[genre];
     }
 
     private static String getTempFilePath(File file) {

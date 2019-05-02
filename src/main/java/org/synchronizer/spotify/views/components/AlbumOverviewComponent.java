@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -26,6 +27,7 @@ import org.synchronizer.spotify.utils.UIUtils;
 import org.synchronizer.spotify.views.model.AlbumOverview;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -67,11 +69,7 @@ public class AlbumOverviewComponent implements Initializable {
         albumOverview.getTracks().forEach(this::createNewAlbumTrackComponent);
         albumOverview.addObserver((o, args) -> {
             if (noAlbum.isVisible()) {
-                CollectionUtils.copy(albumOverview.getTracks()).stream()
-                        .filter(e -> e.getAlbum().getHighResImage() != null)
-                        .findFirst()
-                        .map(SyncTrack::getAlbum)
-                        .ifPresent(this::updateAlbumArtwork);
+                updateAlbumArtwork();
             }
 
             CollectionUtils.copy(albumOverview.getTracks()).stream()
@@ -84,7 +82,7 @@ public class AlbumOverviewComponent implements Initializable {
         Album album = albumOverview.getAlbum();
 
         albumTitle.setText(album.getName());
-        updateAlbumArtwork(album);
+        updateAlbumArtwork();
     }
 
     private void initializeAlbumOverlay() {
@@ -104,10 +102,20 @@ public class AlbumOverviewComponent implements Initializable {
                 .ifPresent(AlbumTrackComponent::play);
     }
 
-    private void updateAlbumArtwork(Album album) {
+    private void updateAlbumArtwork() {
+        Album album = albumOverview.getAlbum();
+
         log.debug("Updating album artwork for " + album);
-        albumImage.setImage(album.getHighResImage());
-        noAlbum.setVisible(album.getHighResImage() == null);
+        Image image = Optional.ofNullable(album.getHighResImage())
+                .orElseGet(() -> CollectionUtils.copy(albumOverview.getTracks()).stream()
+                        .filter(e -> e.getAlbum().getHighResImage() != null)
+                        .findFirst()
+                        .map(SyncTrack::getAlbum)
+                        .map(Album::getHighResImage)
+                        .orElse(null));
+
+        albumImage.setImage(image);
+        noAlbum.setVisible(image == null);
     }
 
     private void createNewAlbumTrackComponent(SyncTrack syncTrack) {

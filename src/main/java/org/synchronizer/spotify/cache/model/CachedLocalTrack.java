@@ -2,23 +2,29 @@ package org.synchronizer.spotify.cache.model;
 
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FileUtils;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.LocalTrack;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
+@Log4j2
 @ToString(callSuper = true)
 @NoArgsConstructor
 public class CachedLocalTrack extends LocalTrack implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String uri;
+    private Long checksum;
 
-    public CachedLocalTrack(String title, String artist, Album album, File file, Integer trackNumber, String uri) {
+    public CachedLocalTrack(String title, String artist, Album album, File file, Integer trackNumber, String uri, Long checksum) {
         super(title, artist, album, file, trackNumber);
         this.uri = uri;
+        this.checksum = checksum;
     }
 
     @Override
@@ -32,13 +38,25 @@ public class CachedLocalTrack extends LocalTrack implements Serializable {
     }
 
     public static CachedLocalTrack from(MusicTrack track) {
+        LocalTrack localTrack = (LocalTrack) track;
+
         return new CachedLocalTrackBuilder()
-                .title(track.getTitle())
-                .artist(track.getArtist())
-                .album(CachedLocalAlbum.from(track.getAlbum()))
-                .uri(track.getUri())
-                .trackNumber(track.getTrackNumber())
+                .title(localTrack.getTitle())
+                .artist(localTrack.getArtist())
+                .album(CachedLocalAlbum.from(localTrack.getAlbum()))
+                .uri(localTrack.getUri())
+                .trackNumber(localTrack.getTrackNumber())
+                .checksum(getChecksumForFile(localTrack.getFile()))
                 .build();
+    }
+
+    private static Long getChecksumForFile(File file) {
+        try {
+            return FileUtils.checksumCRC32(file);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
     }
 
     public static class CachedLocalTrackBuilder {
@@ -48,6 +66,7 @@ public class CachedLocalTrack extends LocalTrack implements Serializable {
         private File file;
         private Integer trackNumber;
         private String uri;
+        private Long checksum;
 
         public CachedLocalTrackBuilder title(String title) {
             this.title = title;
@@ -79,8 +98,13 @@ public class CachedLocalTrack extends LocalTrack implements Serializable {
             return this;
         }
 
+        public CachedLocalTrackBuilder checksum(Long checksum) {
+            this.checksum = checksum;
+            return this;
+        }
+
         public CachedLocalTrack build() {
-            return new CachedLocalTrack(title, artist, album, file, trackNumber, uri);
+            return new CachedLocalTrack(title, artist, album, file, trackNumber, uri, checksum);
         }
     }
 }

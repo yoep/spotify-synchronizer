@@ -2,9 +2,9 @@ package org.synchronizer.spotify.cache;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.synchronizer.spotify.SpotifySynchronizer;
 import org.synchronizer.spotify.cache.model.CachedAlbum;
 import org.synchronizer.spotify.cache.model.CachedLocalTrack;
 import org.synchronizer.spotify.cache.model.CachedSyncTrack;
@@ -14,17 +14,15 @@ import org.synchronizer.spotify.utils.CacheUtils;
 import org.synchronizer.spotify.utils.CollectionUtils;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
 @Service
 @RequiredArgsConstructor
 public class CacheService {
-    private static final String DIRECTORY = "cache";
     private static final String EXTENSION = ".cache";
     private static final String LOCAL_TRACK_CACHE_NAME = "local-tracks";
     private static final String SPOTIFY_CACHE_NAME = "spotify-tracks";
@@ -43,7 +41,7 @@ public class CacheService {
                     .collect(Collectors.toList());
 
             for (CachedLocalTrack cachedTrack : cachedTracks) {
-                ((CachedAlbum) cachedTrack.getAlbum()).cacheImage(getCacheDirectory());
+                ((CachedAlbum) cachedTrack.getAlbum()).cacheImage();
             }
 
             CacheUtils.writeToCache(getLocalTracksCacheFile(), cachedTracks.toArray(new CachedLocalTrack[0]), false);
@@ -67,11 +65,11 @@ public class CacheService {
 
             for (CachedSyncTrack cachedTrack : cachedSyncs) {
                 cachedTrack.getLocalTrack()
-                        .ifPresent(e -> ((CachedAlbum) e.getAlbum()).cacheImage(getCacheDirectory()));
+                        .ifPresent(e -> ((CachedAlbum) e.getAlbum()).cacheImage());
                 cachedTrack.getSpotifyTrack()
-                        .ifPresent(e -> ((CachedAlbum) e.getAlbum()).cacheImage(getCacheDirectory()));
+                        .ifPresent(e -> ((CachedAlbum) e.getAlbum()).cacheImage());
 
-                ((CachedAlbum) cachedTrack.getAlbum()).cacheImage(getCacheDirectory());
+                ((CachedAlbum) cachedTrack.getAlbum()).cacheImage();
             }
 
             CacheUtils.writeToCache(getSyncTracksCacheFile(), cachedSyncs.toArray(new CachedSyncTrack[0]), false);
@@ -81,54 +79,50 @@ public class CacheService {
         }
     }
 
-    public Collection<CachedLocalTrack> getCachedLocalTracks() {
+    public Optional<CachedLocalTrack[]> getCachedLocalTracks() {
         File localTracksCacheFile = getLocalTracksCacheFile();
 
         if (!localTracksCacheFile.exists())
-            return Collections.emptyList();
+            return Optional.empty();
 
         try {
             log.info("Loading cached local tracks from {}", localTracksCacheFile.getAbsolutePath());
             CachedLocalTrack[] cachedTracks = CacheUtils.readFromCache(localTracksCacheFile);
 
-            return Arrays.asList(cachedTracks);
+            return ArrayUtils.isNotEmpty(cachedTracks) ? Optional.of(cachedTracks) : Optional.empty();
         } catch (Exception ex) {
             log.error("Failed to read cache of local tracks with error " + ex.getMessage(), ex);
-            return null;
+            return Optional.empty();
         }
     }
 
-    public Collection<CachedSyncTrack> getCachedSyncTracks() {
+    public Optional<CachedSyncTrack[]> getCachedSyncTracks() {
         File syncTracksCacheFile = getSyncTracksCacheFile();
 
         if (!syncTracksCacheFile.exists())
-            return Collections.emptyList();
+            return Optional.empty();
 
         try {
             log.info("Loading cached sync tracks from {}", syncTracksCacheFile.getAbsolutePath());
             CachedSyncTrack[] cachedSyncs = CacheUtils.readFromCache(syncTracksCacheFile);
 
             log.info("Loaded {} syncs from cache", cachedSyncs.length);
-            return Arrays.asList(cachedSyncs);
+            return ArrayUtils.isNotEmpty(cachedSyncs) ? Optional.of(cachedSyncs) : Optional.empty();
         } catch (Exception ex) {
             log.error("Failed to read cache of local tracks with error " + ex.getMessage(), ex);
-            return null;
+            return Optional.empty();
         }
     }
 
     private File getLocalTracksCacheFile() {
-        return new File(getCacheDirectory() + getFilename(LOCAL_TRACK_CACHE_NAME));
+        return new File(CacheUtils.getCacheDirectory() + getFilename(LOCAL_TRACK_CACHE_NAME));
     }
 
     private File getSyncTracksCacheFile() {
-        return new File(getCacheDirectory() + getFilename(SYNC_CACHE_NAME));
+        return new File(CacheUtils.getCacheDirectory() + getFilename(SYNC_CACHE_NAME));
     }
 
     private static String getFilename(String filename) {
         return filename + EXTENSION;
-    }
-
-    private static String getCacheDirectory() {
-        return SpotifySynchronizer.APP_DIR + DIRECTORY + File.separator;
     }
 }

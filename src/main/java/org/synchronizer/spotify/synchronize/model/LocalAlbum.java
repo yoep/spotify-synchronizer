@@ -15,6 +15,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class LocalAlbum extends AbstractAlbum {
     private String name;
+    private String genre;
     private transient String imageMimeType;
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
@@ -43,12 +44,19 @@ public class LocalAlbum extends AbstractAlbum {
                 .orElse(null);
     }
 
-
     public void setName(String name) {
         if (!Objects.equals(this.name, name))
             this.setChanged();
 
         this.name = name;
+        this.notifyObservers();
+    }
+
+    public void setGenre(String genre) {
+        if (!Objects.equals(this.genre, genre))
+            this.setChanged();
+
+        this.genre = genre;
         this.notifyObservers();
     }
 

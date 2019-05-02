@@ -192,6 +192,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
 
     }
 
+    //TODO: update this method to use a searchable interface instead of the "toString" method and match that against the content
     private void updateSearch(String searchValue) {
         runTask(() -> {
             Pattern pattern = Pattern.compile(".*" + searchValue + ".*", Pattern.CASE_INSENSITIVE);
@@ -219,7 +220,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
         });
     }
 
-    private void renderAdditionalItems(long totalAdditionalItems) {
+    private void renderAdditionalItems(final long totalAdditionalItems) {
         updating.set(true);
 
         runTask(() -> {
@@ -354,8 +355,8 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
                     if (isAllowedToUpdate() && !isSearchActive.get())
                         this.updateRendering();
 
-                    // if last event was more than a minute ago, stop the watcher
-                    if (System.currentTimeMillis() - lastEvent > 60000)
+                    // if last event was more than 20 secs ago, stop the watcher
+                    if (System.currentTimeMillis() - lastEvent > 20000)
                         keepWatcherAlive = false;
                 }
             } catch (InterruptedException ex) {

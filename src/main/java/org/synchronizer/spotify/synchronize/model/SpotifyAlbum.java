@@ -5,12 +5,11 @@ import lombok.*;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.synchronizer.spotify.spotify.api.v1.Album;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
@@ -19,6 +18,7 @@ import java.util.function.Supplier;
 @AllArgsConstructor
 public class SpotifyAlbum extends AbstractAlbum {
     private String name;
+    private String genre;
     private String lowResImageUri;
     private String highResImageUri;
     @EqualsAndHashCode.Exclude
@@ -49,7 +49,9 @@ public class SpotifyAlbum extends AbstractAlbum {
     @Override
     public String getImageMimeType() {
         if (bufferedImageMimeType == null)
-            bufferedImageMimeType = imageMimeTypeSupplier.get();
+            bufferedImageMimeType = Optional.ofNullable(imageMimeTypeSupplier)
+                    .map(Supplier::get)
+                    .orElse(null);
 
         return bufferedImageMimeType;
     }
@@ -57,7 +59,9 @@ public class SpotifyAlbum extends AbstractAlbum {
     @Override
     public byte[] getImage() {
         if (bufferedImage == null)
-            bufferedImage = imageSupplier.get();
+            bufferedImage = Optional.ofNullable(imageSupplier)
+                    .map(Supplier::get)
+                    .orElse(null);
 
         return bufferedImage;
     }
@@ -72,9 +76,18 @@ public class SpotifyAlbum extends AbstractAlbum {
         Assert.notNull(album, "album cannot be null");
         return SpotifyAlbum.builder()
                 .name(album.getName())
+                .genre(getGenre(album))
                 .lowResImageUri(getSmallestImage(album.getImages()))
                 .highResImageUri(getLargestImage(album.getImages()))
                 .build();
+    }
+
+    private static String getGenre(Album album) {
+        return Optional.ofNullable(album.getGenres())
+                .map(Collection::stream)
+                .orElse(Stream.empty())
+                .findFirst()
+                .orElse(null);
     }
 
     private static String getLargestImage(List<org.synchronizer.spotify.spotify.api.v1.Image> images) {

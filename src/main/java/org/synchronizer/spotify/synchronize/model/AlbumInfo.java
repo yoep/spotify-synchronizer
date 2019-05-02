@@ -9,6 +9,13 @@ public interface AlbumInfo {
     String getName();
 
     /**
+     * Get the genre of the album.
+     *
+     * @return Returns the genre of the album.
+     */
+    String getGenre();
+
+    /**
      * Get the low res image uri of the album artwork.
      *
      * @return Returns the image of the album uri.

@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.synchronizer.spotify.ui.Icons;
 
 import java.util.ArrayList;
@@ -104,7 +105,7 @@ public class SearchField extends StackPane {
                     waitThread = createWaitThread();
                     waitThread.start();
                 }
-            } else if (noSpacesValue.length() == 0) {
+            } else if (isTextFieldEmpty()) {
                 onCleared();
             }
         });
@@ -115,11 +116,11 @@ public class SearchField extends StackPane {
     }
 
     private void onChanged() {
+        lastChangeInvoked = System.currentTimeMillis();
+
         synchronized (listeners) {
             listeners.forEach(e -> e.onSearchValueChanged(this.searchField.getText()));
         }
-
-        lastChangeInvoked = System.currentTimeMillis();
     }
 
     private void onCleared() {
@@ -165,5 +166,9 @@ public class SearchField extends StackPane {
 
             waitThread = null;
         });
+    }
+
+    private boolean isTextFieldEmpty() {
+        return StringUtils.isEmpty(this.getText().trim());
     }
 }

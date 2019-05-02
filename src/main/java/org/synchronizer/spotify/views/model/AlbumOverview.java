@@ -6,7 +6,6 @@ import lombok.extern.log4j.Log4j2;
 import org.synchronizer.spotify.common.AbstractObservable;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
-import org.synchronizer.spotify.utils.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;

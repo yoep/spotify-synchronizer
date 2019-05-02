@@ -9,3 +9,6 @@ spotify:
     tokens: https://accounts.spotify.com/api/token
     redirect: http://localhost:9600/login
     user-tracks: https://api.spotify.com/v1/me/tracks
+
+synchronizer:
+  cache-enabled: true

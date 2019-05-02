@@ -1,11 +1,11 @@
 package org.synchronizer.spotify.synchronize;
 
-import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 import org.synchronizer.spotify.cache.CacheService;
+import org.synchronizer.spotify.config.properties.SynchronizerConfiguration;
 import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.synchronize.model.LocalTrack;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
@@ -28,6 +28,7 @@ public class SynchronisationService {
     private final SynchronizeStatusComponent statusComponent;
     private final CacheService cacheService;
     private final SyncTracksWrapper tracks;
+    private final SynchronizerConfiguration synchronizerConfiguration;
 
     public SynchronisationService(DiscoveryService spotifyDiscovery,
                                   DiscoveryService localMusicDiscovery,
@@ -35,7 +36,8 @@ public class SynchronisationService {
                                   SynchronizeDatabaseService synchronizeDatabaseService,
                                   SynchronizeStatusComponent statusComponent,
                                   CacheService cacheService,
-                                  TaskExecutor taskExecutor) {
+                                  TaskExecutor taskExecutor,
+                                  SynchronizerConfiguration synchronizerConfiguration) {
         this.spotifyDiscovery = spotifyDiscovery;
         this.localMusicDiscovery = localMusicDiscovery;
         this.settingsService = settingsService;
@@ -43,16 +45,17 @@ public class SynchronisationService {
         this.statusComponent = statusComponent;
         this.cacheService = cacheService;
         this.tracks = new SyncTracksWrapper(taskExecutor);
+        this.synchronizerConfiguration = synchronizerConfiguration;
     }
 
     public void init() {
-        //TODO: Fix caching as the album names are currently missing
-//        Platform.runLater(() -> {
-//            //load cache if available
-//            tracks.addAll(cacheService.getCachedSyncTracks());
-//        });
-
         addListeners();
+
+        // load cache if available
+        if (synchronizerConfiguration.isCacheEnabled())
+            cacheService.getCachedSyncTracks()
+                    .ifPresent(tracks::addAll);
+
         startDiscovery();
     }
 

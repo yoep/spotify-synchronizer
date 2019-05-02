@@ -4,9 +4,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 import org.synchronizer.spotify.common.AbstractObservable;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public abstract class AbstractMusicTrack extends AbstractObservable implements MusicTrack {
+public abstract class AbstractMusicTrack extends AbstractObservable implements MusicTrack, Serializable {
     @Override
     public boolean matches(MusicTrack musicTrack) {
         Assert.notNull(musicTrack, "musicTrack cannot be null");

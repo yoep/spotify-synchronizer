@@ -51,6 +51,7 @@ public class AlbumTrackSyncComponent implements Initializable {
     }
 
     public void updateCompleted(boolean success) {
+        log.info("Updated " + syncTrack + " with success state " + success);
         updating = false;
 
         if (success) {

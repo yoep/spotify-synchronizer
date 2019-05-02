@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Optional;
-import java.util.UUID;
 
 @Log4j2
 @ToString(callSuper = true)
@@ -22,13 +21,14 @@ public class CachedLocalAlbum extends LocalAlbum implements CachedAlbum, Seriali
 
     private String cachedImageUri;
 
-    public CachedLocalAlbum(String name, String imageMimeType, byte[] image) {
-        super(name, imageMimeType, image);
+    public CachedLocalAlbum(String name, String genre, String imageMimeType, byte[] image) {
+        super(name, genre, imageMimeType, image);
     }
 
     public static CachedLocalAlbum from(Album album) {
         return new CachedLocalAlbumBuilder()
                 .name(album.getName())
+                .genre(album.getGenre())
                 .imageMimeType(album.getImageMimeType())
                 .image(album.getImage())
                 .build();
@@ -43,17 +43,11 @@ public class CachedLocalAlbum extends LocalAlbum implements CachedAlbum, Seriali
     }
 
     @Override
-    public void cacheImage(String cacheDirectory) {
+    public void cacheImage() {
         if (ArrayUtils.isEmpty(this.image))
             return;
 
-        this.cachedImageUri = cacheDirectory + UUID.randomUUID().toString();
-
-        try {
-            CacheUtils.writeToCache(new File(cachedImageUri), this.image, false);
-        } catch (IOException e) {
-            log.error("Failed to cache image for " + this + " with error " + e.getMessage(), e);
-        }
+        this.cachedImageUri = CacheUtils.writeImageToCache(this.image);
     }
 
     private byte[] readCacheFile(File file) {
@@ -67,11 +61,17 @@ public class CachedLocalAlbum extends LocalAlbum implements CachedAlbum, Seriali
 
     public static class CachedLocalAlbumBuilder {
         private String name;
+        private String genre;
         private String imageMimeType;
         private byte[] image;
 
         public CachedLocalAlbumBuilder name(String name) {
             this.name = name;
+            return this;
+        }
+
+        public CachedLocalAlbumBuilder genre(String genre) {
+            this.genre = genre;
             return this;
         }
 
@@ -86,7 +86,7 @@ public class CachedLocalAlbum extends LocalAlbum implements CachedAlbum, Seriali
         }
 
         public CachedLocalAlbum build() {
-            return new CachedLocalAlbum(name, imageMimeType, image);
+            return new CachedLocalAlbum(name, genre, imageMimeType, image);
         }
     }
 }

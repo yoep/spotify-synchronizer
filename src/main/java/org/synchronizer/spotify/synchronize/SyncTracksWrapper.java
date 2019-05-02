@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 @Log4j2
 public class SyncTracksWrapper {
     private static final int BATCH_SIZE = 20;
@@ -35,6 +37,8 @@ public class SyncTracksWrapper {
     }
 
     public void add(SyncTrack track) {
+        Assert.notNull(track, "track cannot be null");
+
         synchronized (tracks) {
             addedTracks.add(track);
             tracks.add(track);
@@ -42,7 +46,24 @@ public class SyncTracksWrapper {
         }
     }
 
+    /**
+     * Add the given arrays of {@link SyncTrack}'s to the items.
+     *
+     * @param tracks The tracks to add.
+     */
+    public void addAll(SyncTrack... tracks) {
+        addAll(asList(tracks));
+    }
+
+    /**
+     * Add the list of {@link SyncTrack}'s to the items.
+     *
+     * @param tracks The tracks to add.
+     */
     public void addAll(Collection<? extends SyncTrack> tracks) {
+        if (CollectionUtils.isEmpty(tracks))
+            return;
+
         synchronized (this.tracks) {
             addedTracks.addAll(tracks);
             this.tracks.addAll(tracks);
@@ -85,10 +106,9 @@ public class SyncTracksWrapper {
                     //check if we need to notify listeners about changes
                     invokeListenersIfAllowed();
 
-                    // if the last event was more than a minute ago, stop the watcher as nothing is changing
-                    if (System.currentTimeMillis() - lastEvent > 60000) {
+                    // if the last event was more than 20 secs ago, stop the watcher as nothing is changing
+                    if (System.currentTimeMillis() - lastEvent > 20000)
                         stopWatcher();
-                    }
                 }
             } catch (InterruptedException e) {
                 //ignore
