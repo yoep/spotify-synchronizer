@@ -11,4 +11,4 @@ spotify:
     user-tracks: https://api.spotify.com/v1/me/tracks
 
 synchronizer:
-  cache-enabled: true
+  cache-mode: cache_enabled

@@ -6,6 +6,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tooltip;
+import javafx.scene.paint.Color;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
@@ -25,7 +26,6 @@ public class AlbumTrackSyncComponent implements Initializable {
     private final UIText uiText;
 
     private Runnable onSyncClicked;
-    private boolean updating;
 
     @FXML
     private Icon outOfSyncIcon;
@@ -50,23 +50,6 @@ public class AlbumTrackSyncComponent implements Initializable {
         syncTrack.addObserver((o, arg) -> updateSyncState());
     }
 
-    public void updateCompleted(boolean success) {
-        log.info("Updated " + syncTrack + " with success state " + success);
-        updating = false;
-
-        if (success) {
-            updateSyncState();
-        } else {
-            showErrorIcon();
-        }
-    }
-
-    public void setStateToUpdating() {
-        showProgressIndicator();
-
-        updating = true;
-    }
-
     private void initializeTooltips() {
         Tooltip tooltipInSync = new Tooltip(uiText.get(SyncMessage.SYNCHRONIZED));
         Tooltip.install(inSyncIcon, tooltipInSync);
@@ -86,10 +69,7 @@ public class AlbumTrackSyncComponent implements Initializable {
     }
 
     private void updateSyncState() {
-        if (updating)
-            return;
-
-        log.debug("Updating sync status for track " + syncTrack);
+        log.debug("Updating synchronize status for track " + syncTrack);
 
         switch (syncTrack.getSyncState()) {
             case UNKNOWN:
@@ -105,6 +85,9 @@ public class AlbumTrackSyncComponent implements Initializable {
                 break;
             case OUT_OF_SYNC:
                 showSyncIcon(false);
+                break;
+            case FAILED:
+                showErrorIcon();
                 break;
             case SYNCED:
                 showSyncIcon(true);
@@ -125,7 +108,7 @@ public class AlbumTrackSyncComponent implements Initializable {
 
     private void showErrorIcon() {
         outOfSyncIcon.setVisible(true);
-        outOfSyncIcon.setStyle("-fx-fill: #f00");
+        outOfSyncIcon.setColor(Color.RED);
     }
 
     private void showSyncIcon(boolean isInSync) {
@@ -136,7 +119,6 @@ public class AlbumTrackSyncComponent implements Initializable {
     }
 
     private void updateMetaData() {
-        setStateToUpdating();
         onSyncClicked.run();
     }
 }

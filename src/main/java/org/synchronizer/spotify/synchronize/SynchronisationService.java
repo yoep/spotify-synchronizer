@@ -3,8 +3,10 @@ package org.synchronizer.spotify.synchronize;
 import javafx.collections.ListChangeListener;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.synchronizer.spotify.cache.CacheService;
+import org.synchronizer.spotify.config.properties.CacheMode;
 import org.synchronizer.spotify.config.properties.SynchronizerConfiguration;
 import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.synchronize.model.LocalTrack;
@@ -48,15 +50,18 @@ public class SynchronisationService {
         this.synchronizerConfiguration = synchronizerConfiguration;
     }
 
+    @Async
     public void init() {
         addListeners();
 
-        // load cache if available
-        if (synchronizerConfiguration.isCacheEnabled())
+        // check if caching is enabled, if so, load the cache if available
+        if (synchronizerConfiguration.getCacheMode().isActive())
             cacheService.getCachedSyncTracks()
                     .ifPresent(tracks::addAll);
 
-        startDiscovery();
+        // check if the current cache mode state is not cache only
+        if (synchronizerConfiguration.getCacheMode() != CacheMode.CACHE_ONLY)
+            startDiscovery();
     }
 
     public void addListener(TracksListener listener) {
@@ -97,7 +102,9 @@ public class SynchronisationService {
     private void serviceFinished() {
         if (localMusicDiscovery.isFinished() && spotifyDiscovery.isFinished()) {
             statusComponent.setSynchronizing(false);
-            cacheService.cacheSync(tracks.getAll());
+
+            if (synchronizerConfiguration.getCacheMode().isActive())
+                cacheService.cacheSync(tracks.getAll());
         }
     }
 

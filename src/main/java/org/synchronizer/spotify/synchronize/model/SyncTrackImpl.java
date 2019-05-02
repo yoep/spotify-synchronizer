@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.util.Assert;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -15,6 +16,8 @@ import java.util.Optional;
 @ToString(callSuper = true)
 @NoArgsConstructor
 public class SyncTrackImpl extends AbstractSyncTrack {
+    private static final long serialVersionUID = 1L;
+
     private SyncState syncState;
 
     @Builder
@@ -27,6 +30,22 @@ public class SyncTrackImpl extends AbstractSyncTrack {
     @Override
     public SyncState getSyncState() {
         return syncState;
+    }
+
+    @Override
+    public void setUpdateState(UpdateState state) {
+        Assert.notNull(state, "state cannot be null");
+        switch (state) {
+            case UPDATING:
+                setSyncState(SyncState.UPDATING);
+                break;
+            case SUCCESS:
+                setSyncState(SyncState.SYNCED);
+                break;
+            case FAILED:
+                setSyncState(SyncState.FAILED);
+                break;
+        }
     }
 
     public void setSpotifyTrack(MusicTrack spotifyTrack) {

@@ -3,7 +3,7 @@ package org.synchronizer.spotify.synchronize.model;
 import java.io.Serializable;
 
 /**
- * The sync status between the local track and spotify track.
+ * The synchronize status between the local track and spotify track.
  */
 public enum SyncState implements Serializable {
     /**
@@ -19,7 +19,7 @@ public enum SyncState implements Serializable {
      */
     SPOTIFY_TRACK_MISSING,
     /**
-     * Metadata is not in sync between the local track and spotify.
+     * Metadata is not in synchronize between the local track and spotify.
      * This state indirectly indicates that the local- and spotify track are present.
      */
     OUT_OF_SYNC,
@@ -28,7 +28,11 @@ public enum SyncState implements Serializable {
      */
     UPDATING,
     /**
-     * Tracks are in sync.
+     * Failed to metadata between the tracks.
+     */
+    FAILED,
+    /**
+     * Tracks are in synchronize.
      */
     SYNCED
 }

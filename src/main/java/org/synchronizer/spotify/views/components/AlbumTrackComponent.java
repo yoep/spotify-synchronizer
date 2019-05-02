@@ -15,6 +15,7 @@ import org.synchronizer.spotify.media.PlayerStateChangeListener;
 import org.synchronizer.spotify.media.TrackChangeListener;
 import org.synchronizer.spotify.synchronize.model.SyncState;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
+import org.synchronizer.spotify.synchronize.model.UpdateState;
 import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
 import org.synchronizer.spotify.ui.ViewLoader;
@@ -106,8 +107,7 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
 
     public void syncTrackData() {
         if (isSyncTrackDataAvailable()) {
-            syncComponent.setStateToUpdating();
-            audioService.updateFileMetadata(syncTrack).thenAccept(e -> syncComponent.updateCompleted(e));
+            audioService.updateFileMetadata(syncTrack);
         }
     }
 

@@ -21,9 +21,9 @@ public interface SyncTrack extends MusicTrack {
     boolean isSpotifyTrackAvailable();
 
     /**
-     * Get the current sync status.
+     * Get the current synchronize status.
      *
-     * @return Returns the current sync status of the local- and spotify track.
+     * @return Returns the current synchronize status of the local- and spotify track.
      */
     SyncState getSyncState();
 
@@ -54,4 +54,11 @@ public interface SyncTrack extends MusicTrack {
      * @param musicTrack Set the local track.
      */
     void setLocalTrack(MusicTrack musicTrack);
+
+    /**
+     * Set the state of the sync update.
+     *
+     * @param state The update state of the sync.
+     */
+    void setUpdateState(UpdateState state);
 }

@@ -9,7 +9,7 @@ import java.util.Collection;
  */
 public interface TracksListener {
     /**
-     * Invoked when tracks are being added to the sync list.
+     * Invoked when tracks are being added to the synchronize list.
      *
      * @param addedTracks The new added tracks.
      */

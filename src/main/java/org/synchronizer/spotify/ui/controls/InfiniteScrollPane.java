@@ -65,6 +65,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
     private boolean keepWatcherAlive;
 
     public InfiniteScrollPane() {
+        initializeListeners();
         initializeScrollBars();
         initializeContent();
         initializeNoSearchResultsText();
@@ -170,7 +171,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
                 noSearchResultsFound.setVisible(false);
 
                 this.clearItemRendering();
-                this.updateRendering();
+                startWatcher();
             });
         });
     }
@@ -184,12 +185,14 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
     }
 
     private void updateRendering() {
+        if (!isShowing())
+            return;
+
         int totalRenderedItems = itemsContainer.getChildren().size();
         long initialRender = calculateInitialRender();
 
         if (totalRenderedItems < initialRender)
             renderAdditionalItems(initialRender - totalRenderedItems);
-
     }
 
     //TODO: update this method to use a searchable interface instead of the "toString" method and match that against the content
@@ -215,7 +218,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
 
             Platform.runLater(() -> {
                 this.clearItemRendering();
-                this.updateRendering();
+                startWatcher();
             });
         });
     }
@@ -285,11 +288,28 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
     }
 
     private long calculateInitialRender() {
-        return Math.round(this.getHeight() / BOX_MIN_HEIGHT) + 1;
+        double height = this.getHeight();
+
+        // if height is 0 (window is opening), then don't render any items yet till the next window size update
+        if (height == 0)
+            return 0;
+
+        return Math.round(height / BOX_MIN_HEIGHT) + 1;
     }
 
     private boolean isAllowedToUpdate() {
         return !updating.get() && System.currentTimeMillis() - lastUpdated > TIME_BETWEEN_UPDATES;
+    }
+
+    private boolean isShowing() {
+        return this.getScene().getWindow().isShowing();
+    }
+
+    private void initializeListeners() {
+        this.heightProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.doubleValue() > oldValue.doubleValue())
+                startWatcher();
+        });
     }
 
     private void initializeScrollBars() {
@@ -352,7 +372,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
                 while (keepWatcherAlive) {
                     Thread.sleep(100);
 
-                    if (isAllowedToUpdate() && !isSearchActive.get())
+                    if (isShowing() && isAllowedToUpdate() && !isSearchActive.get())
                         this.updateRendering();
 
                     // if last event was more than 20 secs ago, stop the watcher

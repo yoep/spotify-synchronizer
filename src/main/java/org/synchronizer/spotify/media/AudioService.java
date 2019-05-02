@@ -38,9 +38,12 @@ public class AudioService {
     }
 
     @Async
-    public CompletableFuture<Boolean> updateFileMetadata(SyncTrack track) {
+    public void updateFileMetadata(SyncTrack track) {
+        Assert.notNull(track, "track cannot be null");
+
         try {
-            Assert.notNull(track, "track cannot be null");
+            track.setUpdateState(UpdateState.UPDATING);
+
             LocalTrack localTrack = (LocalTrack) track.getLocalTrack().orElseThrow(() -> new SynchronizeException("Local track is not available for synchronization"));
             MusicTrack spotifyTrack = track.getSpotifyTrack().orElseThrow(() -> new SynchronizeException("Spotify track is not available for synchronization"));
             LocalAlbum localAlbum = (LocalAlbum) localTrack.getAlbum();
@@ -58,10 +61,14 @@ public class AudioService {
             localAlbum.setGenre(Optional.ofNullable(spotifyAlbum.getGenre())
                     .orElse(localAlbum.getGenre()));
 
-            return CompletableFuture.completedFuture(AudioUtils.updateFileMetadata(localTrack));
+            if (AudioUtils.updateFileMetadata(localTrack)) {
+                track.setUpdateState(UpdateState.SUCCESS);
+            } else {
+                track.setUpdateState(UpdateState.FAILED);
+            }
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
-            return CompletableFuture.completedFuture(false);
+            track.setUpdateState(UpdateState.FAILED);
         }
     }
 

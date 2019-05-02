@@ -3,6 +3,7 @@ package org.synchronizer.spotify.synchronize.model;
 import lombok.*;
 
 import java.io.File;
+import java.net.URI;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -21,7 +22,8 @@ public class LocalTrack extends AbstractMusicTrack {
     @Override
     public String getUri() {
         return Optional.ofNullable(file)
-                .map(File::getAbsolutePath)
+                .map(File::toURI)
+                .map(URI::toString)
                 .orElse(null);
     }
 

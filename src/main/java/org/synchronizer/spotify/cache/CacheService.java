@@ -56,7 +56,7 @@ public class CacheService {
         if (CollectionUtils.isEmpty(syncTracks))
             return;
 
-        log.debug("Caching sync tracks...");
+        log.debug("Caching synchronize tracks...");
 
         try {
             List<CachedSyncTrack> cachedSyncs = CollectionUtils.copy(syncTracks).stream()
@@ -73,9 +73,9 @@ public class CacheService {
             }
 
             CacheUtils.writeToCache(getSyncTracksCacheFile(), cachedSyncs.toArray(new CachedSyncTrack[0]), false);
-            log.debug("{} sync tracks have been cached", cachedSyncs.size());
+            log.debug("{} synchronize tracks have been cached", cachedSyncs.size());
         } catch (Exception ex) {
-            log.error("Failed to create cache of sync tracks with error " + ex.getMessage(), ex);
+            log.error("Failed to create cache of synchronize tracks with error " + ex.getMessage(), ex);
         }
     }
 
@@ -103,7 +103,7 @@ public class CacheService {
             return Optional.empty();
 
         try {
-            log.info("Loading cached sync tracks from {}", syncTracksCacheFile.getAbsolutePath());
+            log.info("Loading cached synchronize tracks from {}", syncTracksCacheFile.getAbsolutePath());
             CachedSyncTrack[] cachedSyncs = CacheUtils.readFromCache(syncTracksCacheFile);
 
             log.info("Loaded {} syncs from cache", cachedSyncs.length);
