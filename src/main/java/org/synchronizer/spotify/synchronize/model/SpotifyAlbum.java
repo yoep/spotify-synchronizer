@@ -2,6 +2,7 @@ package org.synchronizer.spotify.synchronize.model;
 
 import javafx.scene.image.Image;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
@@ -17,8 +18,11 @@ import java.util.stream.Stream;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpotifyAlbum extends AbstractAlbum {
+    private static final long serialVersionUID = 1L;
+
     private String name;
     private String genre;
+    private String href;
     private String lowResImageUri;
     private String highResImageUri;
     @EqualsAndHashCode.Exclude
@@ -66,6 +70,11 @@ public class SpotifyAlbum extends AbstractAlbum {
         return bufferedImage;
     }
 
+    @Override
+    public boolean matchesSearchCriteria(String criteria) {
+        return StringUtils.containsIgnoreCase(name, criteria);
+    }
+
     /**
      * Convert the given {@link org.synchronizer.spotify.spotify.api.v1.Album} to a {@link SpotifyAlbum} instance.
      *
@@ -77,6 +86,7 @@ public class SpotifyAlbum extends AbstractAlbum {
         return SpotifyAlbum.builder()
                 .name(album.getName())
                 .genre(getGenre(album))
+                .href(album.getHref())
                 .lowResImageUri(getSmallestImage(album.getImages()))
                 .highResImageUri(getLargestImage(album.getImages()))
                 .build();

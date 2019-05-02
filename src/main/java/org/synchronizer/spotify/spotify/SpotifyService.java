@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.stereotype.Service;
 import org.synchronizer.spotify.config.properties.SpotifyConfiguration;
+import org.synchronizer.spotify.spotify.api.v1.Album;
 import org.synchronizer.spotify.spotify.api.v1.Tracks;
 
 import java.util.concurrent.CompletableFuture;
@@ -47,5 +48,16 @@ public class SpotifyService {
     @Async
     public CompletableFuture<Tracks> getSavedTracks(String endpoint) {
         return CompletableFuture.completedFuture(spotifyRestTemplate.exchange(endpoint, HttpMethod.GET, HttpEntity.EMPTY, Tracks.class).getBody());
+    }
+
+    /**
+     * Get the full album details of the given album.
+     *
+     * @param album The album to retrieve all details of.
+     * @return Returns the album with full details.
+     */
+    @Async
+    public CompletableFuture<Album> getAlbumDetails(Album album) {
+        return CompletableFuture.completedFuture(spotifyRestTemplate.exchange(album.getHref(), HttpMethod.GET, HttpEntity.EMPTY, Album.class).getBody());
     }
 }

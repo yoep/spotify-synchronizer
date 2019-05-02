@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.synchronizer.spotify.common.AbstractObservable;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
+import org.synchronizer.spotify.ui.controls.Searchable;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = false)
 @Data
 @Log4j2
-public class AlbumOverview extends AbstractObservable implements Comparable<AlbumOverview> {
+public class AlbumOverview extends AbstractObservable implements Comparable<AlbumOverview>, Searchable {
     private final Album album;
     @EqualsAndHashCode.Exclude
     private final SortedSet<SyncTrack> tracks = new TreeSet<>();
@@ -53,5 +54,12 @@ public class AlbumOverview extends AbstractObservable implements Comparable<Albu
             return 1;
 
         return this.getAlbum().getName().compareTo(compareTo.getAlbum().getName());
+    }
+
+    @Override
+    public boolean matchesSearchCriteria(String criteria) {
+        synchronized (tracks) {
+            return album.matchesSearchCriteria(criteria) || tracks.stream().anyMatch(e -> e.matchesSearchCriteria(criteria));
+        }
     }
 }

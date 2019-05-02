@@ -22,16 +22,19 @@ public class CachedSpotifyAlbum extends SpotifyAlbum implements CachedAlbum, Ser
 
     private String cachedImageUri;
 
-    public CachedSpotifyAlbum(String name, String genre, String lowResImageUri, String highResImageUri, Supplier<String> imageMimeTypeSupplier, String bufferedImageMimeType, Supplier<byte[]> imageSupplier, byte[] bufferedImage) {
-        super(name, genre, lowResImageUri, highResImageUri, imageMimeTypeSupplier, bufferedImageMimeType, imageSupplier, bufferedImage);
+    public CachedSpotifyAlbum(String name, String genre, String href, String lowResImageUri, String highResImageUri, Supplier<String> imageMimeTypeSupplier, String bufferedImageMimeType, Supplier<byte[]> imageSupplier, byte[] bufferedImage) {
+        super(name, genre, href, lowResImageUri, highResImageUri, imageMimeTypeSupplier, bufferedImageMimeType, imageSupplier, bufferedImage);
     }
 
     public static CachedSpotifyAlbum from(Album album) {
+        SpotifyAlbum spotifyAlbum = (SpotifyAlbum) album;
+
         return new CachedSpotifyAlbumBuilder()
-                .name(album.getName())
-                .genre(album.getGenre())
-                .lowResImageUri(album.getLowResImageUri())
-                .highResImageUri(album.getHighResImageUri())
+                .name(spotifyAlbum.getName())
+                .genre(spotifyAlbum.getGenre())
+                .href(spotifyAlbum.getHref())
+                .lowResImageUri(spotifyAlbum.getLowResImageUri())
+                .highResImageUri(spotifyAlbum.getHighResImageUri())
                 .build();
     }
 
@@ -63,6 +66,7 @@ public class CachedSpotifyAlbum extends SpotifyAlbum implements CachedAlbum, Ser
     public static class CachedSpotifyAlbumBuilder {
         private String name;
         private String genre;
+        private String href;
         private String lowResImageUri;
         private String highResImageUri;
         private Supplier<String> imageMimeTypeSupplier;
@@ -77,6 +81,11 @@ public class CachedSpotifyAlbum extends SpotifyAlbum implements CachedAlbum, Ser
 
         public CachedSpotifyAlbumBuilder genre(String genre) {
             this.genre = genre;
+            return this;
+        }
+
+        public CachedSpotifyAlbumBuilder href(String href) {
+            this.href = href;
             return this;
         }
 
@@ -111,7 +120,7 @@ public class CachedSpotifyAlbum extends SpotifyAlbum implements CachedAlbum, Ser
         }
 
         public CachedSpotifyAlbum build() {
-            return new CachedSpotifyAlbum(name, genre, lowResImageUri, highResImageUri, imageMimeTypeSupplier, bufferedImageMimeType, imageSupplier, bufferedImage);
+            return new CachedSpotifyAlbum(name, genre, href, lowResImageUri, highResImageUri, imageMimeTypeSupplier, bufferedImageMimeType, imageSupplier, bufferedImage);
         }
     }
 }

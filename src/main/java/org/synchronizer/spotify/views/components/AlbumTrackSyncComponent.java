@@ -26,13 +26,16 @@ public class AlbumTrackSyncComponent implements Initializable {
     private final UIText uiText;
 
     private Runnable onSyncClicked;
+    private Tooltip tooltipCheckMark;
+    private Tooltip tooltipExclamation;
+    private Tooltip tooltipCross;
 
     @FXML
-    private Icon outOfSyncIcon;
+    private Icon exclamationIcon;
     @FXML
-    private Icon inSyncIcon;
+    private Icon checkMarkIcon;
     @FXML
-    private Icon noSyncIcon;
+    private Icon crossIcon;
     @FXML
     private ProgressIndicator progressIndicator;
 
@@ -51,21 +54,21 @@ public class AlbumTrackSyncComponent implements Initializable {
     }
 
     private void initializeTooltips() {
-        Tooltip tooltipInSync = new Tooltip(uiText.get(SyncMessage.SYNCHRONIZED));
-        Tooltip.install(inSyncIcon, tooltipInSync);
+        tooltipCheckMark = new Tooltip(uiText.get(SyncMessage.SYNCED));
+        Tooltip.install(checkMarkIcon, tooltipCheckMark);
 
-        Tooltip tooltipOutOfSync = new Tooltip(uiText.get(SyncMessage.METADATA_OUT_OF_SYNC));
-        Tooltip.install(outOfSyncIcon, tooltipOutOfSync);
+        tooltipExclamation = new Tooltip(uiText.get(SyncMessage.OUT_OF_SYNC));
+        Tooltip.install(exclamationIcon, tooltipExclamation);
 
-        Tooltip tooltipNoSync = new Tooltip(uiText.get(SyncMessage.LOCAL_TRACK_NOT_AVAILABLE));
-        Tooltip.install(noSyncIcon, tooltipNoSync);
+        tooltipCross = new Tooltip(uiText.get(SyncMessage.LOCAL_TRACK_MISSING));
+        Tooltip.install(crossIcon, tooltipCross);
     }
 
     private void initializeContextMenus() {
         ContextMenu contextMenu = new ContextMenu(UIUtils.createMenuItem(uiText.get(SyncMessage.SYNC), Icons.REFRESH, this::updateMetaData));
 
-        outOfSyncIcon.setOnContextMenuRequested(event -> contextMenu.show((Node) event.getSource(), event.getScreenX(), event.getScreenY()));
-        outOfSyncIcon.setOnMouseClicked(event -> contextMenu.show((Node) event.getSource(), event.getScreenX(), event.getScreenY()));
+        exclamationIcon.setOnContextMenuRequested(event -> contextMenu.show((Node) event.getSource(), event.getScreenX(), event.getScreenY()));
+        exclamationIcon.setOnMouseClicked(event -> contextMenu.show((Node) event.getSource(), event.getScreenX(), event.getScreenY()));
     }
 
     private void updateSyncState() {
@@ -78,19 +81,16 @@ public class AlbumTrackSyncComponent implements Initializable {
                 break;
             case LOCAL_TRACK_MISSING:
             case SPOTIFY_TRACK_MISSING:
-                noSyncIcon.setVisible(true);
-                inSyncIcon.setVisible(false);
-                outOfSyncIcon.setVisible(false);
-                progressIndicator.setVisible(false);
+                showCrossIcon();
                 break;
             case OUT_OF_SYNC:
-                showSyncIcon(false);
+                showCheckMarkIcon(false);
                 break;
             case FAILED:
                 showErrorIcon();
                 break;
             case SYNCED:
-                showSyncIcon(true);
+                showCheckMarkIcon(true);
                 break;
             default:
                 showErrorIcon();
@@ -101,24 +101,41 @@ public class AlbumTrackSyncComponent implements Initializable {
 
     private void showProgressIndicator() {
         progressIndicator.setVisible(true);
-        noSyncIcon.setVisible(false);
-        inSyncIcon.setVisible(false);
-        outOfSyncIcon.setVisible(false);
+        crossIcon.setVisible(false);
+        checkMarkIcon.setVisible(false);
+        exclamationIcon.setVisible(false);
     }
 
     private void showErrorIcon() {
-        outOfSyncIcon.setVisible(true);
-        outOfSyncIcon.setColor(Color.RED);
+        exclamationIcon.setVisible(true);
+        exclamationIcon.setColor(Color.RED);
+        updateExclamationTooltip();
     }
 
-    private void showSyncIcon(boolean isInSync) {
-        inSyncIcon.setVisible(isInSync);
-        outOfSyncIcon.setVisible(!isInSync);
-        noSyncIcon.setVisible(false);
+    private void showCheckMarkIcon(boolean isInSync) {
+        checkMarkIcon.setVisible(isInSync);
+        exclamationIcon.setVisible(!isInSync);
+        crossIcon.setVisible(false);
         progressIndicator.setVisible(false);
+    }
+
+    private void showCrossIcon() {
+        crossIcon.setVisible(true);
+        checkMarkIcon.setVisible(false);
+        exclamationIcon.setVisible(false);
+        progressIndicator.setVisible(false);
+        updateCrossTooltip();
     }
 
     private void updateMetaData() {
         onSyncClicked.run();
+    }
+
+    private void updateCrossTooltip() {
+        tooltipCross.setText(uiText.get(SyncMessage.valueOf(syncTrack.getSyncState().name())));
+    }
+
+    private void updateExclamationTooltip() {
+        tooltipExclamation.setText(uiText.get(SyncMessage.valueOf(syncTrack.getSyncState().name())));
     }
 }

@@ -48,6 +48,12 @@ public class SyncTrackImpl extends AbstractSyncTrack {
         }
     }
 
+    @Override
+    public boolean matchesSearchCriteria(String criteria) {
+        return getLocalTrack().map(e -> e.matchesSearchCriteria(criteria)).orElse(false) ||
+                getSpotifyTrack().map(e -> e.matchesSearchCriteria(criteria)).orElse(false);
+    }
+
     public void setSpotifyTrack(MusicTrack spotifyTrack) {
         if (this.spotifyTrack != spotifyTrack)
             this.setChanged();

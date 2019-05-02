@@ -2,6 +2,7 @@ package org.synchronizer.spotify.synchronize.model;
 
 import javafx.scene.image.Image;
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.util.Objects;
@@ -14,6 +15,8 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LocalAlbum extends AbstractAlbum {
+    private static final long serialVersionUID = 1L;
+
     private String name;
     private String genre;
     private transient String imageMimeType;
@@ -42,6 +45,11 @@ public class LocalAlbum extends AbstractAlbum {
                 .map(ByteArrayInputStream::new)
                 .map(Image::new)
                 .orElse(null);
+    }
+
+    @Override
+    public boolean matchesSearchCriteria(String criteria) {
+        return StringUtils.containsIgnoreCase(name, criteria);
     }
 
     public void setName(String name) {

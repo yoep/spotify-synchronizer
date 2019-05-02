@@ -15,7 +15,6 @@ import org.synchronizer.spotify.media.PlayerStateChangeListener;
 import org.synchronizer.spotify.media.TrackChangeListener;
 import org.synchronizer.spotify.synchronize.model.SyncState;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
-import org.synchronizer.spotify.synchronize.model.UpdateState;
 import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
 import org.synchronizer.spotify.ui.ViewLoader;
@@ -66,9 +65,7 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        trackNumber.setText(getTrackNumber());
-        title.setText(syncTrack.getTitle());
-        artist.setText(syncTrack.getArtist());
+        updateTrackInfo();
 
         initializeEvents();
         initializeListeners();
@@ -114,6 +111,7 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     private void initializeListeners() {
         trackChangeListener = (oldTrack, newTrack) -> setPlaybackState(false);
         playerStateChangeListener = (oldState, newState) -> updatePlayPauseIcon(newState);
+        syncTrack.addObserver((o, arg) -> updateTrackInfo());
     }
 
     private void initializeEvents() {
@@ -151,6 +149,12 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
                 //no-op
                 break;
         }
+    }
+
+    private void updateTrackInfo() {
+        trackNumber.setText(getTrackNumber());
+        title.setText(syncTrack.getTitle());
+        artist.setText(syncTrack.getArtist());
     }
 
     private void setPlaybackState(boolean activeInMediaPlayer) {

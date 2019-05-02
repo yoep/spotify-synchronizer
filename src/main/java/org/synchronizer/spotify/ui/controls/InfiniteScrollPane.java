@@ -28,11 +28,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Log4j2
-public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPane implements SearchListener, SortListener {
+public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable> extends StackPane implements SearchListener, SortListener {
     private static final int BOX_MIN_HEIGHT = 100;
     private static final int ADDITIONAL_RENDER = 5;
     private static final int SCROLLBAR_THRESHOLD = 97;
@@ -198,14 +197,13 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
     //TODO: update this method to use a searchable interface instead of the "toString" method and match that against the content
     private void updateSearch(String searchValue) {
         runTask(() -> {
-            Pattern pattern = Pattern.compile(".*" + searchValue + ".*", Pattern.CASE_INSENSITIVE);
             AtomicInteger totalMatchingItems = new AtomicInteger();
 
             clearSearchFlagOnItems();
 
             synchronized (items) {
                 items.stream()
-                        .filter(e -> pattern.matcher(e.getItem().toString()).matches())
+                        .filter(e -> e.getItem().matchesSearchCriteria(searchValue))
                         .forEach(e -> {
                             e.setMatchingSearchValue(true);
                             totalMatchingItems.getAndIncrement();
@@ -238,6 +236,8 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
 
             if (renderItems.size() > 0) {
                 render(renderItems);
+            } else {
+                updating.set(false);
             }
 
             progressIndicator.setVisible(renderItems.size() == totalAdditionalItems);
@@ -372,7 +372,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
                 while (keepWatcherAlive) {
                     Thread.sleep(100);
 
-                    if (isShowing() && isAllowedToUpdate() && !isSearchActive.get())
+                    if (isShowing() && isAllowedToUpdate())
                         this.updateRendering();
 
                     // if last event was more than 20 secs ago, stop the watcher
@@ -411,7 +411,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T>> extends StackPa
 
     //internal wrapper class for the infinite scroll items
     @Data
-    private static class ItemWrapper<T extends Comparable<? super T>> implements Comparable<ItemWrapper<T>> {
+    private static class ItemWrapper<T extends Comparable<? super T> & Searchable> implements Comparable<ItemWrapper<T>> {
         private final T item;
         @EqualsAndHashCode.Exclude
         private Pane view;

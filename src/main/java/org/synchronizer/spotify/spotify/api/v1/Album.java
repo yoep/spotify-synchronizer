@@ -53,6 +53,10 @@ public class Album {
      */
     private Tracks tracks;
     /**
+     * The number of tracks in the album.
+     */
+    private Integer total_tracks;
+    /**
      * The object type: “album”
      */
     private String type;

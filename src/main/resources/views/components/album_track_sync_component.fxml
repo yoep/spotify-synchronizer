@@ -7,13 +7,13 @@
 <StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
     <ProgressIndicator fx:id="progressIndicator" maxHeight="10"/>
 
-    <Icon fx:id="outOfSyncIcon" styleClass="icon-clickable" visible="false">
+    <Icon fx:id="exclamationIcon" styleClass="icon-clickable" visible="false">
         <Icons fx:constant="EXCLAMATION"/>
     </Icon>
-    <Icon fx:id="inSyncIcon" visible="false">
+    <Icon fx:id="checkMarkIcon" visible="false">
         <Icons fx:constant="CHECK_MARK"/>
     </Icon>
-    <Icon fx:id="noSyncIcon" visible="false">
+    <Icon fx:id="crossIcon" visible="false">
         <Icons fx:constant="CROSS"/>
     </Icon>
 </StackPane>

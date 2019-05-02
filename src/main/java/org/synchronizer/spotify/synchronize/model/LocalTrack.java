@@ -1,6 +1,7 @@
 package org.synchronizer.spotify.synchronize.model;
 
 import lombok.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.net.URI;
@@ -13,6 +14,8 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LocalTrack extends AbstractMusicTrack {
+    private static final long serialVersionUID = 1L;
+
     private String title;
     private String artist;
     private Album album;
@@ -25,6 +28,13 @@ public class LocalTrack extends AbstractMusicTrack {
                 .map(File::toURI)
                 .map(URI::toString)
                 .orElse(null);
+    }
+
+    @Override
+    public boolean matchesSearchCriteria(String criteria) {
+        return StringUtils.containsIgnoreCase(title, criteria) ||
+                StringUtils.containsIgnoreCase(artist, criteria) ||
+                album.matchesSearchCriteria(criteria);
     }
 
     public void setTitle(String title) {

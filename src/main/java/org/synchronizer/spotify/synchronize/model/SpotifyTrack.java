@@ -14,6 +14,8 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SpotifyTrack extends AbstractMusicTrack {
+    private static final long serialVersionUID = 1L;
+
     private String title;
     private String artist;
     private Album album;
@@ -21,18 +23,16 @@ public class SpotifyTrack extends AbstractMusicTrack {
     private String spotifyUri;
     private Integer trackNumber;
 
-    /**
-     * Get if the preview playback for this track is available.
-     *
-     * @return Returns true when the preview is available, else false.
-     */
-    public boolean isPreviewAvailable() {
-        return StringUtils.isNotEmpty(previewUrl);
-    }
-
     @Override
     public String getUri() {
         return previewUrl;
+    }
+
+    @Override
+    public boolean matchesSearchCriteria(String criteria) {
+        return StringUtils.containsIgnoreCase(title, criteria) ||
+                StringUtils.containsIgnoreCase(artist, criteria) ||
+                album.matchesSearchCriteria(criteria);
     }
 
     public void setTitle(String title) {
