@@ -7,7 +7,6 @@ import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Tooltip;
-import javafx.scene.paint.Color;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
@@ -39,6 +38,8 @@ public class AlbumTrackSyncComponent implements Initializable {
     @FXML
     private Icon crossIcon;
     @FXML
+    private Icon refreshIcon;
+    @FXML
     private IconSolid albumIcon;
     @FXML
     private ProgressIndicator progressIndicator;
@@ -61,7 +62,7 @@ public class AlbumTrackSyncComponent implements Initializable {
         tooltipCheckMark = new Tooltip(uiText.get(SyncMessage.SYNCED));
         Tooltip.install(checkMarkIcon, tooltipCheckMark);
 
-        tooltipExclamation = new Tooltip(uiText.get(SyncMessage.OUT_OF_SYNC));
+        tooltipExclamation = new Tooltip(uiText.get(SyncMessage.FAILED));
         Tooltip.install(exclamationIcon, tooltipExclamation);
 
         tooltipCross = new Tooltip(uiText.get(SyncMessage.LOCAL_TRACK_MISSING));
@@ -88,13 +89,13 @@ public class AlbumTrackSyncComponent implements Initializable {
                 showCrossIcon();
                 break;
             case OUT_OF_SYNC:
-                showCheckMarkIcon(false);
+                showSyncStateIcon(false);
                 break;
             case FAILED:
                 showErrorIcon();
                 break;
             case SYNCED:
-                showCheckMarkIcon(true);
+                showSyncStateIcon(true);
                 break;
             case ALBUM_INFO_ONLY:
                 showAlbumIcon();
@@ -112,19 +113,21 @@ public class AlbumTrackSyncComponent implements Initializable {
         checkMarkIcon.setVisible(false);
         exclamationIcon.setVisible(false);
         albumIcon.setVisible(false);
+        refreshIcon.setVisible(false);
     }
 
     private void showErrorIcon() {
         exclamationIcon.setVisible(true);
-        exclamationIcon.setColor(Color.RED);
         crossIcon.setVisible(false);
+        refreshIcon.setVisible(false);
         albumIcon.setVisible(false);
+        progressIndicator.setVisible(false);
         updateExclamationTooltip();
     }
 
-    private void showCheckMarkIcon(boolean isInSync) {
+    private void showSyncStateIcon(boolean isInSync) {
         checkMarkIcon.setVisible(isInSync);
-        exclamationIcon.setVisible(!isInSync);
+        refreshIcon.setVisible(!isInSync);
         crossIcon.setVisible(false);
         albumIcon.setVisible(false);
         progressIndicator.setVisible(false);
@@ -134,6 +137,7 @@ public class AlbumTrackSyncComponent implements Initializable {
         crossIcon.setVisible(true);
         checkMarkIcon.setVisible(false);
         exclamationIcon.setVisible(false);
+        refreshIcon.setVisible(false);
         albumIcon.setVisible(false);
         progressIndicator.setVisible(false);
         updateCrossTooltip();
@@ -144,6 +148,7 @@ public class AlbumTrackSyncComponent implements Initializable {
         crossIcon.setVisible(false);
         checkMarkIcon.setVisible(false);
         exclamationIcon.setVisible(false);
+        refreshIcon.setVisible(false);
         progressIndicator.setVisible(false);
     }
 

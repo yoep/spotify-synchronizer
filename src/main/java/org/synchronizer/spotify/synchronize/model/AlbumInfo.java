@@ -16,6 +16,13 @@ public interface AlbumInfo {
     String getGenre();
 
     /**
+     * The release year of the album.
+     *
+     * @return Returns the release year of the album.
+     */
+    String getYear();
+
+    /**
      * Get the low res image uri of the album artwork.
      *
      * @return Returns the image of the album uri.

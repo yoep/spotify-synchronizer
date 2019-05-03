@@ -5,6 +5,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.synchronizer.spotify.cache.model.CachedSpotifyTrack;
 import org.synchronizer.spotify.synchronize.SynchronizeException;
 import org.synchronizer.spotify.synchronize.model.*;
 import org.synchronizer.spotify.utils.AudioUtils;
@@ -48,6 +49,10 @@ public class AudioService {
             MusicTrack spotifyTrack = track.getSpotifyTrack().orElseThrow(() -> new SynchronizeException("Spotify track is not available for synchronization"));
             LocalAlbum localAlbum = (LocalAlbum) localTrack.getAlbum();
             Album spotifyAlbum = spotifyTrack.getAlbum();
+
+            //check if spotify track is cache info
+            if (spotifyTrack instanceof CachedSpotifyTrack)
+                throw new SynchronizeException("Cached spotify info is not allowed for updating metadata");
 
             //update track info
             localTrack.setTitle(spotifyTrack.getTitle());

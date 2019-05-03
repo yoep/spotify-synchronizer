@@ -61,9 +61,11 @@ public class AudioUtils {
 
             String tempFile = getTempFilePath(file);
             mp3File.save(tempFile);
-            replaceFileWithTempFile(file, tempFile);
-            log.debug("Updated metadata of " + file);
-            return true;
+
+            boolean result = replaceFileWithTempFile(file, tempFile);
+            log.debug("Updated metadata of " + file + " with success " + result);
+
+            return result;
         } catch (Exception ex) {
             log.error("Failed to update audio file metadata", ex);
         }
@@ -79,6 +81,7 @@ public class AudioUtils {
                 .album(LocalAlbum.builder()
                         .name(metadata.getAlbum())
                         .genre(getGenre(metadata.getGenre()))
+                        .year(metadata.getYear())
                         .build())
                 .title(metadata.getTitle())
                 .trackNumber(getTrackNumberV1(metadata))
@@ -93,6 +96,7 @@ public class AudioUtils {
                 .album(LocalAlbum.builder()
                         .name(metadata.getAlbum())
                         .genre(getGenre(metadata.getGenre()))
+                        .year(metadata.getYear())
                         .image(metadata.getAlbumImage())
                         .imageMimeType(metadata.getAlbumImageMimeType())
                         .build())
@@ -131,6 +135,7 @@ public class AudioUtils {
         metadata.setAlbum(album.getName());
         metadata.setTrack(getTrackNumber(track));
         metadata.setGenre(getGenre(album));
+        metadata.setYear(album.getYear());
     }
 
     private static void updateMetadataV2(Mp3File file, LocalTrack track) {
@@ -152,6 +157,7 @@ public class AudioUtils {
         metadata.setAlbum(album.getName());
         metadata.setAlbumImage(album.getImage(), album.getImageMimeType());
         metadata.setGenre(getGenre(album));
+        metadata.setYear(album.getYear());
     }
 
     private static ID3v2 downgradeMetadataV2(Mp3File file) {

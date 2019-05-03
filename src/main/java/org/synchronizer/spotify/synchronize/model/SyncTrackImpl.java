@@ -92,7 +92,7 @@ public class SyncTrackImpl extends AbstractSyncTrack {
             setSyncState(SyncState.ALBUM_INFO_ONLY);
 
         if (isLocalTrackAvailable() && isSpotifyTrackAvailable()) {
-            if (areTracksInSync() && areAlbumsInSync()) {
+            if (isTrackInfoInSync() && isAlbumInfoInSync()) {
                 setSyncState(SyncState.SYNCED);
             } else {
                 setSyncState(SyncState.OUT_OF_SYNC);
@@ -107,13 +107,30 @@ public class SyncTrackImpl extends AbstractSyncTrack {
                 .isPresent();
     }
 
-    private boolean areTracksInSync() {
+    private boolean isTrackInfoInSync() {
         return spotifyTrack.getTitle().equalsIgnoreCase(localTrack.getTitle()) &&
                 spotifyTrack.getArtist().equalsIgnoreCase(localTrack.getArtist());
     }
 
-    private boolean areAlbumsInSync() {
-        return spotifyTrack.getAlbum().getName().equalsIgnoreCase(localTrack.getAlbum().getName()) &&
-                localTrack.getAlbum().getImage() != null;
+    private boolean isAlbumInfoInSync() {
+        Album spotifyAlbum = spotifyTrack.getAlbum();
+        Album localAlbum = localTrack.getAlbum();
+
+        return spotifyAlbum.getName().equalsIgnoreCase(localAlbum.getName()) &&
+                isGenreInSync(spotifyAlbum, localAlbum) &&
+                isYearInSync(spotifyAlbum, localAlbum) &&
+                localAlbum.getImage() != null;
+    }
+
+    private boolean isGenreInSync(Album spotifyAlbum, Album localAlbum) {
+        return Optional.ofNullable(spotifyAlbum.getGenre())
+                .map(e -> e.equalsIgnoreCase(localAlbum.getGenre()))
+                .orElse(true);
+    }
+
+    private boolean isYearInSync(Album spotifyAlbum, Album localAlbum) {
+        return Optional.ofNullable(spotifyAlbum.getYear())
+                .map(e -> e.equalsIgnoreCase(localAlbum.getYear()))
+                .orElse(true);
     }
 }

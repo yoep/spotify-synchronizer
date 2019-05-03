@@ -9,7 +9,7 @@
 <StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
     <ProgressIndicator fx:id="progressIndicator" maxHeight="10"/>
 
-    <Icon fx:id="exclamationIcon" styleClass="icon-clickable" visible="false">
+    <Icon fx:id="exclamationIcon" visible="false" style="-fx-text-fill: #f00">
         <Icons fx:constant="EXCLAMATION"/>
     </Icon>
     <Icon fx:id="checkMarkIcon" visible="false">
@@ -17,6 +17,12 @@
     </Icon>
     <Icon fx:id="crossIcon" visible="false">
         <Icons fx:constant="CROSS"/>
+    </Icon>
+    <Icon fx:id="refreshIcon" visible="false" styleClass="icon-clickable">
+        <Icons fx:constant="REFRESH"/>
+        <tooltip>
+            <Tooltip text="%sync" />
+        </tooltip>
     </Icon>
     <IconSolid fx:id="albumIcon" visible="false">
         <Icons fx:constant="COMPACT_DISK"/>

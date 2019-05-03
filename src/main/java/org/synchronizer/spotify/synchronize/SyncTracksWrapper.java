@@ -25,6 +25,7 @@ public class SyncTracksWrapper {
     private long lastInvocation;
     private long lastEvent;
     private boolean keepAlive;
+    private boolean doCleanup;
 
     public SyncTracksWrapper(TaskExecutor taskExecutor) {
         this.taskExecutor = taskExecutor;
@@ -85,6 +86,13 @@ public class SyncTracksWrapper {
         }
     }
 
+    public void cleanup() {
+        this.doCleanup = true;
+
+        if (!keepAlive)
+            doCleanup();
+    }
+
     private void notifyListeners() {
         lastEvent = System.currentTimeMillis();
 
@@ -121,6 +129,9 @@ public class SyncTracksWrapper {
 
         if (addedTracks.size() > 0)
             invokeListenersAndClearSubset();
+
+        if (doCleanup)
+            doCleanup();
     }
 
     private void invokeListenersIfAllowed() {
@@ -150,5 +161,12 @@ public class SyncTracksWrapper {
 
     private boolean isMinimumTimeBetweenInvocations() {
         return System.currentTimeMillis() - lastInvocation >= TIME_BETWEEN_INVOCATIONS;
+    }
+
+    private void doCleanup() {
+        synchronized (tracks) {
+            tracks.clear();
+            addedTracks.clear();
+        }
     }
 }

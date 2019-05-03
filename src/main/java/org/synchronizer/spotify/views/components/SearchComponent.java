@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
 @RequiredArgsConstructor
 public class SearchComponent implements Initializable {
     private final UIText uiText;
-    private final TaskExecutor taskExecutor;
+    private final TaskExecutor uiTaskExecutor;
 
     private final List<SortListener> listeners = new ArrayList<>();
 
@@ -84,7 +84,7 @@ public class SearchComponent implements Initializable {
     }
 
     private void initializeSearchBox() {
-        searchBox.setThreadExecutor(taskExecutor);
+        searchBox.setThreadExecutor(uiTaskExecutor);
     }
 
     @FXML

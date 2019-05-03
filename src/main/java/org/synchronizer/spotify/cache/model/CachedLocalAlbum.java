@@ -21,14 +21,15 @@ public class CachedLocalAlbum extends LocalAlbum implements CachedAlbum, Seriali
 
     private String cachedImageUri;
 
-    public CachedLocalAlbum(String name, String genre, String imageMimeType, byte[] image) {
-        super(name, genre, imageMimeType, image);
+    public CachedLocalAlbum(String name, String genre, String year, String imageMimeType, byte[] image) {
+        super(name, genre, year, imageMimeType, image);
     }
 
     public static CachedLocalAlbum from(Album album) {
         return new CachedLocalAlbumBuilder()
                 .name(album.getName())
                 .genre(album.getGenre())
+                .year(album.getYear())
                 .imageMimeType(album.getImageMimeType())
                 .image(album.getImage())
                 .build();
@@ -62,6 +63,7 @@ public class CachedLocalAlbum extends LocalAlbum implements CachedAlbum, Seriali
     public static class CachedLocalAlbumBuilder {
         private String name;
         private String genre;
+        private String year;
         private String imageMimeType;
         private byte[] image;
 
@@ -72,6 +74,11 @@ public class CachedLocalAlbum extends LocalAlbum implements CachedAlbum, Seriali
 
         public CachedLocalAlbumBuilder genre(String genre) {
             this.genre = genre;
+            return this;
+        }
+
+        public CachedLocalAlbumBuilder year(String year) {
+            this.year = year;
             return this;
         }
 
@@ -86,7 +93,7 @@ public class CachedLocalAlbum extends LocalAlbum implements CachedAlbum, Seriali
         }
 
         public CachedLocalAlbum build() {
-            return new CachedLocalAlbum(name, genre, imageMimeType, image);
+            return new CachedLocalAlbum(name, genre, year, imageMimeType, image);
         }
     }
 }

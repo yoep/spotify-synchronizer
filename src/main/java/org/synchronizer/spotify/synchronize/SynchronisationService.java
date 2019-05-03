@@ -124,6 +124,8 @@ public class SynchronisationService {
 
             if (synchronizerProperties.getCacheMode().isActive())
                 cacheService.cacheSync(tracks.getAll());
+
+            tracks.cleanup();
         }
     }
 

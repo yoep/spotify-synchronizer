@@ -22,6 +22,7 @@ public class SpotifyAlbum extends AbstractAlbum {
 
     private String name;
     private String genre;
+    private String year;
     private String href;
     private String lowResImageUri;
     private String highResImageUri;
@@ -86,6 +87,7 @@ public class SpotifyAlbum extends AbstractAlbum {
         return SpotifyAlbum.builder()
                 .name(album.getName())
                 .genre(getGenre(album))
+                .year(album.getReleaseDate())
                 .href(album.getHref())
                 .lowResImageUri(getSmallestImage(album.getImages()))
                 .highResImageUri(getLargestImage(album.getImages()))

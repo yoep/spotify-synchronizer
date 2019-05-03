@@ -102,6 +102,8 @@ public class SearchField extends StackPane {
         this.searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             lastUserInput = System.currentTimeMillis();
 
+            clearIcon.setVisible(newValue.length() > 0);
+
             if (!keepWatcherAlive)
                 createWatcher();
         });
@@ -178,8 +180,6 @@ public class SearchField extends StackPane {
                 } catch (InterruptedException e) {
                     //ignore
                 }
-
-                clearIcon.setVisible(getText().length() > 0);
 
                 if (isOnChangeInvocationAllowed()) {
                     onChanged();

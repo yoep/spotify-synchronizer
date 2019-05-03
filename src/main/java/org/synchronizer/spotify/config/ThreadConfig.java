@@ -12,9 +12,9 @@ public class ThreadConfig {
     @Bean
     public TaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(3);
+        executor.setCorePoolSize(2);
         executor.setMaxPoolSize(20);
-        executor.setQueueCapacity(30);
+        executor.setQueueCapacity(20);
         executor.setThreadNamePrefix("ss-background");
         executor.initialize();
         return executor;

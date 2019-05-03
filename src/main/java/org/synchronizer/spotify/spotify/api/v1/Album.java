@@ -49,6 +49,10 @@ public class Album {
      */
     private String name;
     /**
+     * The date the album was first released, for example 1981. Depending on the precision, it might be shown as 1981-12 or 1981-12-15.
+     */
+    private String releaseDate;
+    /**
      * The tracks of the album.
      */
     private AlbumTracks tracks;

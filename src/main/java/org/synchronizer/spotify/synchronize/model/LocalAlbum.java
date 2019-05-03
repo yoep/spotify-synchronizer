@@ -19,6 +19,7 @@ public class LocalAlbum extends AbstractAlbum {
 
     private String name;
     private String genre;
+    private String year;
     private transient String imageMimeType;
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
