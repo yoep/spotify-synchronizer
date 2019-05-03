@@ -1,5 +1,6 @@
 package org.synchronizer.spotify.views.components;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -158,11 +159,13 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     }
 
     private void updateTrackInfo() {
-        trackNumber.setText(getTrackNumber());
-        title.setText(syncTrack.getTitle());
-        titleTooltip.setText(syncTrack.getTitle());
-        artist.setText(syncTrack.getArtist());
-        artistTooltip.setText(syncTrack.getArtist());
+        Platform.runLater(() -> {
+            trackNumber.setText(getTrackNumber());
+            title.setText(syncTrack.getTitle());
+            titleTooltip.setText(syncTrack.getTitle());
+            artist.setText(syncTrack.getArtist());
+            artistTooltip.setText(syncTrack.getArtist());
+        });
     }
 
     private void setPlaybackState(boolean activeInMediaPlayer) {

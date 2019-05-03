@@ -37,8 +37,9 @@ public class SpotifyDiscovery implements DiscoveryService {
 
     private final ObservableList<MusicTrack> trackList = FXCollections.observableArrayList();
     private final List<DiscoveryListener> listeners = new ArrayList<>();
-    private final List<CompletableFuture<?>> completableFutures = new ArrayList<>();
-    private final List<Album> cachedAlbums = new ArrayList<>();
+
+    private List<CompletableFuture<?>> completableFutures;
+    private List<String> cachedAlbums;
 
     private boolean finished = true;
 
@@ -67,8 +68,15 @@ public class SpotifyDiscovery implements DiscoveryService {
 
     @Override
     public void start() {
+        // check if the discovery is already running
+        if (!isFinished())
+            return;
+
         log.info("Starting spotify synchronization");
         this.finished = false;
+
+        completableFutures = new ArrayList<>();
+        cachedAlbums = new ArrayList<>();
 
         try {
             Tracks tracks = spotifyService.getSavedTracks().get();
@@ -114,9 +122,10 @@ public class SpotifyDiscovery implements DiscoveryService {
 
     private void addAlbumDetails(final SavedTrack track) {
         final Album album = track.getTrack().getAlbum();
+        String name = album.getName();
 
-        if (!cachedAlbums.contains(album)) {
-            cachedAlbums.add(album);
+        if (!cachedAlbums.contains(name)) {
+            cachedAlbums.add(name);
 
             CompletableFuture<Album> completableFuture = spotifyService.getAlbumDetails(album);
 
@@ -162,10 +171,17 @@ public class SpotifyDiscovery implements DiscoveryService {
     }
 
     private void invokeCallback() {
-        listeners.forEach(e -> e.onFinish(trackList));
+        synchronized (trackList) {
+            listeners.forEach(e -> e.onFinish(new ArrayList<>(trackList)));
+        }
     }
 
     private void doCleanup() {
-        completableFutures.clear();
+        log.debug("Cleaning " + getClass().getSimpleName() + "...");
+        synchronized (trackList) {
+            trackList.clear();
+            completableFutures = null;
+            cachedAlbums = null;
+        }
     }
 }

@@ -19,6 +19,11 @@ public enum SyncState implements Serializable {
      */
     SPOTIFY_TRACK_MISSING,
     /**
+     * Only the Spotify album track info is available.
+     * This state indicates that the track was loaded because the album tracks of a saved track were loaded.
+     */
+    ALBUM_INFO_ONLY,
+    /**
      * Metadata is not in synchronize between the local track and spotify.
      * This state indirectly indicates that the local- and spotify track are present.
      */

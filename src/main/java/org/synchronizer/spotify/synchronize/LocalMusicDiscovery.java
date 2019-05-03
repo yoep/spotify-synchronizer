@@ -34,9 +34,9 @@ public class LocalMusicDiscovery implements DiscoveryService {
     private final TaskExecutor taskExecutor;
 
     private final ObservableList<MusicTrack> trackList = FXCollections.observableArrayList();
-    private final List<CompletableFuture<List<MusicTrack>>> asyncDiscoveries = new ArrayList<>();
     private final List<DiscoveryListener> listeners = new ArrayList<>();
 
+    private List<CompletableFuture<List<MusicTrack>>> asyncDiscoveries;
     private boolean keepIndexing;
     private boolean finished = true;
 
@@ -79,6 +79,7 @@ public class LocalMusicDiscovery implements DiscoveryService {
             }
         }
 
+        this.asyncDiscoveries = new ArrayList<>();
         this.finished = false;
         this.keepIndexing = true;
         indexLocalFiles();
@@ -109,11 +110,14 @@ public class LocalMusicDiscovery implements DiscoveryService {
         onAsyncDiscoveryCompletion(() -> {
             this.finished = true;
 
-            //do not execute the callback if the current indexing is being aborted for a new one
+            // do not execute the callback if the current indexing is being aborted for a new one
             if (keepIndexing) {
                 log.info("Discovered " + trackList.size() + " local music tracks");
                 invokeCallback();
             }
+
+            // memory cleanup
+            doCleanup();
         });
     }
 
@@ -158,6 +162,16 @@ public class LocalMusicDiscovery implements DiscoveryService {
     }
 
     private void invokeCallback() {
-        listeners.forEach(e -> e.onFinish(trackList));
+        synchronized (trackList) {
+            listeners.forEach(e -> e.onFinish(new ArrayList<>(trackList)));
+        }
+    }
+
+    private void doCleanup() {
+        log.debug("Cleaning " + getClass().getSimpleName() + "...");
+        synchronized (trackList) {
+            trackList.clear();
+            asyncDiscoveries = null;
+        }
     }
 }

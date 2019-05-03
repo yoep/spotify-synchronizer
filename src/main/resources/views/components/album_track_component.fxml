@@ -48,7 +48,7 @@
         <Label text=" - "/>
 
         <!-- ARTIST -->
-        <Label fx:id="artist" text="ARTIST PLACEHOLDER" minWidth="50" styleClass="artist">
+        <Label fx:id="artist" text="ARTIST PLACEHOLDER" minWidth="75" styleClass="artist">
             <tooltip>
                 <Tooltip fx:id="artistTooltip"/>
             </tooltip>

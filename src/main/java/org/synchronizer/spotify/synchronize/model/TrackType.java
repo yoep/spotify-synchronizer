@@ -12,5 +12,9 @@ public enum TrackType {
     /**
      * Track is an album Spotify track.
      */
-    ALBUM_TRACK
+    ALBUM_TRACK,
+    /**
+     * Track is a synchronization between a local- and Spotify track.
+     */
+    SYNC_TRACK
 }

@@ -84,10 +84,12 @@ public class SyncTrackImpl extends AbstractSyncTrack {
     }
 
     private void updateSyncStatus() {
-        if (!isLocalTrackAvailable())
+        if (!isLocalTrackAvailable() && !isAlbumInfoOnly())
             setSyncState(SyncState.LOCAL_TRACK_MISSING);
-        if (!isSpotifyTrackAvailable())
+        if (!isSpotifyTrackAvailable() && !isAlbumInfoOnly())
             setSyncState(SyncState.SPOTIFY_TRACK_MISSING);
+        if (!isLocalTrackAvailable() && isAlbumInfoOnly())
+            setSyncState(SyncState.ALBUM_INFO_ONLY);
 
         if (isLocalTrackAvailable() && isSpotifyTrackAvailable()) {
             if (areTracksInSync() && areAlbumsInSync()) {
@@ -96,6 +98,13 @@ public class SyncTrackImpl extends AbstractSyncTrack {
                 setSyncState(SyncState.OUT_OF_SYNC);
             }
         }
+    }
+
+    private boolean isAlbumInfoOnly() {
+        return getSpotifyTrack()
+                .map(MusicTrack::getType)
+                .filter(e -> e == TrackType.ALBUM_TRACK)
+                .isPresent();
     }
 
     private boolean areTracksInSync() {

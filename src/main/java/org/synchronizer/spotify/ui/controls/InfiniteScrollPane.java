@@ -258,12 +258,16 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable> ex
 
             // render items on the JavaFX thread and update the state of this infinite scroll
             Platform.runLater(() -> {
-                itemsContainer.getChildren().addAll(items.stream()
-                        .map(ItemWrapper::getView)
-                        .collect(Collectors.toList()));
-
-                lastUpdated = System.currentTimeMillis();
-                updating.set(false);
+                try {
+                    itemsContainer.getChildren().addAll(items.stream()
+                            .map(ItemWrapper::getView)
+                            .collect(Collectors.toList()));
+                } catch (Exception ex) {
+                    log.error(ex.getMessage(), ex);
+                } finally {
+                    lastUpdated = System.currentTimeMillis();
+                    updating.set(false);
+                }
             });
         });
     }

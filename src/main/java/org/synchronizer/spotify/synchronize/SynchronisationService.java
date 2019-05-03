@@ -152,7 +152,7 @@ public class SynchronisationService {
                         SpotifyTrack spotifyTrack = (SpotifyTrack) newTrack;
 
                         // only overwrite the track when it's an album track (and not a saved one)
-                        if (!syncTrack.getSpotifyTrack().isPresent() || spotifyTrack.isSavedTrack())
+                        if (!syncTrack.getSpotifyTrack().isPresent() || spotifyTrack.getType() == TrackType.SAVED_TRACK)
                             syncTrack.setSpotifyTrack(newTrack);
                     }
                 } catch (Exception ex) {

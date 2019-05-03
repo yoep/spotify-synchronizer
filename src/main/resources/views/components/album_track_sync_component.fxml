@@ -4,6 +4,8 @@
 <?import javafx.scene.layout.StackPane?>
 <?import org.synchronizer.spotify.ui.controls.Icon?>
 <?import org.synchronizer.spotify.ui.Icons?>
+<?import org.synchronizer.spotify.ui.controls.IconSolid?>
+<?import javafx.scene.control.Tooltip?>
 <StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
     <ProgressIndicator fx:id="progressIndicator" maxHeight="10"/>
 
@@ -16,4 +18,10 @@
     <Icon fx:id="crossIcon" visible="false">
         <Icons fx:constant="CROSS"/>
     </Icon>
+    <IconSolid fx:id="albumIcon" visible="false">
+        <Icons fx:constant="COMPACT_DISK"/>
+        <tooltip>
+            <Tooltip text="%spotify_album_track_info_only" />
+        </tooltip>
+    </IconSolid>
 </StackPane>

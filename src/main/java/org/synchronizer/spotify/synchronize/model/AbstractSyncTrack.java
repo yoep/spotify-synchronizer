@@ -16,6 +16,8 @@ import static java.util.Optional.ofNullable;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class AbstractSyncTrack extends AbstractMusicTrack implements SyncTrack {
+    private static final long serialVersionUID = 1L;
+
     protected MusicTrack spotifyTrack;
     protected MusicTrack localTrack;
 
@@ -42,6 +44,11 @@ public abstract class AbstractSyncTrack extends AbstractMusicTrack implements Sy
     @Override
     public Integer getTrackNumber() {
         return getProperty(MusicTrack::getTrackNumber);
+    }
+
+    @Override
+    public TrackType getType() {
+        return TrackType.SYNC_TRACK;
     }
 
     @Override
