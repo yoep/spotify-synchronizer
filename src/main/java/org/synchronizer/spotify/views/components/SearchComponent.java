@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
@@ -27,6 +28,7 @@ import java.util.ResourceBundle;
 @RequiredArgsConstructor
 public class SearchComponent implements Initializable {
     private final UIText uiText;
+    private final TaskExecutor taskExecutor;
 
     private final List<SortListener> listeners = new ArrayList<>();
 
@@ -45,6 +47,7 @@ public class SearchComponent implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        initializeSearchBox();
         initializeMenu();
         initializeSort();
     }
@@ -78,6 +81,10 @@ public class SearchComponent implements Initializable {
 
     private void initializeSort() {
         sortIcon.setOnMouseClicked(event -> sort());
+    }
+
+    private void initializeSearchBox() {
+        searchBox.setThreadExecutor(taskExecutor);
     }
 
     @FXML

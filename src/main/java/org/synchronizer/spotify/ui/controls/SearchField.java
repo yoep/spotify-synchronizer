@@ -6,13 +6,14 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.synchronizer.spotify.ui.Icons;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 @Log4j2
 public class SearchField extends StackPane {
@@ -21,9 +22,16 @@ public class SearchField extends StackPane {
     private final List<SearchListener> listeners = new ArrayList<>();
     private final TextField searchField = new TextField();
 
-    private Thread waitThread;
+    /**
+     * The thread executor that will be used for offloading.
+     * If not set, the {@link SearchField} will not use a thread pool and create threads on it's own.
+     */
+    @Setter
+    private Executor threadExecutor;
     private Node clearIcon;
+    private boolean keepWatcherAlive;
     private long lastChangeInvoked;
+    private long lastUserInput;
 
     public SearchField() {
         initializeSearchField();
@@ -92,27 +100,34 @@ public class SearchField extends StackPane {
 
         this.searchField.setPadding(new Insets(5, 20, 5, 20));
         this.searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            String noSpacesValue = newValue.trim();
+            lastUserInput = System.currentTimeMillis();
 
-            if (newValue.length() > 0) {
-                clearIcon.setVisible(true);
-            }
-
-            if (noSpacesValue.length() >= 3) {
-                if (isOnChangeInvokedAllowed()) {
-                    onChanged();
-                } else {
-                    waitThread = createWaitThread();
-                    waitThread.start();
-                }
-            } else if (isTextFieldEmpty()) {
-                onCleared();
-            }
+            if (!keepWatcherAlive)
+                createWatcher();
         });
     }
 
-    private boolean isOnChangeInvokedAllowed() {
-        return waitThread == null && System.currentTimeMillis() - lastChangeInvoked > MILLIS_BETWEEN_INVOKES;
+    private boolean isOnChangeInvocationAllowed() {
+        int noSpacesText = getText().trim().length();
+
+        return noSpacesText >= 3 &&
+                isInvocationAllowedBasedOnTime() &&
+                lastUserInput > lastChangeInvoked;
+    }
+
+    private boolean isOnClearInvocationAllowed() {
+        int noSpacesText = getText().trim().length();
+
+        return noSpacesText < 3 &&
+                isInvocationAllowedBasedOnTime() &&
+                lastUserInput > lastChangeInvoked;
+    }
+
+    private boolean isInvocationAllowedBasedOnTime() {
+        long currentTimeMillis = System.currentTimeMillis();
+
+        return currentTimeMillis - lastUserInput > 300 &&
+                currentTimeMillis - lastChangeInvoked > MILLIS_BETWEEN_INVOKES;
     }
 
     private void onChanged() {
@@ -124,7 +139,7 @@ public class SearchField extends StackPane {
     }
 
     private void onCleared() {
-        clearIcon.setVisible(false);
+        lastChangeInvoked = System.currentTimeMillis();
 
         synchronized (listeners) {
             listeners.forEach(SearchListener::onSearchValueCleared);
@@ -153,22 +168,36 @@ public class SearchField extends StackPane {
         return clearIcon;
     }
 
-    private Thread createWaitThread() {
-        return new Thread(() -> {
-            try {
-                Thread.sleep(MILLIS_BETWEEN_INVOKES);
+    private void createWatcher() {
+        keepWatcherAlive = true;
 
-                if (isOnChangeInvokedAllowed())
-                    this.onChanged();
-            } catch (InterruptedException e) {
-                log.error(e.getMessage(), e);
+        runTask(() -> {
+            while (keepWatcherAlive) {
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    //ignore
+                }
+
+                clearIcon.setVisible(getText().length() > 0);
+
+                if (isOnChangeInvocationAllowed()) {
+                    onChanged();
+                } else if (isOnClearInvocationAllowed()) {
+                    onCleared();
+                }
+
+                if (System.currentTimeMillis() - lastUserInput > 10000)
+                    keepWatcherAlive = false;
             }
-
-            waitThread = null;
         });
     }
 
-    private boolean isTextFieldEmpty() {
-        return StringUtils.isEmpty(this.getText().trim());
+    private void runTask(Runnable task) {
+        if (threadExecutor != null) {
+            threadExecutor.execute(task);
+        } else {
+            new Thread(task).run();
+        }
     }
 }
