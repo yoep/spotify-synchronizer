@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
+import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.spotify.SpotifyService;
 import org.synchronizer.spotify.spotify.api.v1.Album;
 import org.synchronizer.spotify.spotify.api.v1.AlbumTrack;
@@ -20,9 +21,7 @@ import org.synchronizer.spotify.synchronize.model.SpotifyAlbum;
 import org.synchronizer.spotify.synchronize.model.SpotifyTrack;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -34,12 +33,13 @@ public class SpotifyDiscovery implements DiscoveryService {
     private final SpotifyService spotifyService;
     private final RestTemplate restTemplate;
     private final TaskExecutor taskExecutor;
+    private final SettingsService settingsService;
 
     private final ObservableList<MusicTrack> trackList = FXCollections.observableArrayList();
     private final List<DiscoveryListener> listeners = new ArrayList<>();
 
     private List<CompletableFuture<?>> completableFutures;
-    private List<String> cachedAlbums;
+    private Map<String, Album> cachedAlbums;
 
     private boolean finished = true;
 
@@ -76,7 +76,7 @@ public class SpotifyDiscovery implements DiscoveryService {
         this.finished = false;
 
         completableFutures = new ArrayList<>();
-        cachedAlbums = new ArrayList<>();
+        cachedAlbums = new HashMap<>();
 
         try {
             Tracks tracks = spotifyService.getSavedTracks().get();
@@ -98,9 +98,15 @@ public class SpotifyDiscovery implements DiscoveryService {
 
             CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0])).thenRun(() -> {
                 log.info("Synchronized " + trackList.size() + " spotify tracks");
-                this.finished = true;
-                invokeCallback();
-                doCleanup();
+
+                if (isFullAlbumSynchronizationEnabled()) {
+                    log.info("Synchronizing Spotify album songs");
+                    completableFutures.clear();
+
+                    synchronizeAlbumSongs();
+                } else {
+                    onFinish();
+                }
             });
         } catch (Exception ex) {
             throw new SynchronizeException(ex.getMessage(), ex);
@@ -124,9 +130,12 @@ public class SpotifyDiscovery implements DiscoveryService {
         final Album album = track.getTrack().getAlbum();
         String name = album.getName();
 
-        if (!cachedAlbums.contains(name)) {
-            cachedAlbums.add(name);
+        if (!cachedAlbums.containsKey(name))
+            cachedAlbums.put(name, album);
+    }
 
+    private void synchronizeAlbumSongs() {
+        cachedAlbums.values().forEach(album -> {
             CompletableFuture<Album> completableFuture = spotifyService.getAlbumDetails(album);
 
             completableFutures.add(completableFuture);
@@ -140,7 +149,9 @@ public class SpotifyDiscovery implements DiscoveryService {
                             .collect(Collectors.toList()));
                 }
             });
-        }
+        });
+
+        CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0])).thenRun(this::onFinish);
     }
 
     private void updateImageAndMimeTypeSupplier(SpotifyTrack track) {
@@ -168,6 +179,16 @@ public class SpotifyDiscovery implements DiscoveryService {
     private boolean isNewTrack(AlbumTrack track) {
         return trackList.stream()
                 .noneMatch(x -> x.getTitle().equals(track.getName()));
+    }
+
+    private boolean isFullAlbumSynchronizationEnabled() {
+        return settingsService.getUserSettingsOrDefault().getSynchronization().isFullAlbumSyncEnabled();
+    }
+
+    private void onFinish() {
+        this.finished = true;
+        invokeCallback();
+        doCleanup();
     }
 
     private void invokeCallback() {

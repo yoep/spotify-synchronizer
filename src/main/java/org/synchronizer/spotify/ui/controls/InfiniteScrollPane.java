@@ -371,19 +371,13 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable> ex
         keepWatcherAlive = true;
 
         runTask(() -> {
-            try {
-                while (keepWatcherAlive) {
-                    Thread.sleep(100);
+            while (keepWatcherAlive) {
+                if (isShowing() && isAllowedToUpdate())
+                    this.updateRendering();
 
-                    if (isShowing() && isAllowedToUpdate())
-                        this.updateRendering();
-
-                    // if last event was more than 20 secs ago, stop the watcher
-                    if (System.currentTimeMillis() - lastEvent > 20000)
-                        keepWatcherAlive = false;
-                }
-            } catch (InterruptedException ex) {
-                //ignore
+                // if last event was more than 10 secs ago, stop the watcher
+                if (System.currentTimeMillis() - lastEvent > 10000)
+                    keepWatcherAlive = false;
             }
         });
     }

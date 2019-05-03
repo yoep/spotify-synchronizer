@@ -24,7 +24,6 @@ public class ThreadConfig {
     public TaskExecutor uiTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(5);
         executor.setQueueCapacity(0);
         executor.setThreadNamePrefix("ui-background");
         executor.setThreadPriority(Thread.MAX_PRIORITY);

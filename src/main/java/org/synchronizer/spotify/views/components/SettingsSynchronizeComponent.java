@@ -3,6 +3,7 @@ package org.synchronizer.spotify.views.components;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -36,11 +37,14 @@ public class SettingsSynchronizeComponent implements Initializable {
     private ListView<File> localMusicDirectories;
     @FXML
     private Button removeLocalDirectoryButton;
+    @FXML
+    private CheckBox spotifyFullAlbumSync;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initializeDirectoryPicker();
         initializeLocalDirectoriesList();
+        initializeFullAlbumSync();
     }
 
     private void initializeDirectoryPicker() {
@@ -56,6 +60,12 @@ public class SettingsSynchronizeComponent implements Initializable {
 
         localMusicDirectories.setOnDragOver(this::onLocalDirectoriesDragOver);
         localMusicDirectories.setOnDragDropped(this::onLocalDirectoriesDragDropped);
+    }
+
+    private void initializeFullAlbumSync() {
+        spotifyFullAlbumSync.setSelected(getSynchronizationSettings().isFullAlbumSyncEnabled());
+
+        spotifyFullAlbumSync.selectedProperty().addListener((observable, oldValue, newValue) -> getSynchronizationSettings().setFullAlbumSyncEnabled(newValue));
     }
 
     private void onLocalDirectoriesDragOver(DragEvent event) {

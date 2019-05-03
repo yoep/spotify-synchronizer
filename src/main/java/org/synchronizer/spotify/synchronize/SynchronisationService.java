@@ -125,6 +125,8 @@ public class SynchronisationService {
             if (synchronizerProperties.getCacheMode().isActive())
                 cacheService.cacheSync(tracks.getAll());
 
+            log.info("Finished synchronisation");
+            log.debug("Cleaning " + getClass().getSimpleName());
             tracks.cleanup();
         }
     }

@@ -2,6 +2,7 @@ package org.synchronizer.spotify.settings.model;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.File;
@@ -18,9 +19,19 @@ import static java.util.Arrays.asList;
 @AllArgsConstructor
 public class Synchronization extends Observable implements Serializable {
     private List<File> localMusicDirectories = new ArrayList<>();
+    @Getter
+    private boolean fullAlbumSyncEnabled = true;
 
     public List<File> getLocalMusicDirectories() {
         return Collections.unmodifiableList(localMusicDirectories);
+    }
+
+    public void setFullAlbumSyncEnabled(boolean fullAlbumSyncEnabled) {
+        if (this.fullAlbumSyncEnabled != fullAlbumSyncEnabled)
+            this.setChanged();
+
+        this.fullAlbumSyncEnabled = fullAlbumSyncEnabled;
+        this.notifyObservers();
     }
 
     public void addLocalMusicDirectory(File... directory) {

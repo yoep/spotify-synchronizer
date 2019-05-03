@@ -175,12 +175,6 @@ public class SearchField extends StackPane {
 
         runTask(() -> {
             while (keepWatcherAlive) {
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    //ignore
-                }
-
                 if (isOnChangeInvocationAllowed()) {
                     onChanged();
                 } else if (isOnClearInvocationAllowed()) {
