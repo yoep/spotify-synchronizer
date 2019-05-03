@@ -5,6 +5,7 @@ import lombok.ToString;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import org.synchronizer.spotify.synchronize.model.SpotifyTrack;
+import org.synchronizer.spotify.synchronize.model.TrackType;
 
 import java.io.Serializable;
 
@@ -13,8 +14,8 @@ import java.io.Serializable;
 public class CachedSpotifyTrack extends SpotifyTrack implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public CachedSpotifyTrack(String title, String artist, Album album, String previewUrl, String spotifyUri, Integer trackNumber, boolean savedTrack) {
-        super(title, artist, album, previewUrl, spotifyUri, trackNumber, savedTrack);
+    public CachedSpotifyTrack(String title, String artist, Album album, String previewUrl, String spotifyUri, Integer trackNumber, TrackType type) {
+        super(title, artist, album, previewUrl, spotifyUri, trackNumber, type);
     }
 
     public static CachedSpotifyTrack from(MusicTrack track) {
@@ -27,7 +28,7 @@ public class CachedSpotifyTrack extends SpotifyTrack implements Serializable {
                 .previewUrl(spotifyTrack.getPreviewUrl())
                 .spotifyUri(spotifyTrack.getSpotifyUri())
                 .trackNumber(spotifyTrack.getTrackNumber())
-                .savedTrack(spotifyTrack.isSavedTrack())
+                .type(spotifyTrack.getType())
                 .build();
     }
 
@@ -38,7 +39,7 @@ public class CachedSpotifyTrack extends SpotifyTrack implements Serializable {
         private String previewUrl;
         private String spotifyUri;
         private Integer trackNumber;
-        private boolean savedTrack;
+        private TrackType type;
 
         public CachedSpotifyTrackBuilder title(String title) {
             this.title = title;
@@ -70,13 +71,13 @@ public class CachedSpotifyTrack extends SpotifyTrack implements Serializable {
             return this;
         }
 
-        public CachedSpotifyTrackBuilder savedTrack(boolean savedTrack) {
-            this.savedTrack = savedTrack;
+        public CachedSpotifyTrackBuilder type(TrackType type) {
+            this.type = type;
             return this;
         }
 
         public CachedSpotifyTrack build() {
-            return new CachedSpotifyTrack(title, artist, album, previewUrl, spotifyUri, trackNumber, savedTrack);
+            return new CachedSpotifyTrack(title, artist, album, previewUrl, spotifyUri, trackNumber, type);
         }
     }
 }

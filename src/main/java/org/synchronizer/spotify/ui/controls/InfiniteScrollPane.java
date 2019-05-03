@@ -324,7 +324,6 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable> ex
             initializeHeader();
 
         this.setFocusTraversable(true);
-        this.scrollPane.setMaxWidth(Integer.MAX_VALUE);
         this.scrollPane.setFocusTraversable(true);
         this.scrollPane.setFitToWidth(true);
         this.scrollPane.setContent(contentPane);

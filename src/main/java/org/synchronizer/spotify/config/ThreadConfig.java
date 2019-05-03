@@ -14,7 +14,7 @@ public class ThreadConfig {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(3);
         executor.setMaxPoolSize(25);
-        executor.setQueueCapacity(500);
+        executor.setQueueCapacity(25);
         executor.setThreadNamePrefix("ss-background");
         executor.initialize();
         return executor;
@@ -25,8 +25,9 @@ public class ThreadConfig {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(2);
         executor.setMaxPoolSize(5);
-        executor.setQueueCapacity(20);
+        executor.setQueueCapacity(0);
         executor.setThreadNamePrefix("ui-background");
+        executor.setThreadPriority(Thread.MAX_PRIORITY);
         executor.initialize();
         return executor;
     }

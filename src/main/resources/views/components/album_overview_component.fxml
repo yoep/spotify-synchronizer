@@ -10,8 +10,8 @@
 <?import org.synchronizer.spotify.ui.Icons?>
 <GridPane stylesheets="/styles/main.css,/styles/album_overview.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
-        <ColumnConstraints minWidth="100"/>
-        <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity"/>
+        <ColumnConstraints minWidth="150" maxWidth="150"/>
+        <ColumnConstraints hgrow="ALWAYS"/>
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="100" valignment="TOP"/>
@@ -22,7 +22,7 @@
 
     <!-- LEFT SIDE / IMAGE -->
     <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="TOP_CENTER">
-        <HBox fx:id="noAlbum" maxHeight="150" maxWidth="150" minHeight="150" styleClass="album_border" alignment="CENTER">
+        <HBox fx:id="noAlbum" minWidth="150" minHeight="150" styleClass="album_border" alignment="CENTER">
             <IconSolid sizeFactor="4">
                 <Icons fx:constant="COMPACT_DISK"/>
             </IconSolid>
@@ -46,7 +46,7 @@
     <!-- RIGHT SIDE -->
     <GridPane GridPane.columnIndex="1" GridPane.rowIndex="0">
         <columnConstraints>
-            <ColumnConstraints hgrow="ALWAYS" percentWidth="100"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
         </columnConstraints>
         <rowConstraints>
             <RowConstraints/>

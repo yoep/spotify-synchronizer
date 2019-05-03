@@ -31,6 +31,11 @@ public class LocalTrack extends AbstractMusicTrack {
     }
 
     @Override
+    public TrackType getType() {
+        return TrackType.LOCAL;
+    }
+
+    @Override
     public boolean matchesSearchCriteria(String criteria) {
         return StringUtils.containsIgnoreCase(title, criteria) ||
                 StringUtils.containsIgnoreCase(artist, criteria) ||

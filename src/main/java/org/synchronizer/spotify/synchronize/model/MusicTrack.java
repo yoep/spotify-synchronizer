@@ -17,6 +17,13 @@ public interface MusicTrack extends TrackInfo, IObservable, Comparable<MusicTrac
     Album getAlbum();
 
     /**
+     * Get the type of the track.
+     *
+     * @return Returns the type of the track.
+     */
+    TrackType getType();
+
+    /**
      * Verify if the given {@link MusicTrack} matches the spotify track.
      *
      * @param musicTrack Set the {@link MusicTrack} to compare.

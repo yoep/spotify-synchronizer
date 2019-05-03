@@ -2,6 +2,8 @@ package org.synchronizer.spotify.views.components;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -49,9 +51,13 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     @FXML
     private Icon playbackUnavailableIcon;
     @FXML
-    private Text title;
+    private Label title;
     @FXML
-    private Text artist;
+    private Label artist;
+    @FXML
+    private Tooltip titleTooltip;
+    @FXML
+    private Tooltip artistTooltip;
     @FXML
     private Pane syncPane;
 
@@ -154,7 +160,9 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     private void updateTrackInfo() {
         trackNumber.setText(getTrackNumber());
         title.setText(syncTrack.getTitle());
+        titleTooltip.setText(syncTrack.getTitle());
         artist.setText(syncTrack.getArtist());
+        artistTooltip.setText(syncTrack.getArtist());
     }
 
     private void setPlaybackState(boolean activeInMediaPlayer) {

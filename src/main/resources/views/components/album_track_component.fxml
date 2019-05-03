@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <?import org.synchronizer.spotify.ui.controls.Icon?>
@@ -7,12 +8,12 @@
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" stylesheets="/styles/album_overview.css, /styles/main.css"
           fx:id="trackRow">
     <columnConstraints>
-        <ColumnConstraints minWidth="15" prefWidth="20" halignment="LEFT"/>
+        <ColumnConstraints minWidth="20" maxWidth="20" halignment="LEFT"/>
         <ColumnConstraints hgrow="ALWAYS" halignment="LEFT"/>
-        <ColumnConstraints minWidth="15" prefWidth="30" halignment="CENTER"/>
+        <ColumnConstraints minWidth="30" maxWidth="30" halignment="CENTER"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="20" vgrow="ALWAYS" valignment="CENTER"/>
+        <RowConstraints minHeight="20" maxHeight="20" vgrow="ALWAYS" valignment="CENTER"/>
     </rowConstraints>
 
     <!-- LEFT SECTION -->
@@ -38,12 +39,20 @@
     <!-- MIDDLE SECTION -->
     <HBox GridPane.columnIndex="1" GridPane.rowIndex="0" alignment="CENTER_LEFT">
         <!-- SONG TITLE -->
-        <Text fx:id="title" text="TITLE PLACEHOLDER"/>
+        <Label fx:id="title" text="TITLE PLACEHOLDER">
+            <tooltip>
+                <Tooltip fx:id="titleTooltip"/>
+            </tooltip>
+        </Label>
 
-        <Text text=" - "/>
+        <Label text=" - "/>
 
         <!-- ARTIST -->
-        <Text fx:id="artist" text="ARTIST PLACEHOLDER" styleClass="artist"/>
+        <Label fx:id="artist" text="ARTIST PLACEHOLDER" minWidth="50" styleClass="artist">
+            <tooltip>
+                <Tooltip fx:id="artistTooltip"/>
+            </tooltip>
+        </Label>
     </HBox>
 
     <!-- RIGHT SECTION / SYNC STATUS -->

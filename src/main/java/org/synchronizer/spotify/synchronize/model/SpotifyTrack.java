@@ -23,7 +23,7 @@ public class SpotifyTrack extends AbstractMusicTrack {
     private String previewUrl;
     private String spotifyUri;
     private Integer trackNumber;
-    private boolean savedTrack;
+    private TrackType type;
 
     @Override
     public String getUri() {
@@ -85,7 +85,7 @@ public class SpotifyTrack extends AbstractMusicTrack {
                 .previewUrl(track.getPreviewUrl())
                 .spotifyUri(track.getUri())
                 .trackNumber(track.getTrackNumber())
-                .savedTrack(true)
+                .type(TrackType.SAVED_TRACK)
                 .build();
     }
 
@@ -98,7 +98,7 @@ public class SpotifyTrack extends AbstractMusicTrack {
                 .previewUrl(track.getPreviewUrl())
                 .spotifyUri(track.getUri())
                 .trackNumber(track.getTrackNumber())
-                .savedTrack(false)
+                .type(TrackType.ALBUM_TRACK)
                 .build();
     }
 }
