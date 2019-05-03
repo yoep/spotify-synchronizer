@@ -38,7 +38,9 @@ public interface DiscoveryService {
 
     /**
      * Start the discovery service on an asynchronous thread.
+     *
+     * @throws SynchronizeException Is thrown when an error occurs during discovery.
      */
     @Async
-    void start() throws RuntimeException;
+    void start() throws SynchronizeException;
 }

@@ -62,11 +62,8 @@ public class CacheService {
         try {
             List<CachedSpotifyTrack> cachedTracks = spotifyTracks.stream()
                     .map(CachedSpotifyTrack::from)
+                    .peek(e -> ((CachedAlbum) e.getAlbum()).cacheImage())
                     .collect(Collectors.toList());
-
-            for (CachedSpotifyTrack cachedTrack : cachedTracks) {
-                ((CachedAlbum) cachedTrack.getAlbum()).cacheImage();
-            }
 
             CacheUtils.writeToCache(getSpotifyTracksCacheFile(), cachedTracks.toArray(new CachedSpotifyTrack[0]), false);
             log.debug("Spotify music tracks cached");
@@ -85,16 +82,13 @@ public class CacheService {
         try {
             List<CachedSyncTrack> cachedSyncs = CollectionUtils.copy(syncTracks).stream()
                     .map(CachedSyncTrack::from)
+                    .peek(track -> {
+                        track.getLocalTrack()
+                                .ifPresent(e -> ((CachedAlbum) e.getAlbum()).cacheImage());
+                        track.getSpotifyTrack()
+                                .ifPresent(e -> ((CachedAlbum) e.getAlbum()).cacheImage());
+                    })
                     .collect(Collectors.toList());
-
-            for (CachedSyncTrack cachedTrack : cachedSyncs) {
-                cachedTrack.getLocalTrack()
-                        .ifPresent(e -> ((CachedAlbum) e.getAlbum()).cacheImage());
-                cachedTrack.getSpotifyTrack()
-                        .ifPresent(e -> ((CachedAlbum) e.getAlbum()).cacheImage());
-
-                ((CachedAlbum) cachedTrack.getAlbum()).cacheImage();
-            }
 
             CacheUtils.writeToCache(getSyncTracksCacheFile(), cachedSyncs.toArray(new CachedSyncTrack[0]), false);
             log.debug("{} synchronize tracks have been cached", cachedSyncs.size());

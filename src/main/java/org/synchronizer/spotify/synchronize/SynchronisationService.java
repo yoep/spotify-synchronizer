@@ -10,7 +10,10 @@ import org.synchronizer.spotify.cache.CacheService;
 import org.synchronizer.spotify.config.properties.CacheMode;
 import org.synchronizer.spotify.config.properties.SynchronizerProperties;
 import org.synchronizer.spotify.settings.SettingsService;
-import org.synchronizer.spotify.synchronize.model.*;
+import org.synchronizer.spotify.synchronize.model.LocalTrack;
+import org.synchronizer.spotify.synchronize.model.MusicTrack;
+import org.synchronizer.spotify.synchronize.model.SyncTrack;
+import org.synchronizer.spotify.synchronize.model.SyncTrackImpl;
 import org.synchronizer.spotify.utils.CollectionUtils;
 
 import java.util.ArrayList;
@@ -112,14 +115,6 @@ public class SynchronisationService {
     }
 
     private void spotifyDiscoveryFinished(Collection<MusicTrack> tracks) {
-        boolean spotifyTrackMissing = this.getTracks().stream()
-                .anyMatch(e -> e.getSyncState() == SyncState.SPOTIFY_TRACK_MISSING);
-
-//        if (spotifyTrackMissing) {
-//
-//            return;
-//        }
-
         if (synchronizerProperties.getCacheMode().isActive())
             cacheService.cacheSpotifyTracks(tracks);
 

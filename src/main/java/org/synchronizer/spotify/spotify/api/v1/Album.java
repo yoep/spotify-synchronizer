@@ -51,7 +51,7 @@ public class Album {
     /**
      * The tracks of the album.
      */
-    private Tracks tracks;
+    private AlbumTracks tracks;
     /**
      * The number of tracks in the album.
      */

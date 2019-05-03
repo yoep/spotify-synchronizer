@@ -3,6 +3,7 @@ package org.synchronizer.spotify.synchronize.model;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
+import org.synchronizer.spotify.spotify.api.v1.AlbumTrack;
 import org.synchronizer.spotify.spotify.api.v1.SavedTrack;
 import org.synchronizer.spotify.spotify.api.v1.Track;
 
@@ -22,6 +23,7 @@ public class SpotifyTrack extends AbstractMusicTrack {
     private String previewUrl;
     private String spotifyUri;
     private Integer trackNumber;
+    private boolean savedTrack;
 
     @Override
     public String getUri() {
@@ -83,6 +85,20 @@ public class SpotifyTrack extends AbstractMusicTrack {
                 .previewUrl(track.getPreviewUrl())
                 .spotifyUri(track.getUri())
                 .trackNumber(track.getTrackNumber())
+                .savedTrack(true)
+                .build();
+    }
+
+    public static SpotifyTrack from(AlbumTrack track) {
+        Assert.notNull(track, "track cannot be null");
+        return SpotifyTrack.builder()
+                .title(track.getName())
+                .artist(track.getArtists().get(0).getName())
+                .album(SpotifyAlbum.from(track.getAlbum()))
+                .previewUrl(track.getPreviewUrl())
+                .spotifyUri(track.getUri())
+                .trackNumber(track.getTrackNumber())
+                .savedTrack(false)
                 .build();
     }
 }
