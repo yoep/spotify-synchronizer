@@ -164,10 +164,10 @@ public class SpotifyAlbumDiscoveryService implements DiscoveryService {
                 } else {
                     if (System.currentTimeMillis() - lastEvent > WATCHER_TTL) {
                         stopWatcher();
-                    } else {
-                        watcherWait();
                     }
                 }
+
+                watcherWait();
             }
         });
     }
