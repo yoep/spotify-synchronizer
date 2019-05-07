@@ -55,7 +55,7 @@ public class AlbumTrackSyncComponent implements Initializable {
         initializeContextMenus();
 
         updateSyncState();
-        syncTrack.addObserver((o, arg) -> Platform.runLater(this::updateSyncState));
+        syncTrack.addObserver((o, arg) -> updateSyncState());
     }
 
     private void initializeTooltips() {
@@ -108,48 +108,58 @@ public class AlbumTrackSyncComponent implements Initializable {
     }
 
     private void showProgressIndicator() {
-        progressIndicator.setVisible(true);
-        crossIcon.setVisible(false);
-        checkMarkIcon.setVisible(false);
-        exclamationIcon.setVisible(false);
-        albumIcon.setVisible(false);
-        refreshIcon.setVisible(false);
+        Platform.runLater(() -> {
+            progressIndicator.setVisible(true);
+            crossIcon.setVisible(false);
+            checkMarkIcon.setVisible(false);
+            exclamationIcon.setVisible(false);
+            albumIcon.setVisible(false);
+            refreshIcon.setVisible(false);
+        });
     }
 
     private void showErrorIcon() {
-        exclamationIcon.setVisible(true);
-        crossIcon.setVisible(false);
-        refreshIcon.setVisible(false);
-        albumIcon.setVisible(false);
-        progressIndicator.setVisible(false);
-        updateExclamationTooltip();
+        Platform.runLater(() -> {
+            exclamationIcon.setVisible(true);
+            crossIcon.setVisible(false);
+            refreshIcon.setVisible(false);
+            albumIcon.setVisible(false);
+            progressIndicator.setVisible(false);
+            updateExclamationTooltip();
+        });
     }
 
     private void showSyncStateIcon(boolean isInSync) {
-        checkMarkIcon.setVisible(isInSync);
-        refreshIcon.setVisible(!isInSync);
-        crossIcon.setVisible(false);
-        albumIcon.setVisible(false);
-        progressIndicator.setVisible(false);
+        Platform.runLater(() -> {
+            checkMarkIcon.setVisible(isInSync);
+            refreshIcon.setVisible(!isInSync);
+            crossIcon.setVisible(false);
+            albumIcon.setVisible(false);
+            progressIndicator.setVisible(false);
+        });
     }
 
     private void showCrossIcon() {
-        crossIcon.setVisible(true);
-        checkMarkIcon.setVisible(false);
-        exclamationIcon.setVisible(false);
-        refreshIcon.setVisible(false);
-        albumIcon.setVisible(false);
-        progressIndicator.setVisible(false);
-        updateCrossTooltip();
+        Platform.runLater(() -> {
+            crossIcon.setVisible(true);
+            checkMarkIcon.setVisible(false);
+            exclamationIcon.setVisible(false);
+            refreshIcon.setVisible(false);
+            albumIcon.setVisible(false);
+            progressIndicator.setVisible(false);
+            updateCrossTooltip();
+        });
     }
 
     private void showAlbumIcon() {
-        albumIcon.setVisible(true);
-        crossIcon.setVisible(false);
-        checkMarkIcon.setVisible(false);
-        exclamationIcon.setVisible(false);
-        refreshIcon.setVisible(false);
-        progressIndicator.setVisible(false);
+        Platform.runLater(() -> {
+            albumIcon.setVisible(true);
+            crossIcon.setVisible(false);
+            checkMarkIcon.setVisible(false);
+            exclamationIcon.setVisible(false);
+            refreshIcon.setVisible(false);
+            progressIndicator.setVisible(false);
+        });
     }
 
     private void updateMetaData() {

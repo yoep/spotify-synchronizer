@@ -7,9 +7,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.synchronizer.spotify.spotify.api.v1.Album;
+import org.synchronizer.spotify.utils.SpotifyUtils;
 
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @EqualsAndHashCode(callSuper = false)
@@ -26,16 +26,8 @@ public class SpotifyAlbum extends AbstractAlbum {
     private String href;
     private String lowResImageUri;
     private String highResImageUri;
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private transient Supplier<String> imageMimeTypeSupplier;
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     @Nullable
-    private transient String bufferedImageMimeType;
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private transient Supplier<byte[]> imageSupplier;
+    private String bufferedImageMimeType;
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @Nullable
@@ -54,8 +46,7 @@ public class SpotifyAlbum extends AbstractAlbum {
     @Override
     public String getImageMimeType() {
         if (bufferedImageMimeType == null)
-            bufferedImageMimeType = Optional.ofNullable(imageMimeTypeSupplier)
-                    .map(Supplier::get)
+            bufferedImageMimeType = SpotifyUtils.getImageMimeType(highResImageUri)
                     .orElse(null);
 
         return bufferedImageMimeType;
@@ -64,9 +55,7 @@ public class SpotifyAlbum extends AbstractAlbum {
     @Override
     public byte[] getImage() {
         if (bufferedImage == null)
-            bufferedImage = Optional.ofNullable(imageSupplier)
-                    .map(Supplier::get)
-                    .orElse(null);
+            bufferedImage = SpotifyUtils.getImage(highResImageUri);
 
         return bufferedImage;
     }
@@ -76,13 +65,21 @@ public class SpotifyAlbum extends AbstractAlbum {
         return StringUtils.containsIgnoreCase(name, criteria);
     }
 
+    public boolean isImageMimeTypeBuffered() {
+        return bufferedImageMimeType != null;
+    }
+
+    public boolean isImageBuffered() {
+        return bufferedImage != null;
+    }
+
     /**
-     * Convert the given {@link org.synchronizer.spotify.spotify.api.v1.Album} to a {@link SpotifyAlbum} instance.
+     * Convert the given {@link Album} to a {@link SpotifyAlbum} instance.
      *
      * @param album Set the album to convert.
      * @return Returns the converted instance.
      */
-    public static SpotifyAlbum from(org.synchronizer.spotify.spotify.api.v1.Album album) {
+    public static SpotifyAlbum from(Album album) {
         Assert.notNull(album, "album cannot be null");
         return SpotifyAlbum.builder()
                 .name(album.getName())

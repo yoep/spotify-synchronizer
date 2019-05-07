@@ -11,7 +11,6 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
-import org.synchronizer.spotify.ui.controls.Icon;
 import org.synchronizer.spotify.ui.controls.SearchField;
 import org.synchronizer.spotify.ui.controls.SearchListener;
 import org.synchronizer.spotify.ui.controls.SortListener;
@@ -36,8 +35,6 @@ public class SearchComponent implements Initializable {
     @Setter
     private Runnable onSettingsClicked;
 
-    @FXML
-    private Icon menuIcon;
     @FXML
     private Pane menuPane;
     @FXML

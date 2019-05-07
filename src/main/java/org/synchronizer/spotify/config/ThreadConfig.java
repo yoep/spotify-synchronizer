@@ -13,8 +13,7 @@ public class ThreadConfig {
     public TaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(20);
-        executor.setQueueCapacity(20);
+        executor.setQueueCapacity(0);
         executor.setThreadNamePrefix("ss-background");
         executor.initialize();
         return executor;

@@ -36,6 +36,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable> ex
     private static final int ADDITIONAL_RENDER = 5;
     private static final int SCROLLBAR_THRESHOLD = 97;
     private static final int TIME_BETWEEN_UPDATES = 200;
+    private static final int WATCHER_TTL = 5000;
 
     private final List<ItemWrapper<T>> items = new ArrayList<>();
     private final ScrollPane scrollPane = new ScrollPane();
@@ -194,7 +195,6 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable> ex
             renderAdditionalItems(initialRender - totalRenderedItems);
     }
 
-    //TODO: update this method to use a searchable interface instead of the "toString" method and match that against the content
     private void updateSearch(String searchValue) {
         runTask(() -> {
             AtomicInteger totalMatchingItems = new AtomicInteger();
@@ -375,8 +375,8 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable> ex
                 if (isShowing() && isAllowedToUpdate())
                     this.updateRendering();
 
-                // if last event was more than 10 secs ago, stop the watcher
-                if (System.currentTimeMillis() - lastEvent > 10000)
+                // if last event was more than #WATCHER_TTL millis ago, stop the watcher
+                if (System.currentTimeMillis() - lastEvent > WATCHER_TTL)
                     keepWatcherAlive = false;
             }
         });

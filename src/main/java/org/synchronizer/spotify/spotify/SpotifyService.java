@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.synchronizer.spotify.config.properties.SpotifyConfiguration;
 import org.synchronizer.spotify.spotify.api.v1.Album;
 import org.synchronizer.spotify.spotify.api.v1.Tracks;
+import org.synchronizer.spotify.synchronize.model.SpotifyAlbum;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -57,7 +58,7 @@ public class SpotifyService {
      * @return Returns the album with full details.
      */
     @Async
-    public CompletableFuture<Album> getAlbumDetails(Album album) {
+    public CompletableFuture<Album> getAlbumDetails(SpotifyAlbum album) {
         return CompletableFuture.completedFuture(spotifyRestTemplate.exchange(album.getHref(), HttpMethod.GET, HttpEntity.EMPTY, Album.class).getBody());
     }
 }

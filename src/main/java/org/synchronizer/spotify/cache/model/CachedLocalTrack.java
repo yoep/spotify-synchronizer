@@ -11,6 +11,8 @@ import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 @Log4j2
 @ToString(callSuper = true)
@@ -34,7 +36,12 @@ public class CachedLocalTrack extends LocalTrack implements Serializable {
 
     @Override
     public File getFile() {
-        return new File(uri);
+        try {
+            return new File(new URI(uri));
+        } catch (URISyntaxException e) {
+            log.error(e.getMessage(), e);
+            return null;
+        }
     }
 
     public static CachedLocalTrack from(MusicTrack track) {

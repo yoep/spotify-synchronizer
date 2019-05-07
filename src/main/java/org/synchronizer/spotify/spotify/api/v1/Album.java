@@ -16,7 +16,7 @@ public class Album {
      */
     private AlbumType albumType;
     /**
-     * he artists of the album. Each artist object includes a link in href to more detailed information about the artist.
+     * The artists of the album. Each artist object includes a link in href to more detailed information about the artist.
      */
     private List<Artist> artists;
     /**

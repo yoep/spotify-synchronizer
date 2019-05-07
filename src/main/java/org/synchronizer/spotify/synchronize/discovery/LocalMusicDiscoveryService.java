@@ -1,21 +1,26 @@
-package org.synchronizer.spotify.synchronize;
+package org.synchronizer.spotify.synchronize.discovery;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.synchronizer.spotify.cache.CacheService;
+import org.synchronizer.spotify.config.properties.SynchronizerProperties;
 import org.synchronizer.spotify.media.AudioService;
 import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.Synchronization;
-import org.synchronizer.spotify.settings.model.UserSettings;
+import org.synchronizer.spotify.synchronize.TracksWrapper;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,27 +28,23 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 
 @Log4j2
-@Data
+@ToString
 @Service
 @RequiredArgsConstructor
-public class LocalMusicDiscovery implements DiscoveryService {
-    private static final List<String> extensions = Collections.singletonList("mp3");
-
+public class LocalMusicDiscoveryService implements DiscoveryService {
     private final SettingsService settingsService;
+    private final SynchronizerProperties synchronizerProperties;
     private final AudioService audioService;
+    private final CacheService cacheService;
     private final TaskExecutor taskExecutor;
 
-    private final ObservableList<MusicTrack> trackList = FXCollections.observableArrayList();
     private final List<DiscoveryListener> listeners = new ArrayList<>();
 
     private List<CompletableFuture<List<MusicTrack>>> asyncDiscoveries;
+    private TracksWrapper<MusicTrack> tracks;
     private boolean keepIndexing;
+    @Getter
     private boolean finished = true;
-
-    @Override
-    public boolean isFinished() {
-        return this.finished;
-    }
 
     @Override
     public void addListener(DiscoveryListener listener) {
@@ -79,41 +80,57 @@ public class LocalMusicDiscovery implements DiscoveryService {
             }
         }
 
+        this.tracks = new TracksWrapper<>(taskExecutor, this::invokeOnChangedCallback);
         this.asyncDiscoveries = new ArrayList<>();
         this.finished = false;
         this.keepIndexing = true;
+
+        // load cache
+        loadCache();
+        // start indexing local files
         indexLocalFiles();
+    }
+
+    @PostConstruct
+    private void init() {
+        initializeListeners();
+    }
+
+    private void initializeListeners() {
+        getSynchronizationSettings().addObserver((o, arg) -> start());
+    }
+
+    private void loadCache() {
+        if (synchronizerProperties.getCacheMode().isReadMode())
+            cacheService.getCachedLocalTracks()
+                    .ifPresent(e -> tracks.addAll(e));
     }
 
     private void indexLocalFiles() {
         if (!keepIndexing)
             return;
 
-        List<File> localDirectories = settingsService.getUserSettings()
-                .map(UserSettings::getSynchronization)
-                .map(Synchronization::getLocalMusicDirectories)
-                .map(Collection::stream)
-                .orElse(Stream.empty())
+        List<File> localDirectories = getSynchronizationSettings().getLocalMusicDirectories().stream()
                 .filter(File::exists)
                 .collect(Collectors.toList());
 
         if (localDirectories.size() == 0) {
             log.info("Skipping local music discovery as no directories are available for indexing");
             this.finished = true;
-            invokeCallback();
+            invokeOnFinishCallback();
             return;
         }
 
         log.info("Starting local music discovery in {}", localDirectories);
         localDirectories.forEach(this::discoverDirectory);
 
-        onAsyncDiscoveryCompletion(() -> {
+        CompletableFuture.allOf(asyncDiscoveries.toArray(new CompletableFuture[0])).thenRun(() -> {
             this.finished = true;
 
             // do not execute the callback if the current indexing is being aborted for a new one
             if (keepIndexing) {
-                log.info("Discovered " + trackList.size() + " local music tracks");
-                invokeCallback();
+                log.info("Discovered " + tracks.size() + " local music tracks");
+                invokeOnFinishCallback();
             }
 
             // memory cleanup
@@ -140,38 +157,31 @@ public class LocalMusicDiscovery implements DiscoveryService {
         log.debug("Scanning for audio in " + directory.getAbsolutePath());
         CompletableFuture<List<MusicTrack>> scanCompletableFuture = audioService.scanDirectory(directory);
         asyncDiscoveries.add(scanCompletableFuture);
-        scanCompletableFuture.thenAccept(trackList::addAll);
+        scanCompletableFuture.thenAccept(tracks::addAll);
     }
 
-    private void onAsyncDiscoveryCompletion(Runnable onCompletion) {
-        taskExecutor.execute(() -> {
-            //check if all completable futures have been completed
-            //we don't wan't to chain all the completable futures with CompletableFuture.allOf as we want the results of each individual discovery to be visible
-            //immediately in the overview list
-            while (!asyncDiscoveries.stream().allMatch(CompletableFuture::isDone) && keepIndexing) {
-                //wait for completion and ask the JVM to not run this thread within the next 50 millis
-                try {
-                    Thread.sleep(50);
-                } catch (InterruptedException e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
-
-            onCompletion.run();
-        });
+    private Synchronization getSynchronizationSettings() {
+        return settingsService.getUserSettingsOrDefault().getSynchronization();
     }
 
-    private void invokeCallback() {
-        synchronized (trackList) {
-            listeners.forEach(e -> e.onFinish(new ArrayList<>(trackList)));
+    private void invokeOnChangedCallback(Collection<MusicTrack> addedTracks) {
+        synchronized (listeners) {
+            listeners.forEach(e -> e.onChanged(addedTracks));
+        }
+    }
+
+    private void invokeOnFinishCallback() {
+        if (synchronizerProperties.getCacheMode().isWriteMode())
+            cacheService.cacheLocalTracks(tracks.getAll());
+
+        synchronized (listeners) {
+            listeners.forEach(e -> e.onFinish(tracks.getAll()));
         }
     }
 
     private void doCleanup() {
         log.debug("Cleaning " + getClass().getSimpleName() + "...");
-        synchronized (trackList) {
-            trackList.clear();
-            asyncDiscoveries = null;
-        }
+        tracks = null;
+        asyncDiscoveries = null;
     }
 }

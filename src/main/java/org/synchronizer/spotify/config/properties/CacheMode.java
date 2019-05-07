@@ -7,19 +7,21 @@ public enum CacheMode {
     /**
      * This mode will allow the application to read & write to/from the cache.
      */
-    CACHE_ENABLED(true),
+    CACHE_ENABLED(true, true),
     /**
      * This mode fully disables the caching in the application.
      */
-    CACHE_DISABLED(false),
+    CACHE_DISABLED(false, false),
     /**
      * This mode forces the application to only read from the cache (and not from the disk nor Spotify API).
      */
-    CACHE_ONLY(true);
+    CACHE_ONLY(true, false);
 
-    private boolean active;
+    private boolean readMode;
+    private boolean writeMode;
 
-    CacheMode(boolean active) {
-        this.active = active;
+    CacheMode(boolean readMode, boolean writeMode) {
+        this.readMode = readMode;
+        this.writeMode = writeMode;
     }
 }

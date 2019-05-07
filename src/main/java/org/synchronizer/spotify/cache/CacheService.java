@@ -9,6 +9,7 @@ import org.synchronizer.spotify.cache.model.CachedAlbum;
 import org.synchronizer.spotify.cache.model.CachedLocalTrack;
 import org.synchronizer.spotify.cache.model.CachedSpotifyTrack;
 import org.synchronizer.spotify.cache.model.CachedSyncTrack;
+import org.synchronizer.spotify.spotify.api.v1.Album;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.utils.CacheUtils;
@@ -26,7 +27,8 @@ import java.util.stream.Collectors;
 public class CacheService {
     private static final String EXTENSION = ".cache";
     private static final String LOCAL_TRACK_CACHE_NAME = "local-tracks";
-    private static final String SPOTIFY_CACHE_NAME = "spotify-tracks";
+    private static final String SPOTIFY_TRACKS_CACHE_NAME = "spotify-tracks";
+    private static final String SPOTIFY_ALBUMS_CACHE_NAME = "spotify-albums";
     private static final String SYNC_CACHE_NAME = "sync";
 
     @Async
@@ -57,7 +59,7 @@ public class CacheService {
         if (CollectionUtils.isEmpty(spotifyTracks))
             return;
 
-        log.debug("Caching spotify music tracks...");
+        log.debug("Caching Spotify music tracks...");
 
         try {
             List<CachedSpotifyTrack> cachedTracks = spotifyTracks.stream()
@@ -68,7 +70,21 @@ public class CacheService {
             CacheUtils.writeToCache(getSpotifyTracksCacheFile(), cachedTracks.toArray(new CachedSpotifyTrack[0]), false);
             log.debug("Spotify music tracks cached");
         } catch (Exception ex) {
-            log.error("Failed to create cache of spotify tracks with error " + ex.getMessage(), ex);
+            log.error("Failed to create cache of Spotify tracks with error " + ex.getMessage(), ex);
+        }
+    }
+
+    @Async
+    public void cacheSpotifyAlbums(Collection<Album> spotifyAlbums) {
+        if (CollectionUtils.isEmpty(spotifyAlbums))
+            return;
+
+        log.debug("Caching Spotify albums...");
+
+        try {
+
+        } catch (Exception ex) {
+            log.error("Failed to create cache of Spotify albums with error " + ex.getMessage(), ex);
         }
     }
 
@@ -137,7 +153,11 @@ public class CacheService {
     }
 
     private File getSpotifyTracksCacheFile() {
-        return new File(CacheUtils.getCacheDirectory() + getFilename(SPOTIFY_CACHE_NAME));
+        return new File(CacheUtils.getCacheDirectory() + getFilename(SPOTIFY_TRACKS_CACHE_NAME));
+    }
+
+    private File getSpotifyAlbumsCacheFile() {
+        return new File(CacheUtils.getCacheDirectory() + getFilename(SPOTIFY_ALBUMS_CACHE_NAME));
     }
 
     private File getSyncTracksCacheFile() {

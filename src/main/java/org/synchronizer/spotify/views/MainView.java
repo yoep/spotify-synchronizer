@@ -47,7 +47,7 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
     public void initialize(URL location, ResourceBundle resources) {
         initializeTrackOverview();
 
-        synchronisationService.addListener((TracksListener) addedTracks -> {
+        synchronisationService.addListener((TracksListener<SyncTrack>) addedTracks -> {
             String lastAlbumName = null;
             AlbumOverview lastAlbumOverview = null;
             List<SyncTrack> sortedTracks = addedTracks.stream()
@@ -73,7 +73,7 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
             }
 
         });
-        synchronisationService.init();
+        synchronisationService.start();
     }
 
     @Override

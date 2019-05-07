@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 @Log4j2
 @ToString(callSuper = true)
@@ -22,8 +21,8 @@ public class CachedSpotifyAlbum extends SpotifyAlbum implements CachedAlbum, Ser
 
     private String cachedImageUri;
 
-    public CachedSpotifyAlbum(String name, String genre, String year, String href, String lowResImageUri, String highResImageUri, Supplier<String> imageMimeTypeSupplier, String bufferedImageMimeType, Supplier<byte[]> imageSupplier, byte[] bufferedImage) {
-        super(name, genre, year, href, lowResImageUri, highResImageUri, imageMimeTypeSupplier, bufferedImageMimeType, imageSupplier, bufferedImage);
+    public CachedSpotifyAlbum(String name, String genre, String year, String href, String lowResImageUri, String highResImageUri, String bufferedImageMimeType, byte[] bufferedImage) {
+        super(name, genre, year, href, lowResImageUri, highResImageUri, bufferedImageMimeType, bufferedImage);
     }
 
     public static CachedSpotifyAlbum from(Album album) {
@@ -36,6 +35,8 @@ public class CachedSpotifyAlbum extends SpotifyAlbum implements CachedAlbum, Ser
                 .href(spotifyAlbum.getHref())
                 .lowResImageUri(spotifyAlbum.getLowResImageUri())
                 .highResImageUri(spotifyAlbum.getHighResImageUri())
+                .bufferedImageMimeType(spotifyAlbum.isImageMimeTypeBuffered() ? spotifyAlbum.getBufferedImageMimeType() : null)
+                .bufferedImage(spotifyAlbum.isImageBuffered() ? spotifyAlbum.getBufferedImage() : null)
                 .build();
     }
 
@@ -71,9 +72,7 @@ public class CachedSpotifyAlbum extends SpotifyAlbum implements CachedAlbum, Ser
         private String href;
         private String lowResImageUri;
         private String highResImageUri;
-        private Supplier<String> imageMimeTypeSupplier;
         private String bufferedImageMimeType;
-        private Supplier<byte[]> imageSupplier;
         private byte[] bufferedImage;
 
         public CachedSpotifyAlbumBuilder name(String name) {
@@ -106,18 +105,8 @@ public class CachedSpotifyAlbum extends SpotifyAlbum implements CachedAlbum, Ser
             return this;
         }
 
-        public CachedSpotifyAlbumBuilder imageMimeTypeSupplier(Supplier<String> imageMimeTypeSupplier) {
-            this.imageMimeTypeSupplier = imageMimeTypeSupplier;
-            return this;
-        }
-
         public CachedSpotifyAlbumBuilder bufferedImageMimeType(String bufferedImageMimeType) {
             this.bufferedImageMimeType = bufferedImageMimeType;
-            return this;
-        }
-
-        public CachedSpotifyAlbumBuilder imageSupplier(Supplier<byte[]> imageSupplier) {
-            this.imageSupplier = imageSupplier;
             return this;
         }
 
@@ -127,7 +116,7 @@ public class CachedSpotifyAlbum extends SpotifyAlbum implements CachedAlbum, Ser
         }
 
         public CachedSpotifyAlbum build() {
-            return new CachedSpotifyAlbum(name, genre, year, href, lowResImageUri, highResImageUri, imageMimeTypeSupplier, bufferedImageMimeType, imageSupplier, bufferedImage);
+            return new CachedSpotifyAlbum(name, genre, year, href, lowResImageUri, highResImageUri, bufferedImageMimeType, bufferedImage);
         }
     }
 }

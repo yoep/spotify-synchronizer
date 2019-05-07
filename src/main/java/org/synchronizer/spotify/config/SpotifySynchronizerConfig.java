@@ -20,7 +20,6 @@ import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.spotify.OAuth2RestTemplateSpotify;
 import org.synchronizer.spotify.ui.UIText;
 
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -40,7 +39,7 @@ public class SpotifySynchronizerConfig {
         AuthorizationCodeResourceDetails details = new AuthorizationCodeResourceDetails();
         details.setClientId(configuration.getClientId());
         details.setClientSecret(configuration.getClientSecret());
-        details.setScope(Collections.singletonList("user-library-read"));
+        details.setScope(asList("user-library-read", "user-read-private"));
         details.setAccessTokenUri(configuration.getEndpoints().getTokens().toString());
         details.setUserAuthorizationUri(configuration.getEndpoints().getAuthorization().toString());
         details.setPreEstablishedRedirectUri(configuration.getEndpoints().getRedirect().toString());

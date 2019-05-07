@@ -17,7 +17,8 @@ import java.util.concurrent.Executor;
 
 @Log4j2
 public class SearchField extends StackPane {
-    private static final long MILLIS_BETWEEN_INVOKES = 300;
+    private static final int MILLIS_BETWEEN_INVOKES = 300;
+    private static final int WATCHER_TTL = 5000;
 
     private final List<SearchListener> listeners = new ArrayList<>();
     private final TextField searchField = new TextField();
@@ -181,7 +182,8 @@ public class SearchField extends StackPane {
                     onCleared();
                 }
 
-                if (System.currentTimeMillis() - lastUserInput > 10000)
+                // stop the watcher if the last user interaction was more than #WATCHER_TTL millis ago
+                if (System.currentTimeMillis() - lastUserInput > WATCHER_TTL)
                     keepWatcherAlive = false;
             }
         });

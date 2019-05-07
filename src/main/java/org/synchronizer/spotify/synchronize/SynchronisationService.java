@@ -1,6 +1,5 @@
 package org.synchronizer.spotify.synchronize;
 
-import javafx.collections.ListChangeListener;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Async;
@@ -9,10 +8,11 @@ import org.springframework.util.Assert;
 import org.synchronizer.spotify.cache.CacheService;
 import org.synchronizer.spotify.config.properties.CacheMode;
 import org.synchronizer.spotify.config.properties.SynchronizerProperties;
-import org.synchronizer.spotify.settings.SettingsService;
+import org.synchronizer.spotify.synchronize.discovery.DiscoveryListener;
+import org.synchronizer.spotify.synchronize.discovery.DiscoveryService;
 import org.synchronizer.spotify.synchronize.model.*;
-import org.synchronizer.spotify.utils.CollectionUtils;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,36 +20,32 @@ import java.util.List;
 @Log4j2
 @Service
 public class SynchronisationService {
-    private final DiscoveryService spotifyDiscovery;
-    private final DiscoveryService localMusicDiscovery;
-    private final SettingsService settingsService;
+    private final List<DiscoveryService> discoveryServices;
     private final CacheService cacheService;
-    private final SyncTracksWrapper tracks;
     private final SynchronizerProperties synchronizerProperties;
 
     private final List<SynchronisationStateListener> listeners = new ArrayList<>();
+    private final TracksWrapper<SyncTrack> tracks;
     private SynchronisationState state = SynchronisationState.COMPLETED;
 
-    public SynchronisationService(DiscoveryService spotifyDiscovery,
-                                  DiscoveryService localMusicDiscovery,
-                                  SettingsService settingsService,
+    public SynchronisationService(List<DiscoveryService> discoveryServices,
                                   CacheService cacheService,
                                   SynchronizerProperties synchronizerProperties,
                                   TaskExecutor taskExecutor) {
-        this.spotifyDiscovery = spotifyDiscovery;
-        this.localMusicDiscovery = localMusicDiscovery;
-        this.settingsService = settingsService;
+        this.discoveryServices = discoveryServices;
         this.cacheService = cacheService;
         this.synchronizerProperties = synchronizerProperties;
-        this.tracks = new SyncTracksWrapper(taskExecutor);
+        this.tracks = new TracksWrapper<>(taskExecutor);
     }
 
     @Async
-    public void init() {
-        addListeners();
+    public void start() {
+        // check if the service is still synchronizing
+        if (state != SynchronisationState.COMPLETED)
+            return;
 
         // check if caching is enabled, if so, load the cache if available
-        if (synchronizerProperties.getCacheMode().isActive())
+        if (synchronizerProperties.getCacheMode().isReadMode())
             cacheService.getCachedSyncTracks()
                     .ifPresent(tracks::addAll);
 
@@ -58,11 +54,11 @@ public class SynchronisationService {
             startDiscovery();
     }
 
-    public void addListener(TracksListener listener) {
+    public void addListener(TracksListener<SyncTrack> listener) {
         tracks.addListener(listener);
     }
 
-    public void removeListener(TracksListener listener) {
+    public void removeListener(TracksListener<SyncTrack> listener) {
         tracks.removeListener(listener);
     }
 
@@ -86,86 +82,75 @@ public class SynchronisationService {
         return tracks.getAll();
     }
 
+    @PostConstruct
+    private void init() {
+        addListeners();
+    }
+
     private void startDiscovery() {
         updateSyncState(SynchronisationState.SYNCHRONIZING);
-        spotifyDiscovery.start();
-        localMusicDiscovery.start();
+        discoveryServices.forEach(DiscoveryService::start);
     }
 
     private void addListeners() {
-        localMusicDiscovery.getTrackList().addListener(this::synchronizeList);
-        spotifyDiscovery.getTrackList().addListener(this::synchronizeList);
-        localMusicDiscovery.addListener(this::localDiscoveryFinished);
-        spotifyDiscovery.addListener(this::spotifyDiscoveryFinished);
+        discoveryServices.forEach(e -> e.addListener(new DiscoveryListener() {
+            @Override
+            public void onChanged(Collection<MusicTrack> addedTracks) {
+                synchronizeList(addedTracks);
+            }
 
-        settingsService.getUserSettingsOrDefault().getSynchronization().addObserver((o, arg) -> {
-            updateSyncState(SynchronisationState.SYNCHRONIZING);
-            localMusicDiscovery.start();
-        });
-    }
-
-    private void localDiscoveryFinished(Collection<MusicTrack> tracks) {
-        if (synchronizerProperties.getCacheMode().isActive())
-            cacheService.cacheLocalTracks(tracks);
-
-        this.serviceFinished();
-    }
-
-    private void spotifyDiscoveryFinished(Collection<MusicTrack> tracks) {
-        if (synchronizerProperties.getCacheMode().isActive())
-            cacheService.cacheSpotifyTracks(tracks);
-
-        this.serviceFinished();
+            @Override
+            public void onFinish(Collection<MusicTrack> tracks) {
+                serviceFinished();
+            }
+        }));
     }
 
     private void serviceFinished() {
-        if (localMusicDiscovery.isFinished() && spotifyDiscovery.isFinished()) {
+        if (discoveryServices.stream().allMatch(DiscoveryService::isFinished)) {
             updateSyncState(SynchronisationState.COMPLETED);
 
-            if (synchronizerProperties.getCacheMode().isActive())
+            if (synchronizerProperties.getCacheMode().isWriteMode())
                 cacheService.cacheSync(tracks.getAll());
 
             log.info("Finished synchronisation");
-            log.debug("Cleaning " + getClass().getSimpleName());
+            log.debug("Cleaning {}...", getClass().getSimpleName());
             tracks.cleanup();
         }
     }
 
-    private void synchronizeList(ListChangeListener.Change<? extends MusicTrack> changeList) {
-        while (changeList.next()) {
-            Collection<? extends MusicTrack> addedTracks = CollectionUtils.copy(changeList.getAddedSubList());
-            List<SyncTrack> newSyncTracks = new ArrayList<>();
+    private void synchronizeList(final Collection<? extends MusicTrack> addedTracks) {
+        List<SyncTrack> newSyncTracks = new ArrayList<>();
 
-            for (MusicTrack newTrack : addedTracks) {
-                try {
-                    List<SyncTrack> allTracks = new ArrayList<>(tracks.getAll());
-                    allTracks.addAll(newSyncTracks);
+        addedTracks.forEach(newTrack -> {
+            try {
+                List<SyncTrack> allTracks = tracks.getAll();
+                allTracks.addAll(newSyncTracks);
 
-                    SyncTrack syncTrack = allTracks.stream()
-                            .filter(e -> e.matches(newTrack))
-                            .findFirst()
-                            .orElseGet(() -> {
-                                SyncTrackImpl track = SyncTrackImpl.builder().build();
-                                newSyncTracks.add(track);
-                                return track;
-                            });
+                SyncTrack syncTrack = allTracks.stream()
+                        .filter(e -> e.matches(newTrack))
+                        .findFirst()
+                        .orElseGet(() -> {
+                            SyncTrackImpl track = SyncTrackImpl.builder().build();
+                            newSyncTracks.add(track);
+                            return track;
+                        });
 
-                    if (newTrack instanceof LocalTrack) {
-                        syncTrack.setLocalTrack(newTrack);
-                    } else {
-                        SpotifyTrack spotifyTrack = (SpotifyTrack) newTrack;
+                if (newTrack instanceof LocalTrack) {
+                    syncTrack.setLocalTrack(newTrack);
+                } else {
+                    SpotifyTrack spotifyTrack = (SpotifyTrack) newTrack;
 
-                        // only overwrite the track when it's an album track (and not a saved one)
-                        if (!syncTrack.getSpotifyTrack().isPresent() || spotifyTrack.getType() == TrackType.SAVED_TRACK)
-                            syncTrack.setSpotifyTrack(newTrack);
-                    }
-                } catch (Exception ex) {
-                    log.error(ex.getMessage(), ex);
+                    // only overwrite the track when it's an album track (and not a saved one)
+                    if (!syncTrack.getSpotifyTrack().isPresent() || spotifyTrack.getType() == TrackType.SAVED_TRACK)
+                        syncTrack.setSpotifyTrack(newTrack);
                 }
+            } catch (Exception ex) {
+                log.error(ex.getMessage(), ex);
             }
+        });
 
-            tracks.addAll(newSyncTracks);
-        }
+        tracks.addAll(newSyncTracks);
     }
 
     private void updateSyncState(final SynchronisationState state) {
