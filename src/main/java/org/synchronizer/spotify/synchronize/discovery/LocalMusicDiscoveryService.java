@@ -115,7 +115,7 @@ public class LocalMusicDiscoveryService implements DiscoveryService {
                 .collect(Collectors.toList());
 
         if (localDirectories.size() == 0) {
-            log.info("Skipping local music discovery as no directories are available for indexing");
+            log.warn("Skipping local music discovery as no directories are available for indexing");
             this.finished = true;
             invokeOnFinishCallback();
             return;

@@ -4,6 +4,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.util.Assert;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.LocalAlbum;
 import org.synchronizer.spotify.utils.CacheUtils;
@@ -26,6 +27,8 @@ public class CachedLocalAlbum extends LocalAlbum implements CachedAlbum, Seriali
     }
 
     public static CachedLocalAlbum from(Album album) {
+        Assert.notNull(album, "album cannot be null");
+
         return new CachedLocalAlbumBuilder()
                 .name(album.getName())
                 .genre(album.getGenre())

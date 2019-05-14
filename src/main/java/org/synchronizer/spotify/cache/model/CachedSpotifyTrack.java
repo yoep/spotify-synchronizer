@@ -24,7 +24,7 @@ public class CachedSpotifyTrack extends SpotifyTrack implements Serializable {
         return new CachedSpotifyTrackBuilder()
                 .title(spotifyTrack.getTitle())
                 .artist(spotifyTrack.getArtist())
-                .album(CachedSpotifyAlbum.from(spotifyTrack.getAlbum()))
+                .album(CachedSpotifyAlbumSimple.from(spotifyTrack.getAlbum()))
                 .previewUrl(spotifyTrack.getPreviewUrl())
                 .spotifyUri(spotifyTrack.getSpotifyUri())
                 .trackNumber(spotifyTrack.getTrackNumber())

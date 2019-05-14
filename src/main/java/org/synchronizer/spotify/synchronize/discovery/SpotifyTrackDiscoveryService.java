@@ -87,7 +87,7 @@ public class SpotifyTrackDiscoveryService implements DiscoveryService {
             }
 
             CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0])).thenRun(() -> {
-                log.info("Synchronized " + this.tracks.size() + " spotify tracks");
+                log.info("Synchronized " + this.tracks.size() + " Spotify tracks");
                 onFinish();
             });
         } catch (Exception ex) {

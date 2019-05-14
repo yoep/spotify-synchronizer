@@ -4,6 +4,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
+import org.springframework.util.Assert;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.LocalTrack;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
@@ -45,6 +46,7 @@ public class CachedLocalTrack extends LocalTrack implements Serializable {
     }
 
     public static CachedLocalTrack from(MusicTrack track) {
+        Assert.notNull(track, "track cannot be null");
         LocalTrack localTrack = (LocalTrack) track;
 
         return new CachedLocalTrackBuilder()

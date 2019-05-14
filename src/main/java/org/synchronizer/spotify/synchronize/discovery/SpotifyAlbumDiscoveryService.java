@@ -7,6 +7,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.synchronizer.spotify.cache.CacheService;
+import org.synchronizer.spotify.cache.model.CachedSpotifyAlbumDetails;
 import org.synchronizer.spotify.config.properties.SynchronizerProperties;
 import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.Synchronization;
@@ -16,12 +18,15 @@ import org.synchronizer.spotify.synchronize.SynchronizeException;
 import org.synchronizer.spotify.synchronize.TracksWrapper;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import org.synchronizer.spotify.synchronize.model.SpotifyAlbum;
-import org.synchronizer.spotify.synchronize.model.SpotifyTrack;
+import org.synchronizer.spotify.synchronize.model.SpotifyAlbumDetails;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
 
 @Log4j2
 @ToString
@@ -31,6 +36,7 @@ public class SpotifyAlbumDiscoveryService implements DiscoveryService {
     private static final int WATCHER_TTL = 5000;
 
     private final SpotifyService spotifyService;
+    private final CacheService cacheService;
     private final DiscoveryService spotifyTrackDiscoveryService;
     private final SettingsService settingsService;
     private final SynchronizerProperties synchronizerProperties;
@@ -39,6 +45,7 @@ public class SpotifyAlbumDiscoveryService implements DiscoveryService {
     private final List<DiscoveryListener> listeners = new ArrayList<>();
     private final List<SpotifyAlbum> syncedAlbums = new ArrayList<>();
     private final List<SpotifyAlbum> albumsToBeSynced = new ArrayList<>();
+    private final Object albumLock = new Object();
 
     private TracksWrapper<MusicTrack> tracks;
     private long lastEvent;
@@ -73,7 +80,11 @@ public class SpotifyAlbumDiscoveryService implements DiscoveryService {
         if (!isFinished())
             return;
 
-        tracks = new TracksWrapper<>(taskExecutor, this::invokeOnChangedCallback);
+        this.tracks = new TracksWrapper<>(taskExecutor, this::invokeOnChangedCallback);
+        this.finished = false;
+
+        // load cache if available
+        loadCache();
 
         spotifyTrackDiscoveryService.addListener(new DiscoveryListener() {
             @Override
@@ -86,6 +97,19 @@ public class SpotifyAlbumDiscoveryService implements DiscoveryService {
                 //no-op
             }
         });
+    }
+
+    private void loadCache() {
+        if (synchronizerProperties.getCacheMode().isReadMode())
+            cacheService.getCachedSpotifyAlbums()
+                    .ifPresent(e -> {
+                        syncedAlbums.addAll(asList(e));
+
+                        tracks.addAll(Arrays.stream(e)
+                                .map(CachedSpotifyAlbumDetails::getTracks)
+                                .flatMap(Collection::stream)
+                                .collect(Collectors.toList()));
+                    });
     }
 
     private Synchronization getSynchronizationSettings() {
@@ -102,7 +126,7 @@ public class SpotifyAlbumDiscoveryService implements DiscoveryService {
                 .map(e -> (SpotifyAlbum) e)
                 .collect(Collectors.toList());
 
-        synchronized (albumsToBeSynced) {
+        synchronized (albumLock) {
             albumsToBeSynced.addAll(newAlbums);
         }
 
@@ -112,11 +136,9 @@ public class SpotifyAlbumDiscoveryService implements DiscoveryService {
     private boolean isNewAlbum(final org.synchronizer.spotify.synchronize.model.Album album) {
         String albumName = album.getName();
 
-        synchronized (syncedAlbums) {
-            synchronized (albumsToBeSynced) {
-                return syncedAlbums.stream().noneMatch(e -> e.getName().equalsIgnoreCase(albumName)) &&
-                        albumsToBeSynced.stream().noneMatch(e -> e.getName().equalsIgnoreCase(albumName));
-            }
+        synchronized (albumLock) {
+            return syncedAlbums.stream().noneMatch(e -> e.getName().equalsIgnoreCase(albumName)) &&
+                    albumsToBeSynced.stream().noneMatch(e -> e.getName().equalsIgnoreCase(albumName));
         }
     }
 
@@ -130,7 +152,7 @@ public class SpotifyAlbumDiscoveryService implements DiscoveryService {
             while (keepAlive) {
                 int toBeSyncedTotal;
 
-                synchronized (albumsToBeSynced) {
+                synchronized (albumLock) {
                     toBeSyncedTotal = albumsToBeSynced.size();
                 }
 
@@ -138,28 +160,22 @@ public class SpotifyAlbumDiscoveryService implements DiscoveryService {
                     lastEvent = System.currentTimeMillis();
                     SpotifyAlbum album;
 
-                    synchronized (albumsToBeSynced) {
+                    synchronized (albumLock) {
                         album = albumsToBeSynced.get(0);
                     }
 
                     try {
                         Album albumDetails = spotifyService.getAlbumDetails(album).get();
+                        SpotifyAlbumDetails spotifyAlbumDetails = SpotifyAlbumDetails.from(albumDetails);
 
-                        tracks.addAll(albumDetails.getTracks().getItems().stream()
-                                .peek(e -> e.setAlbum(albumDetails))
-                                .map(SpotifyTrack::from)
-                                .collect(Collectors.toList()));
+                        this.tracks.addAll(spotifyAlbumDetails.getTracks());
 
-                        synchronized (albumsToBeSynced) {
-                            syncedAlbums.add(album);
+                        synchronized (albumLock) {
+                            syncedAlbums.add(spotifyAlbumDetails);
                             albumsToBeSynced.remove(album);
                         }
                     } catch (Exception ex) {
-                        log.error(ex.getMessage(), ex);
-
-                        synchronized (albumsToBeSynced) {
-                            albumsToBeSynced.remove(album);
-                        }
+                        handleWatcherException(album, ex);
                     }
                 } else {
                     if (System.currentTimeMillis() - lastEvent > WATCHER_TTL) {
@@ -174,7 +190,7 @@ public class SpotifyAlbumDiscoveryService implements DiscoveryService {
 
     private void watcherWait() {
         try {
-            Thread.sleep(50);
+            Thread.sleep(150);
         } catch (InterruptedException e) {
             //ignore
         }
@@ -183,6 +199,14 @@ public class SpotifyAlbumDiscoveryService implements DiscoveryService {
     private void stopWatcher() {
         keepAlive = false;
         onFinish();
+    }
+
+    private void handleWatcherException(SpotifyAlbum album, Exception ex) {
+        log.error(ex.getMessage(), ex);
+
+        synchronized (albumLock) {
+            albumsToBeSynced.remove(album);
+        }
     }
 
     private void invokeOnChangedCallback(Collection<MusicTrack> addedTracks) {
@@ -195,17 +219,24 @@ public class SpotifyAlbumDiscoveryService implements DiscoveryService {
         synchronized (listeners) {
             listeners.forEach(e -> e.onFinish(tracks.getAll()));
         }
+
+        if (synchronizerProperties.getCacheMode().isWriteMode())
+            synchronized (albumLock) {
+                cacheService.cacheSpotifyAlbums(new ArrayList<>(syncedAlbums));
+            }
     }
 
     private void onFinish() {
+        log.info("Synchronized " + this.tracks.size() + " Spotify album songs");
         this.finished = true;
+
         invokeOnFinishedCallback();
         doCleanup();
     }
 
     private void doCleanup() {
         log.debug("Cleaning " + getClass().getSimpleName() + "...");
-        synchronized (syncedAlbums) {
+        synchronized (albumLock) {
             tracks = null;
             syncedAlbums.clear();
             albumsToBeSynced.clear();

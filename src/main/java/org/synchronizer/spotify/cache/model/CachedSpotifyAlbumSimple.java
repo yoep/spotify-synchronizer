@@ -4,28 +4,33 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.util.Assert;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.SpotifyAlbum;
+import org.synchronizer.spotify.synchronize.model.SpotifyAlbumSimple;
+import org.synchronizer.spotify.utils.AssertUtils;
 import org.synchronizer.spotify.utils.CacheUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Optional;
 
 @Log4j2
 @ToString(callSuper = true)
 @NoArgsConstructor
-public class CachedSpotifyAlbum extends SpotifyAlbum implements CachedAlbum, Serializable {
+public class CachedSpotifyAlbumSimple extends SpotifyAlbumSimple implements CachedAlbum, Serializable {
     private static final long serialVersionUID = 1L;
 
     private String cachedImageUri;
 
-    public CachedSpotifyAlbum(String name, String genre, String year, String href, String lowResImageUri, String highResImageUri, String bufferedImageMimeType, byte[] bufferedImage) {
+    public CachedSpotifyAlbumSimple(String name, String genre, String year, String href, String lowResImageUri, String highResImageUri, String bufferedImageMimeType, byte[] bufferedImage) {
         super(name, genre, year, href, lowResImageUri, highResImageUri, bufferedImageMimeType, bufferedImage);
     }
 
-    public static CachedSpotifyAlbum from(Album album) {
+    public static CachedSpotifyAlbumSimple from(Album album) {
+        Assert.notNull(album, "album cannot be null");
+        Assert.isInstanceOf(SpotifyAlbum.class, album, AssertUtils.buildInstanceOfMessage("album", SpotifyAlbum.class, album.getClass()));
+
         SpotifyAlbum spotifyAlbum = (SpotifyAlbum) album;
 
         return new CachedSpotifyAlbumBuilder()
@@ -35,8 +40,8 @@ public class CachedSpotifyAlbum extends SpotifyAlbum implements CachedAlbum, Ser
                 .href(spotifyAlbum.getHref())
                 .lowResImageUri(spotifyAlbum.getLowResImageUri())
                 .highResImageUri(spotifyAlbum.getHighResImageUri())
-                .bufferedImageMimeType(spotifyAlbum.isImageMimeTypeBuffered() ? spotifyAlbum.getBufferedImageMimeType() : null)
-                .bufferedImage(spotifyAlbum.isImageBuffered() ? spotifyAlbum.getBufferedImage() : null)
+                .bufferedImageMimeType(ModelHelper.mapImageMimeType(spotifyAlbum))
+                .bufferedImage(ModelHelper.mapImage(spotifyAlbum))
                 .build();
     }
 
@@ -44,7 +49,7 @@ public class CachedSpotifyAlbum extends SpotifyAlbum implements CachedAlbum, Ser
     public byte[] getImage() {
         return Optional.ofNullable(cachedImageUri)
                 .map(File::new)
-                .map(this::readCacheFile)
+                .map(ModelHelper::readCacheFile)
                 .orElse(new byte[0]);
     }
 
@@ -54,15 +59,6 @@ public class CachedSpotifyAlbum extends SpotifyAlbum implements CachedAlbum, Ser
             return;
 
         this.cachedImageUri = CacheUtils.writeImageToCache(this.bufferedImage);
-    }
-
-    private byte[] readCacheFile(File file) {
-        try {
-            return CacheUtils.readFromCache(file);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            return null;
-        }
     }
 
     public static class CachedSpotifyAlbumBuilder {
@@ -115,8 +111,8 @@ public class CachedSpotifyAlbum extends SpotifyAlbum implements CachedAlbum, Ser
             return this;
         }
 
-        public CachedSpotifyAlbum build() {
-            return new CachedSpotifyAlbum(name, genre, year, href, lowResImageUri, highResImageUri, bufferedImageMimeType, bufferedImage);
+        public CachedSpotifyAlbumSimple build() {
+            return new CachedSpotifyAlbumSimple(name, genre, year, href, lowResImageUri, highResImageUri, bufferedImageMimeType, bufferedImage);
         }
     }
 }

@@ -5,11 +5,8 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.synchronizer.spotify.cache.model.CachedAlbum;
-import org.synchronizer.spotify.cache.model.CachedLocalTrack;
-import org.synchronizer.spotify.cache.model.CachedSpotifyTrack;
-import org.synchronizer.spotify.cache.model.CachedSyncTrack;
-import org.synchronizer.spotify.spotify.api.v1.Album;
+import org.synchronizer.spotify.cache.model.*;
+import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.utils.CacheUtils;
@@ -39,16 +36,14 @@ public class CacheService {
         log.debug("Caching local music tracks...");
 
         try {
+            File cacheFile = getLocalTracksCacheFile();
             List<CachedLocalTrack> cachedTracks = localTracks.stream()
                     .map(CachedLocalTrack::from)
+                    .peek(e -> ((CachedAlbum) e.getAlbum()).cacheImage())
                     .collect(Collectors.toList());
 
-            for (CachedLocalTrack cachedTrack : cachedTracks) {
-                ((CachedAlbum) cachedTrack.getAlbum()).cacheImage();
-            }
-
-            CacheUtils.writeToCache(getLocalTracksCacheFile(), cachedTracks.toArray(new CachedLocalTrack[0]), false);
-            log.debug("Local music tracks cached");
+            CacheUtils.writeToCache(cacheFile, cachedTracks.toArray(new CachedLocalTrack[0]), false);
+            log.info("Cached {} local tracks to {}", cachedTracks.size(), cacheFile.getAbsolutePath());
         } catch (Exception ex) {
             log.error("Failed to create cache of local tracks with error " + ex.getMessage(), ex);
         }
@@ -62,27 +57,35 @@ public class CacheService {
         log.debug("Caching Spotify music tracks...");
 
         try {
+            File cacheFile = getSpotifyTracksCacheFile();
             List<CachedSpotifyTrack> cachedTracks = spotifyTracks.stream()
                     .map(CachedSpotifyTrack::from)
                     .peek(e -> ((CachedAlbum) e.getAlbum()).cacheImage())
                     .collect(Collectors.toList());
 
-            CacheUtils.writeToCache(getSpotifyTracksCacheFile(), cachedTracks.toArray(new CachedSpotifyTrack[0]), false);
-            log.debug("Spotify music tracks cached");
+            CacheUtils.writeToCache(cacheFile, cachedTracks.toArray(new CachedSpotifyTrack[0]), false);
+            log.info("Cached {} Spotify tracks to {}", cachedTracks.size(), cacheFile.getAbsolutePath());
         } catch (Exception ex) {
             log.error("Failed to create cache of Spotify tracks with error " + ex.getMessage(), ex);
         }
     }
 
     @Async
-    public void cacheSpotifyAlbums(Collection<Album> spotifyAlbums) {
+    public void cacheSpotifyAlbums(Collection<? extends Album> spotifyAlbums) {
         if (CollectionUtils.isEmpty(spotifyAlbums))
             return;
 
         log.debug("Caching Spotify albums...");
 
         try {
+            File cacheFile = getSpotifyAlbumsCacheFile();
+            List<CachedSpotifyAlbumDetails> cachedAlbums = spotifyAlbums.stream()
+                    .map(CachedSpotifyAlbumDetails::from)
+                    .peek(e -> ((CachedAlbum) e).cacheImage())
+                    .collect(Collectors.toList());
 
+            CacheUtils.writeToCache(cacheFile, cachedAlbums.toArray(new CachedSpotifyAlbumDetails[0]), false);
+            log.info("Cached {} Spotify albums to {}", cachedAlbums.size(), cacheFile.getAbsolutePath());
         } catch (Exception ex) {
             log.error("Failed to create cache of Spotify albums with error " + ex.getMessage(), ex);
         }
@@ -114,14 +117,14 @@ public class CacheService {
     }
 
     public Optional<CachedLocalTrack[]> getCachedLocalTracks() {
-        File localTracksCacheFile = getLocalTracksCacheFile();
+        File cacheFile = getLocalTracksCacheFile();
 
-        if (!localTracksCacheFile.exists())
+        if (!cacheFile.exists())
             return Optional.empty();
 
         try {
-            log.info("Loading cached local tracks from {}", localTracksCacheFile.getAbsolutePath());
-            CachedLocalTrack[] cachedTracks = CacheUtils.readFromCache(localTracksCacheFile);
+            log.info("Loading cached local tracks from {}", cacheFile.getAbsolutePath());
+            CachedLocalTrack[] cachedTracks = CacheUtils.readFromCache(cacheFile);
 
             return ArrayUtils.isNotEmpty(cachedTracks) ? Optional.of(cachedTracks) : Optional.empty();
         } catch (Exception ex) {
@@ -131,19 +134,37 @@ public class CacheService {
     }
 
     public Optional<CachedSyncTrack[]> getCachedSyncTracks() {
-        File syncTracksCacheFile = getSyncTracksCacheFile();
+        File cacheFile = getSyncTracksCacheFile();
 
-        if (!syncTracksCacheFile.exists())
+        if (!cacheFile.exists())
             return Optional.empty();
 
         try {
-            log.info("Loading cached synchronize tracks from {}", syncTracksCacheFile.getAbsolutePath());
-            CachedSyncTrack[] cachedSyncs = CacheUtils.readFromCache(syncTracksCacheFile);
+            log.info("Loading cached synchronize tracks from {}", cacheFile.getAbsolutePath());
+            CachedSyncTrack[] cachedSyncs = CacheUtils.readFromCache(cacheFile);
 
             log.info("Loaded {} syncs from cache", cachedSyncs.length);
             return ArrayUtils.isNotEmpty(cachedSyncs) ? Optional.of(cachedSyncs) : Optional.empty();
         } catch (Exception ex) {
-            log.error("Failed to read cache of local tracks with error " + ex.getMessage(), ex);
+            log.error("Failed to read cache of sync tracks with error " + ex.getMessage(), ex);
+            return Optional.empty();
+        }
+    }
+
+    public Optional<CachedSpotifyAlbumDetails[]> getCachedSpotifyAlbums() {
+        File cacheFile = getSpotifyAlbumsCacheFile();
+
+        if (!cacheFile.exists())
+            return Optional.empty();
+
+        try {
+            log.info("Loading cached Spotify albums from {}", cacheFile.getAbsolutePath());
+            CachedSpotifyAlbumDetails[] cachedSyncs = CacheUtils.readFromCache(cacheFile);
+
+            log.info("Loaded {} Spotify albums from cache", cachedSyncs.length);
+            return ArrayUtils.isNotEmpty(cachedSyncs) ? Optional.of(cachedSyncs) : Optional.empty();
+        } catch (Exception ex) {
+            log.error("Failed to read cache of Spotify albums with error " + ex.getMessage(), ex);
             return Optional.empty();
         }
     }
