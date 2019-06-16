@@ -11,6 +11,7 @@
     <columnConstraints>
         <ColumnConstraints/>
         <ColumnConstraints/>
+        <ColumnConstraints/>
         <ColumnConstraints maxWidth="Infinity" hgrow="ALWAYS"/>
         <ColumnConstraints minWidth="15" hgrow="ALWAYS" maxWidth="15"/>
     </columnConstraints>
@@ -26,6 +27,7 @@
     <SearchField fx:id="searchBox" promptText="%search" styleClass="search"
                  GridPane.columnIndex="0" GridPane.rowIndex="0"/>
 
+    <!-- Sorting -->
     <Icon fx:id="sortIcon" styleClass="icon-clickable"
           GridPane.columnIndex="1" GridPane.rowIndex="0">
         <tooltip>
@@ -34,10 +36,22 @@
         <Icons fx:constant="SORT"/>
     </Icon>
 
+    <!-- Filtering -->
+    <Icon fx:id="filterIcon" styleClass="icon-clickable" onMouseClicked="#showFilter"
+          GridPane.columnIndex="2" GridPane.rowIndex="0">
+        <tooltip>
+            <Tooltip text="%filter"/>
+        </tooltip>
+        <Icons fx:constant="FILTER"/>
+    </Icon>
+
+    <!-- Menu -->
     <Pane fx:id="menuPane" styleClass="icon-clickable"
-          GridPane.columnIndex="3" GridPane.rowIndex="0" GridPane.fillWidth="true" GridPane.valignment="CENTER">
-        <Icon fx:id="menuIcon" sizeFactor="2" styleClass="icon-clickable">
+          GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.fillWidth="true" GridPane.valignment="CENTER">
+        <Icon sizeFactor="2" styleClass="icon-clickable">
             <Icons fx:constant="ELLIPSIS_V"/>
         </Icon>
     </Pane>
+
+    <fx:include fx:id="filter" source="filter.component.fxml" managed="false"/>
 </GridPane>

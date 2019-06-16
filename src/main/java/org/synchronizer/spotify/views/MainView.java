@@ -20,6 +20,7 @@ import org.synchronizer.spotify.ui.controls.InfiniteScrollPane;
 import org.synchronizer.spotify.ui.controls.SearchListener;
 import org.synchronizer.spotify.ui.controls.SortListener;
 import org.synchronizer.spotify.views.components.AlbumOverviewComponent;
+import org.synchronizer.spotify.views.components.FilterComponent;
 import org.synchronizer.spotify.views.components.SearchComponent;
 import org.synchronizer.spotify.views.model.AlbumOverview;
 import org.synchronizer.spotify.views.sections.ContentSection;
@@ -38,6 +39,7 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
     private final SettingsService settingsService;
     private final ViewLoader viewLoader;
     private final SearchComponent searchComponent;
+    private final FilterComponent filterComponent;
     private final TaskExecutor uiTaskExecutor;
     private final ContentSection contentSection;
 
@@ -101,10 +103,11 @@ public class MainView extends ScaleAwareImpl implements Initializable, SizeAware
         InfiniteScrollPane<AlbumOverview> overviewPane = contentSection.getOverviewPane();
 
         overviewPane.setThreadExecutor(uiTaskExecutor);
-        overviewPane.setItemFactory(item -> viewLoader.loadComponent("album_overview_component.fxml", new AlbumOverviewComponent(item)));
-        overviewPane.setHeader(viewLoader.loadComponent("search_component.fxml"));
+        overviewPane.setItemFactory(item -> viewLoader.loadComponent("album_overview.component.fxml", new AlbumOverviewComponent(item)));
+        overviewPane.setHeader(viewLoader.loadComponent("search.component.fxml"));
         searchComponent.addListener((SearchListener) overviewPane);
         searchComponent.addListener((SortListener) overviewPane);
+        filterComponent.addListener(overviewPane);
     }
 
     private AlbumOverview getAlbumOverviewForAlbum(Album album) {

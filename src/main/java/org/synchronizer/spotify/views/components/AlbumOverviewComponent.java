@@ -126,7 +126,7 @@ public class AlbumOverviewComponent implements Initializable {
     }
 
     private void createNewTrack(AlbumTrackComponent albumTrackComponent) {
-        Pane track = viewLoader.loadComponent("album_track_component.fxml", albumTrackComponent);
+        Pane track = viewLoader.loadComponent("album_track.component.fxml", albumTrackComponent);
         int columnIndex = trackOverview.getChildren().size() % 2;
 
         // if column is even, we should create a new row

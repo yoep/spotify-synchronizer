@@ -27,21 +27,21 @@
                 <!-- GENERAL -->
                 <Text text="%settings_general" styleClass="setting_section"/>
                 <Separator/>
-                <fx:include source="../components/settings_general_component.fxml"/>
+                <fx:include source="../components/settings_general.component.fxml"/>
 
                 <Pane minHeight="25"/>
 
                 <!-- SYNC -->
                 <Text text="%settings_sync" styleClass="setting_section"/>
                 <Separator/>
-                <fx:include source="../components/settings_synchronize_component.fxml"/>
+                <fx:include source="../components/settings_synchronize.component.fxml"/>
 
                 <Pane minHeight="25"/>
 
                 <!-- LOGGING -->
                 <Text text="%settings_logging" styleClass="setting_section"/>
                 <Separator/>
-                <fx:include source="../components/settings_logging_component.fxml"/>
+                <fx:include source="../components/settings_logging.component.fxml"/>
             </VBox>
         </GridPane>
     </ScrollPane>

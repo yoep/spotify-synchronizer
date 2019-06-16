@@ -16,6 +16,6 @@
                         GridPane.columnIndex="0" GridPane.rowIndex="0"/>
 
     <!-- SETTINGS -->
-    <fx:include fx:id="settingsPane" source="settings_section.fxml" visible="false"
+    <fx:include fx:id="settingsPane" source="settings.section.fxml" visible="false"
                 GridPane.columnIndex="0" GridPane.rowIndex="0"/>
 </GridPane>

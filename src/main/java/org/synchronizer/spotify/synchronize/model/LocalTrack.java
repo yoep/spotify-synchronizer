@@ -2,6 +2,8 @@ package org.synchronizer.spotify.synchronize.model;
 
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
+import org.synchronizer.spotify.settings.model.FilterType;
+import org.synchronizer.spotify.views.model.FilterCriteria;
 
 import java.io.File;
 import java.net.URI;
@@ -40,6 +42,11 @@ public class LocalTrack extends AbstractMusicTrack {
         return StringUtils.containsIgnoreCase(title, criteria) ||
                 StringUtils.containsIgnoreCase(artist, criteria) ||
                 album.matchesSearchCriteria(criteria);
+    }
+
+    @Override
+    public boolean matchesFilterCriteria(FilterCriteria criteria) {
+        return criteria.getFilterType() == FilterType.LOCAL_ONLY;
     }
 
     public void setTitle(String title) {

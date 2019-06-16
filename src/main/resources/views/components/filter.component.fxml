@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.geometry.Insets?>
+<?import org.synchronizer.spotify.ui.controls.Icon?>
+<?import org.synchronizer.spotify.ui.Icons?>
+<?import javafx.scene.control.Tooltip?>
+<GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+          fx:controller="org.synchronizer.spotify.views.components.FilterComponent" styleClass="context-menu,form">
+    <columnConstraints>
+        <ColumnConstraints/>
+        <ColumnConstraints/>
+        <ColumnConstraints/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints/>
+        <RowConstraints/>
+        <RowConstraints/>
+    </rowConstraints>
+    <padding>
+        <Insets top="5" right="10" bottom="10" left="10"/>
+    </padding>
+    <hgap>5</hgap>
+
+    <!-- Close button -->
+    <Icon styleClass="icon-clickable" onMouseClicked="#closeFilter"
+          GridPane.columnIndex="2" GridPane.rowIndex="0">
+        <Icons fx:constant="CROSS"/>
+        <tooltip>
+            <Tooltip text="%filter_close" />
+        </tooltip>
+    </Icon>
+
+    <!-- Type filter -->
+    <Label text="%filter_show" styleClass="form-label"
+           GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+    <ChoiceBox fx:id="filterTypes"
+               GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+</GridPane>

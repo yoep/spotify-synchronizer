@@ -22,6 +22,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.util.Assert;
+import org.synchronizer.spotify.views.model.FilterCriteria;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +32,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Log4j2
-public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable> extends StackPane implements SearchListener, SortListener {
+public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable & Filterable> extends StackPane
+        implements SearchListener, SortListener, FilterListener {
     private static final int BOX_MIN_HEIGHT = 100;
     private static final int ADDITIONAL_RENDER = 5;
     private static final int SCROLLBAR_THRESHOLD = 97;
@@ -176,6 +178,24 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable> ex
         });
     }
 
+    @Override
+    public void onFilterChanged(FilterCriteria filterCriteria) {
+        if (!updating.get()) {
+            updateFilter(filterCriteria);
+        } else {
+            updating.addListener(new ChangeListener<Boolean>() {
+                @Override
+                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                    //check if we're done updating
+                    if (!newValue) {
+                        updating.removeListener(this);
+                        updateFilter(filterCriteria);
+                    }
+                }
+            });
+        }
+    }
+
     private void onScroll() {
         double vPercentage = (this.scrollPane.getVvalue() / this.scrollPane.getVmax()) * 100;
 
@@ -221,6 +241,31 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable> ex
         });
     }
 
+    private void updateFilter(FilterCriteria filterCriteria) {
+        runTask(() -> {
+            AtomicInteger totalMatchingItems = new AtomicInteger();
+
+            clearFilterFlagOnItems();
+
+            synchronized (items) {
+                items.stream()
+                        .filter(e -> e.getItem().matchesFilterCriteria(filterCriteria))
+                        .forEach(e -> {
+                            e.setMatchingFilter(true);
+                            totalMatchingItems.getAndIncrement();
+                        });
+            }
+
+            log.debug("Found " + totalMatchingItems.get() + " items for the filter criteria '" + filterCriteria + "'");
+            this.noSearchResultsFound.setVisible(totalMatchingItems.get() == 0);
+
+            Platform.runLater(() -> {
+                this.clearItemRendering();
+                startWatcher();
+            });
+        });
+    }
+
     private void renderAdditionalItems(final long totalAdditionalItems) {
         updating.set(true);
 
@@ -229,7 +274,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable> ex
 
             synchronized (items) {
                 renderItems = items.stream()
-                        .filter(e -> !e.isRendering() && (!isSearchActive.get() || e.isMatchingSearchValue()))
+                        .filter(e -> !e.isRendering() && (!isSearchActive.get() || e.isMatchingSearchValue()) && e.isMatchingFilter())
                         .limit(totalAdditionalItems)
                         .collect(Collectors.toList());
             }
@@ -288,6 +333,14 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable> ex
             items.stream()
                     .filter(ItemWrapper::isMatchingSearchValue)
                     .forEach(e -> e.setMatchingSearchValue(false));
+        }
+    }
+
+    private void clearFilterFlagOnItems() {
+        synchronized (items) {
+            items.stream()
+                    .filter(ItemWrapper::isMatchingFilter)
+                    .forEach(e -> e.setMatchingFilter(false));
         }
     }
 
@@ -407,12 +460,13 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable> ex
 
     //internal wrapper class for the infinite scroll items
     @Data
-    private static class ItemWrapper<T extends Comparable<? super T> & Searchable> implements Comparable<ItemWrapper<T>> {
+    private static class ItemWrapper<T extends Comparable<? super T> & Searchable & Filterable> implements Comparable<ItemWrapper<T>> {
         private final T item;
         @EqualsAndHashCode.Exclude
         private Pane view;
         private boolean rendering;
         private boolean matchingSearchValue;
+        private boolean matchingFilter = true;
 
         ItemWrapper(T item) {
             this.item = item;

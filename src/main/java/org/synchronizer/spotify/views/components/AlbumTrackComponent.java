@@ -132,7 +132,7 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         syncComponent = new AlbumTrackSyncComponent(syncTrack, uiText);
         syncComponent.setOnSyncClicked(this::syncTrackData);
 
-        syncPane.getChildren().add(viewLoader.loadComponent("album_track_sync_component.fxml", syncComponent));
+        syncPane.getChildren().add(viewLoader.loadComponent("album_track_sync.component.fxml", syncComponent));
     }
 
     private void playPauseTrack() {

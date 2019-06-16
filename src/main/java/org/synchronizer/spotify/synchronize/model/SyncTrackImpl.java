@@ -5,6 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.util.Assert;
+import org.synchronizer.spotify.settings.model.FilterType;
+import org.synchronizer.spotify.views.model.FilterCriteria;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -52,6 +54,23 @@ public class SyncTrackImpl extends AbstractSyncTrack {
     public boolean matchesSearchCriteria(String criteria) {
         return getLocalTrack().map(e -> e.matchesSearchCriteria(criteria)).orElse(false) ||
                 getSpotifyTrack().map(e -> e.matchesSearchCriteria(criteria)).orElse(false);
+    }
+
+    @Override
+    public boolean matchesFilterCriteria(FilterCriteria criteria) {
+        FilterType type = criteria.getFilterType();
+
+        if (type == FilterType.ALL)
+            return true;
+
+        if (type == FilterType.SYNCHRONIZED && syncState == SyncState.SYNCED)
+            return true;
+
+        if (type == FilterType.OUT_OF_SYNC && syncState == SyncState.OUT_OF_SYNC)
+            return true;
+
+        return getLocalTrack().map(e -> e.matchesFilterCriteria(criteria)).orElse(false) ||
+                getSpotifyTrack().map(e -> e.matchesFilterCriteria(criteria)).orElse(false);
     }
 
     public void setSpotifyTrack(MusicTrack spotifyTrack) {

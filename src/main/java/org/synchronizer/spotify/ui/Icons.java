@@ -12,6 +12,7 @@ public class Icons {
     public static final String ELLIPSIS_V = "\uf142";
     public static final String EXCLAMATION = "\uf12a";
     public static final String FILE = "\uf15b";
+    public static final String FILTER = "\uf0b0";
     public static final String FOLDER_OPEN = "\uf07c";
     public static final String HELP = "\uf059";
     public static final String IMAGE = "\uf03e";

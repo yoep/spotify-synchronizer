@@ -3,9 +3,11 @@ package org.synchronizer.spotify.synchronize.model;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
+import org.synchronizer.spotify.settings.model.FilterType;
 import org.synchronizer.spotify.spotify.api.v1.AlbumTrack;
 import org.synchronizer.spotify.spotify.api.v1.SavedTrack;
 import org.synchronizer.spotify.spotify.api.v1.Track;
+import org.synchronizer.spotify.views.model.FilterCriteria;
 
 import java.util.Objects;
 
@@ -35,6 +37,11 @@ public class SpotifyTrack extends AbstractMusicTrack {
         return StringUtils.containsIgnoreCase(title, criteria) ||
                 StringUtils.containsIgnoreCase(artist, criteria) ||
                 album.matchesSearchCriteria(criteria);
+    }
+
+    @Override
+    public boolean matchesFilterCriteria(FilterCriteria criteria) {
+        return criteria.getFilterType() == FilterType.SPOTIFY_ONLY;
     }
 
     public void setTitle(String title) {

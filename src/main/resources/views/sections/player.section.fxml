@@ -77,7 +77,7 @@
         </GridPane>
 
         <VBox GridPane.valignment="TOP" GridPane.columnIndex="0" GridPane.rowIndex="1">
-            <fx:include source="/views/components/time_slider_component.fxml"/>
+            <fx:include source="/views/components/time_slider.component.fxml"/>
         </VBox>
     </GridPane>
 
@@ -91,12 +91,12 @@
             <RowConstraints minHeight="25" vgrow="NEVER"/>
         </rowConstraints>
 
-        <fx:include source="/views/components/synchronize_status_component.fxml"
+        <fx:include source="/views/components/synchronize_status.component.fxml"
                     GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.valignment="BOTTOM"
                     GridPane.halignment="CENTER"/>
 
         <VBox GridPane.valignment="TOP" GridPane.columnIndex="0" GridPane.rowIndex="1">
-            <fx:include source="/views/components/volume_component.fxml" GridPane.columnIndex="2"
+            <fx:include source="/views/components/volume.component.fxml" GridPane.columnIndex="2"
                         GridPane.rowIndex="0"/>
         </VBox>
     </GridPane>

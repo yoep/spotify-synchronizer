@@ -12,8 +12,8 @@
     </rowConstraints>
 
     <!-- CONTENT -->
-    <fx:include source="sections/content_section.fxml" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+    <fx:include source="sections/content.section.fxml" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
 
     <!-- PLAYER -->
-    <fx:include source="sections/player_section.fxml" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+    <fx:include source="sections/player.section.fxml" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
 </GridPane>
