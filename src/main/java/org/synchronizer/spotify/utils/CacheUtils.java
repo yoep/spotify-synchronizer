@@ -3,6 +3,7 @@ package org.synchronizer.spotify.utils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SerializationUtils;
+import org.springframework.util.Assert;
 import org.synchronizer.spotify.SpotifySynchronizer;
 
 import java.io.File;
@@ -35,8 +36,9 @@ public class CacheUtils {
      * @throws IOException Is thrown when the cache file couldn't be written.
      */
     public static void writeToCache(File file, Serializable content, boolean append) throws IOException {
+        Assert.notNull(file, "file cannot be null");
+        Assert.notNull(content, "content cannot be null");
         byte[] serializedContent = SerializationUtils.serialize(content);
-
 
         FileUtils.writeByteArrayToFile(file, serializedContent, append);
     }
@@ -70,6 +72,8 @@ public class CacheUtils {
      * @throws IOException Is thrown when the cache file could not be read.
      */
     public static <T> T readFromCache(File file) throws IOException {
+        Assert.notNull(file, "file cannot be null");
+
         return SerializationUtils.deserialize(FileUtils.readFileToByteArray(file));
     }
 
