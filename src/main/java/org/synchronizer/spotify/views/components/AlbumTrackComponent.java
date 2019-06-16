@@ -9,36 +9,32 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.Assert;
 import org.synchronizer.spotify.SpotifySynchronizer;
-import org.synchronizer.spotify.common.PlayerState;
 import org.synchronizer.spotify.media.AudioService;
-import org.synchronizer.spotify.media.MediaPlayerService;
-import org.synchronizer.spotify.media.PlayerStateChangeListener;
-import org.synchronizer.spotify.media.TrackChangeListener;
 import org.synchronizer.spotify.synchronize.model.SyncState;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
-import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
 import org.synchronizer.spotify.ui.ViewLoader;
 import org.synchronizer.spotify.ui.controls.Icon;
+import org.synchronizer.spotify.views.model.AlbumTrackListener;
 
 import java.net.URL;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
+@EqualsAndHashCode(callSuper = false)
 @Data
-public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrackComponent> {
+public class AlbumTrackComponent extends AbstractPlaybackStateComponent implements Initializable, Comparable<AlbumTrackComponent> {
     private final SyncTrack syncTrack;
-    private final MediaPlayerService mediaPlayerService;
     private final ViewLoader viewLoader;
     private final UIText uiText;
     private final AudioService audioService;
 
+    private final List<AlbumTrackListener> listeners = new ArrayList<>();
+
     private boolean activeInMediaPlayer;
-    private TrackChangeListener trackChangeListener;
-    private PlayerStateChangeListener playerStateChangeListener;
     private AlbumTrackSyncComponent syncComponent;
 
     @FXML
@@ -64,7 +60,7 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
 
     public AlbumTrackComponent(SyncTrack syncTrack) {
         this.syncTrack = syncTrack;
-        this.mediaPlayerService = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(MediaPlayerService.class);
+
         this.viewLoader = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(ViewLoader.class);
         this.uiText = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(UIText.class);
         this.audioService = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(AudioService.class);
@@ -92,23 +88,87 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         return Objects.compare(trackNumber, compareToTrackNumber, Integer::compareTo);
     }
 
+    /**
+     * Check if the playback of this track component is available.
+     *
+     * @return Returns true if this track component can be played, else false.
+     */
     public boolean isPlaybackAvailable() {
         return StringUtils.isNotEmpty(syncTrack.getUri());
     }
 
+    /**
+     * Check if the sync information of this track component is available.
+     *
+     * @return Returns true if the sync info is available, else false.
+     */
     public boolean isSyncTrackDataAvailable() {
         return syncTrack.getSyncState() == SyncState.OUT_OF_SYNC;
     }
 
-    public void play() {
-        if (isPlaybackAvailable()) {
-            mediaPlayerService.play(syncTrack);
-            subscribeListenersToMediaPlayer();
+    /**
+     * Check if this track component is active in the media player.
+     *
+     * @return Returns true if this component is active in the media player, else false.
+     */
+    public boolean isActiveInMediaPlayer() {
+        return activeInMediaPlayer;
+    }
 
-            setPlaybackState(true);
+    /**
+     * Set the playback state of this track component.
+     * This method is thread safe and will run on the javaFX thread.
+     *
+     * @param activeInMediaPlayer The indication if this track component is active in the media player.
+     */
+    public void setPlaybackState(boolean activeInMediaPlayer) {
+        this.activeInMediaPlayer = activeInMediaPlayer;
+
+        Platform.runLater(() -> {
+            this.playPauseIcon.setVisible(activeInMediaPlayer);
+            this.trackNumber.setVisible(!activeInMediaPlayer);
+
+            if (activeInMediaPlayer) {
+                this.playTrackIcon.setVisible(false);
+            }
+        });
+    }
+
+    /**
+     * Add the given album track listener to this track component.
+     *
+     * @param listener The listener to add.
+     */
+    public void addListener(AlbumTrackListener listener) {
+        Assert.notNull(listener, "listener cannot be null");
+        synchronized (listeners) {
+            listeners.add(listener);
         }
     }
 
+    /**
+     * Invoke the play functionality of this track component.
+     */
+    public void play() {
+        if (isPlaybackAvailable()) {
+            synchronized (listeners) {
+                listeners.forEach(AlbumTrackListener::onPlay);
+            }
+        }
+    }
+
+    /**
+     * Invoke the player pause functionality of this track component.
+     */
+    public void playPauseTrack() {
+        synchronized (listeners) {
+            listeners.forEach(AlbumTrackListener::onPlayPause);
+        }
+    }
+
+    /**
+     * Synchronize the track information of the local- and spotify track of this component.
+     */
     public void syncTrackData() {
         if (isSyncTrackDataAvailable()) {
             audioService.updateFileMetadata(syncTrack);
@@ -116,8 +176,6 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
     }
 
     private void initializeListeners() {
-        trackChangeListener = (oldTrack, newTrack) -> setPlaybackState(false);
-        playerStateChangeListener = (oldState, newState) -> updatePlayPauseIcon(newState);
         syncTrack.addObserver((o, arg) -> updateTrackInfo());
     }
 
@@ -135,29 +193,6 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         syncPane.getChildren().add(viewLoader.loadComponent("album_track_sync.component.fxml", syncComponent));
     }
 
-    private void playPauseTrack() {
-        if (mediaPlayerService.getCurrentPlayerState() == PlayerState.PAUSED) {
-            mediaPlayerService.play();
-        } else {
-            mediaPlayerService.pause();
-        }
-    }
-
-    private void updatePlayPauseIcon(PlayerState playerState) {
-        switch (playerState) {
-            case PLAYING:
-                playPauseIcon.setText(Icons.PAUSE);
-                break;
-            case PAUSED:
-            case END_OF_MEDIA:
-                playPauseIcon.setText(Icons.PLAY);
-                break;
-            default:
-                //no-op
-                break;
-        }
-    }
-
     private void updateTrackInfo() {
         Platform.runLater(() -> {
             trackNumber.setText(getTrackNumber());
@@ -166,18 +201,6 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
             artist.setText(syncTrack.getArtist());
             artistTooltip.setText(syncTrack.getArtist());
         });
-    }
-
-    private void setPlaybackState(boolean activeInMediaPlayer) {
-        this.activeInMediaPlayer = activeInMediaPlayer;
-        this.playPauseIcon.setVisible(activeInMediaPlayer);
-        this.trackNumber.setVisible(!activeInMediaPlayer);
-
-        if (activeInMediaPlayer) {
-            this.playTrackIcon.setVisible(false);
-        } else {
-            unsubscribeListenersToMediaPlayer();
-        }
     }
 
     private void updatePlayTrackVisibilityState(boolean isMouseHovering) {
@@ -195,15 +218,5 @@ public class AlbumTrackComponent implements Initializable, Comparable<AlbumTrack
         return Optional.ofNullable(syncTrack.getTrackNumber())
                 .map(String::valueOf)
                 .orElse("#");
-    }
-
-    private void subscribeListenersToMediaPlayer() {
-        mediaPlayerService.addPlayerStateChangeListener(playerStateChangeListener);
-        mediaPlayerService.addTrackChangeListener(trackChangeListener);
-    }
-
-    private void unsubscribeListenersToMediaPlayer() {
-        mediaPlayerService.removePlayerStateChangeListener(playerStateChangeListener);
-        mediaPlayerService.removeTrackChangeListener(trackChangeListener);
     }
 }

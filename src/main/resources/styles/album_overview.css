@@ -5,9 +5,15 @@
     -fx-font-weight: bold;
 }
 
-.root .album_border {
+.root #noAlbum {
+    -fx-background-color: #e1e1e1;
     -fx-border-width: 2 2 2 2;
     -fx-border-color: #3C4A3E;
+}
+
+.root #noAlbum IconSolid {
+    -fx-text-fill: #b0b0b0;
+    -fx-fill: #b0b0b0;
 }
 
 .root .artist {

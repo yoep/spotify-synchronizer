@@ -8,6 +8,7 @@
 <?import org.synchronizer.spotify.ui.controls.Icon?>
 <?import org.synchronizer.spotify.ui.controls.IconSolid?>
 <?import org.synchronizer.spotify.ui.Icons?>
+<?import javafx.scene.shape.Circle?>
 <GridPane stylesheets="/styles/main.css,/styles/album_overview.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints minWidth="150" maxWidth="150"/>
@@ -21,23 +22,31 @@
     </padding>
 
     <!-- LEFT SIDE / IMAGE -->
-    <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="TOP_CENTER">
-        <HBox fx:id="noAlbum" minWidth="150" minHeight="150" styleClass="album_border" alignment="CENTER">
+    <StackPane GridPane.columnIndex="0" GridPane.rowIndex="0" alignment="TOP_CENTER" maxHeight="150">
+        <HBox fx:id="noAlbum" minWidth="150" minHeight="150" maxHeight="150" alignment="CENTER">
             <IconSolid sizeFactor="4">
                 <Icons fx:constant="COMPACT_DISK"/>
             </IconSolid>
         </HBox>
         <ImageView fx:id="albumImage" fitWidth="150" preserveRatio="true"/>
+        <Icon fx:id="playPauseIcon" sizeFactor="4" styleClass="icon-clickable" StackPane.alignment="CENTER" onMouseClicked="#playPause" visible="false">
+            <Icons fx:constant="PLAY"/>
+        </Icon>
 
         <!-- ACTIONS -->
-        <StackPane fx:id="albumOverlay" visible="false" styleClass="album_image_overlay" maxHeight="150">
+        <StackPane fx:id="albumOverlay" visible="false" styleClass="album_image_overlay">
             <Icon fx:id="albumOptions" sizeFactor="2" styleClass="icon-clickable" StackPane.alignment="TOP_RIGHT">
                 <StackPane.margin>
                     <Insets top="5" right="5"/>
                 </StackPane.margin>
                 <Icons fx:constant="ELLIPSIS_V"/>
             </Icon>
-            <Icon sizeFactor="4" styleClass="icon-clickable" StackPane.alignment="CENTER" onMouseClicked="#play">
+
+            <!-- PLAYBACK STATE ICONS -->
+            <Icon fx:id="playbackUnavailableIcon" sizeFactor="4" StackPane.alignment="CENTER">
+                <Icons fx:constant="BAN"/>
+            </Icon>
+            <Icon fx:id="playbackIcon" sizeFactor="4" styleClass="icon-clickable" StackPane.alignment="CENTER" onMouseClicked="#play" visible="false">
                 <Icons fx:constant="PLAY_CIRCLE_OPEN"/>
             </Icon>
         </StackPane>

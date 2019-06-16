@@ -15,6 +15,7 @@ import javafx.scene.text.Text;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.synchronizer.spotify.SpotifySynchronizer;
+import org.synchronizer.spotify.common.PlayerState;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.ui.Icons;
@@ -25,6 +26,7 @@ import org.synchronizer.spotify.ui.lang.SyncMessage;
 import org.synchronizer.spotify.utils.CollectionUtils;
 import org.synchronizer.spotify.utils.UIUtils;
 import org.synchronizer.spotify.views.model.AlbumOverview;
+import org.synchronizer.spotify.views.model.AlbumTrackListenerImpl;
 
 import java.net.URL;
 import java.util.Optional;
@@ -34,7 +36,7 @@ import java.util.TreeSet;
 
 @Log4j2
 @ToString
-public class AlbumOverviewComponent implements Initializable {
+public class AlbumOverviewComponent extends AbstractPlaybackStateComponent implements Initializable {
     private final AlbumOverview albumOverview;
     private final ViewLoader viewLoader;
     private final UIText uiText;
@@ -49,14 +51,21 @@ public class AlbumOverviewComponent implements Initializable {
     @FXML
     private HBox noAlbum;
     @FXML
+    private Icon playPauseIcon;
+    @FXML
     private Region albumOverlay;
     @FXML
     private Icon albumOptions;
+    @FXML
+    private Icon playbackUnavailableIcon;
+    @FXML
+    private Icon playbackIcon;
     @FXML
     private GridPane trackOverview;
 
     public AlbumOverviewComponent(AlbumOverview albumOverview) {
         this.albumOverview = albumOverview;
+
         this.viewLoader = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(ViewLoader.class);
         this.uiText = SpotifySynchronizer.APPLICATION_CONTEXT.getBean(UIText.class);
     }
@@ -97,9 +106,25 @@ public class AlbumOverviewComponent implements Initializable {
     @FXML
     private void play() {
         albumTracks.stream()
-                .filter(AlbumTrackComponent::isPlaybackAvailable)
                 .findFirst()
                 .ifPresent(AlbumTrackComponent::play);
+    }
+
+    @FXML
+    private void playPause() {
+        albumTracks.stream()
+                .filter(AlbumTrackComponent::isActiveInMediaPlayer)
+                .findFirst()
+                .ifPresent(AlbumTrackComponent::playPauseTrack);
+    }
+
+    /**
+     * Set the playback state of this album.
+     *
+     * @param activeInMediaPlayer The indication if this album is active in the media player.
+     */
+    public void setPlaybackState(final boolean activeInMediaPlayer) {
+        Platform.runLater(() -> playPauseIcon.setVisible(activeInMediaPlayer));
     }
 
     private void updateAlbumArtwork() {
@@ -120,8 +145,10 @@ public class AlbumOverviewComponent implements Initializable {
 
     private void createNewAlbumTrackComponent(SyncTrack syncTrack) {
         AlbumTrackComponent albumTrackComponent = new AlbumTrackComponent(syncTrack);
+        albumTrackComponent.addListener(new AlbumTrackListenerImpl(this, albumTrackComponent));
 
         albumTracks.add(albumTrackComponent);
+        updatePlaybackState();
         Platform.runLater(() -> createNewTrack(albumTrackComponent));
     }
 
@@ -145,5 +172,15 @@ public class AlbumOverviewComponent implements Initializable {
         albumTracks.stream()
                 .filter(AlbumTrackComponent::isSyncTrackDataAvailable)
                 .forEach(AlbumTrackComponent::syncTrackData);
+    }
+
+    private void updatePlaybackState() {
+        albumTracks.stream()
+                .filter(AlbumTrackComponent::isPlaybackAvailable)
+                .findFirst()
+                .ifPresent(e -> Platform.runLater(() -> {
+                    playbackUnavailableIcon.setVisible(false);
+                    playbackIcon.setVisible(true);
+                }));
     }
 }

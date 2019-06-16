@@ -134,10 +134,8 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable & F
                     Collections.reverse(items);
             }
 
-            Platform.runLater(() -> {
-                this.clearItemRendering();
-                this.renderAdditionalItems(calculateInitialRender());
-            });
+            clearItemRendering();
+            renderAdditionalItems(calculateInitialRender());
         });
     }
 
@@ -169,12 +167,10 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable & F
         runTask(() -> {
             clearSearchFlagOnItems();
 
-            Platform.runLater(() -> {
-                noSearchResultsFound.setVisible(false);
+            Platform.runLater(() -> noSearchResultsFound.setVisible(false));
 
-                this.clearItemRendering();
-                startWatcher();
-            });
+            clearItemRendering();
+            startWatcher();
         });
     }
 
@@ -234,10 +230,8 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable & F
             this.isSearchActive.set(true);
             this.noSearchResultsFound.setVisible(totalMatchingItems.get() == 0);
 
-            Platform.runLater(() -> {
-                this.clearItemRendering();
-                startWatcher();
-            });
+            clearItemRendering();
+            startWatcher();
         });
     }
 
@@ -259,10 +253,8 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable & F
             log.debug("Found " + totalMatchingItems.get() + " items for the filter criteria '" + filterCriteria + "'");
             this.noSearchResultsFound.setVisible(totalMatchingItems.get() == 0);
 
-            Platform.runLater(() -> {
-                this.clearItemRendering();
-                startWatcher();
-            });
+            this.clearItemRendering();
+            startWatcher();
         });
     }
 
@@ -318,10 +310,12 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable & F
     }
 
     private void clearItemRendering() {
-        progressIndicator.setVisible(true);
+        Platform.runLater(() -> {
+            progressIndicator.setVisible(true);
+            itemsContainer.getChildren().clear();
+        });
 
         synchronized (items) {
-            itemsContainer.getChildren().clear();
             items.stream()
                     .filter(ItemWrapper::isRendering)
                     .forEach(e -> e.setRendering(false));

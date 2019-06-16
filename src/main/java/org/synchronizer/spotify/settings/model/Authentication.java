@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Observable;
 
 @EqualsAndHashCode(callSuper = false)
@@ -16,8 +17,10 @@ public class Authentication extends Observable implements Serializable {
     private OAuth2AccessTokenWrapper accessToken;
 
     public void setAccessToken(OAuth2AccessTokenWrapper accessToken) {
+        if (!Objects.equals(this.accessToken, accessToken))
+            this.setChanged();
+
         this.accessToken = accessToken;
-        this.setChanged();
         this.notifyObservers();
     }
 }
