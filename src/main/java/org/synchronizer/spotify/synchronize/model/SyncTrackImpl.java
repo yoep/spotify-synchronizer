@@ -14,7 +14,7 @@ import java.util.Optional;
 /**
  * Implementation of the {@link SyncTrack}.
  */
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @NoArgsConstructor
 public class SyncTrackImpl extends AbstractSyncTrack {
@@ -149,7 +149,7 @@ public class SyncTrackImpl extends AbstractSyncTrack {
 
     private boolean isYearInSync(Album spotifyAlbum, Album localAlbum) {
         return Optional.ofNullable(spotifyAlbum.getYear())
-                .map(e -> e.equalsIgnoreCase(localAlbum.getYear()))
+                .map(e -> e.contains(localAlbum.getYear()))
                 .orElse(true);
     }
 }

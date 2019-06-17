@@ -1,5 +1,6 @@
 package org.synchronizer.spotify.cache.model;
 
+import javafx.scene.image.Image;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
@@ -9,6 +10,7 @@ import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.LocalAlbum;
 import org.synchronizer.spotify.utils.CacheUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
@@ -44,6 +46,21 @@ public class CachedLocalAlbum extends LocalAlbum implements CachedAlbum, Seriali
                 .map(File::new)
                 .map(this::readCacheFile)
                 .orElse(new byte[0]);
+    }
+
+    @Override
+    public Image getHighResImage() {
+        byte[] imageContent = getImage();
+
+        if (ArrayUtils.isNotEmpty(imageContent))
+            return new Image(new ByteArrayInputStream(imageContent));
+
+        return null;
+    }
+
+    @Override
+    public Image getLowResImage() {
+        return getHighResImage();
     }
 
     @Override

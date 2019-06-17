@@ -10,8 +10,8 @@ import org.synchronizer.spotify.views.sections.PlayerSection;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @Log4j2
 @Service
@@ -25,8 +25,8 @@ public class MediaPlayerService {
     private void init() {
         playerSection.setOnPlayerStateChange(oldPlayerState ->
                 new ArrayList<>(playerStateChangeListeners).forEach(e -> e.onChange(oldPlayerState, getCurrentPlayerState())));
-        playerSection.setOnTrackChange(oldTrack ->
-                new ArrayList<>(trackChangeListeners).forEach(e -> e.onChange(oldTrack, getCurrentTrack().orElse(null))));
+        playerSection.setOnTrackChange(event ->
+                new ArrayList<>(trackChangeListeners).forEach(e -> e.onChange(event.getOldTrack(), event.getNewTrack())));
     }
 
     /**
@@ -38,7 +38,28 @@ public class MediaPlayerService {
     public void play(MusicTrack track) {
         Assert.notNull(track, "track cannot be null");
         Assert.hasText(track.getUri(), "uri cannot be empty");
-        playerSection.play(track);
+        play(Collections.singletonList(track));
+    }
+
+    /**
+     * Play the given list of media tracks.
+     *
+     * @param tracks The tracks to play.
+     */
+    public void play(List<MusicTrack> tracks) {
+        Assert.notEmpty(tracks, "tracks cannot be empty");
+        playerSection.play(tracks, 0);
+    }
+
+    /**
+     * Play the given tracks in the player.
+     *
+     * @param tracks     The tracks to play.
+     * @param trackIndex The track index to start playing as first.
+     */
+    public void play(List<MusicTrack> tracks, int trackIndex) {
+        Assert.notEmpty(tracks, "tracks cannot be empty");
+        playerSection.play(tracks, trackIndex);
     }
 
     /**
@@ -53,15 +74,6 @@ public class MediaPlayerService {
      */
     public void pause() {
         playerSection.onPause();
-    }
-
-    /**
-     * Get the current track that is being played.
-     *
-     * @return Returns the current track of the player.
-     */
-    public Optional<MusicTrack> getCurrentTrack() {
-        return playerSection.getCurrentTrack();
     }
 
     /**

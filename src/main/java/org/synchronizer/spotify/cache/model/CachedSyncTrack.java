@@ -1,5 +1,6 @@
 package org.synchronizer.spotify.cache.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
@@ -9,6 +10,7 @@ import org.synchronizer.spotify.synchronize.model.SyncTrackImpl;
 
 import java.io.Serializable;
 
+@EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @NoArgsConstructor
 public class CachedSyncTrack extends SyncTrackImpl implements Serializable {

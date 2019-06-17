@@ -28,10 +28,7 @@ import org.synchronizer.spotify.views.model.AlbumOverview;
 import org.synchronizer.spotify.views.model.AlbumTrackListenerImpl;
 
 import java.net.URL;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 @Log4j2
 @ToString
@@ -84,6 +81,18 @@ public class AlbumOverviewComponent extends AbstractPlaybackStateComponent imple
                     .filter(this::isTrackAlreadyPresent)
                     .forEach(this::createNewAlbumTrackComponent);
         });
+    }
+
+    /**
+     * Get all music tracks of this album overview that are currently visible.
+     *
+     * @return Returns the list of visible music tracks.
+     */
+    public List<AlbumTrackComponent> getAllVisibleTrackComponents() {
+        synchronized (albumTracks) {
+            //TODO: filter out hidden tracks
+            return new ArrayList<>(albumTracks);
+        }
     }
 
     /**

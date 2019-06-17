@@ -5,8 +5,12 @@ import org.synchronizer.spotify.common.PlayerState;
 import org.synchronizer.spotify.media.MediaPlayerService;
 import org.synchronizer.spotify.media.PlayerStateChangeListener;
 import org.synchronizer.spotify.media.TrackChangeListener;
+import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import org.synchronizer.spotify.views.components.AlbumOverviewComponent;
 import org.synchronizer.spotify.views.components.AlbumTrackComponent;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class AlbumTrackListenerImpl implements AlbumTrackListener {
     private final AlbumOverviewComponent albumOverviewComponent;
@@ -26,10 +30,15 @@ public class AlbumTrackListenerImpl implements AlbumTrackListener {
 
     @Override
     public void onPlay() {
-        mediaPlayerService.play(trackComponent.getSyncTrack());
+        List<AlbumTrackComponent> trackComponents = albumOverviewComponent.getAllVisibleTrackComponents();
+        List<MusicTrack> tracks = getMusicTracks(trackComponents);
+
+        mediaPlayerService.play(tracks, tracks.indexOf(trackComponent.getSyncTrack()));
         trackComponent.setPlaybackState(true);
         albumOverviewComponent.setPlaybackState(true);
-        subscribeListenersToMediaPlayer();
+
+        subscribeStateChangeListener();
+        trackComponents.forEach(e -> e.getListeners().forEach(listener -> ((AlbumTrackListenerImpl) listener).subscribeTrackChangeListener()));
     }
 
     @Override
@@ -42,14 +51,28 @@ public class AlbumTrackListenerImpl implements AlbumTrackListener {
     }
 
     private void initialize() {
-        trackChangeListener = (oldTrack, newTrack) -> onTrackChanged();
+        trackChangeListener = (oldTrack, newTrack) -> onTrackChanged(newTrack);
         playerStateChangeListener = (oldState, newState) -> onPlayerStateChanged(newState);
     }
 
-    private void onTrackChanged() {
-        trackComponent.setPlaybackState(false);
-        albumOverviewComponent.setPlaybackState(false);
-        unsubscribeListenersToMediaPlayer();
+    private void onTrackChanged(MusicTrack newTrack) {
+        List<AlbumTrackComponent> trackComponents = albumOverviewComponent.getAllVisibleTrackComponents();
+        List<MusicTrack> tracks = getMusicTracks(trackComponents);
+
+        if (newTrack != trackComponent.getSyncTrack()) {
+            trackComponent.setPlaybackState(false);
+            unsubscribeStateChangeListener();
+        } else {
+            trackComponent.setPlaybackState(true);
+            subscribeStateChangeListener();
+        }
+
+        boolean isAlbumSong = tracks.contains(newTrack);
+        albumOverviewComponent.setPlaybackState(isAlbumSong);
+
+        // check if the new track is still of the same album, if not, unsubscribe all the album listeners
+        if (!isAlbumSong)
+            trackComponents.forEach(e -> e.getListeners().forEach(listener -> ((AlbumTrackListenerImpl) listener).unsubscribeTrackChangeListener()));
     }
 
     private void onPlayerStateChanged(PlayerState newState) {
@@ -57,13 +80,25 @@ public class AlbumTrackListenerImpl implements AlbumTrackListener {
         albumOverviewComponent.updatePlayPauseIcon(newState);
     }
 
-    private void subscribeListenersToMediaPlayer() {
+    private void subscribeStateChangeListener() {
         mediaPlayerService.addPlayerStateChangeListener(playerStateChangeListener);
+    }
+
+    private void subscribeTrackChangeListener() {
         mediaPlayerService.addTrackChangeListener(trackChangeListener);
     }
 
-    private void unsubscribeListenersToMediaPlayer() {
+    private void unsubscribeStateChangeListener() {
         mediaPlayerService.removePlayerStateChangeListener(playerStateChangeListener);
+    }
+
+    private void unsubscribeTrackChangeListener() {
         mediaPlayerService.removeTrackChangeListener(trackChangeListener);
+    }
+
+    private List<MusicTrack> getMusicTracks(List<AlbumTrackComponent> trackComponents) {
+        return trackComponents.stream()
+                .map(AlbumTrackComponent::getSyncTrack)
+                .collect(Collectors.toList());
     }
 }

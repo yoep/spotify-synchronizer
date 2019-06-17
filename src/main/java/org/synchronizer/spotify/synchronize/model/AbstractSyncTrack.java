@@ -1,6 +1,7 @@
 package org.synchronizer.spotify.synchronize.model;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -12,6 +13,7 @@ import static java.util.Optional.ofNullable;
 /**
  * Abstract implementation of {@link SyncTrack}.
  */
+@EqualsAndHashCode(callSuper = false)
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor

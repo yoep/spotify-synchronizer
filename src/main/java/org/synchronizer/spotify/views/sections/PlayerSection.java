@@ -16,10 +16,12 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.synchronizer.spotify.common.PlayerState;
+import org.synchronizer.spotify.media.TrackChangeEvent;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import org.synchronizer.spotify.views.components.MediaPlayerComponent;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -30,17 +32,16 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class PlayerSection implements Initializable {
     private final List<MediaPlayerComponent> mediaPlayerComponents;
+    private final List<MusicTrack> queue = new ArrayList<>();
 
     @Getter
     private PlayerState playerState = PlayerState.NOT_LOADED;
     private MediaPlayer mediaPlayer;
     private MusicTrack currentTrack;
-    @Getter
     @Setter
     private Consumer<PlayerState> onPlayerStateChange;
-    @Getter
     @Setter
-    private Consumer<MusicTrack> onTrackChange;
+    private Consumer<TrackChangeEvent> onTrackChange;
 
     @FXML
     public ImageView image;
@@ -58,17 +59,61 @@ public class PlayerSection implements Initializable {
         playerPause.setVisible(false);
     }
 
-    public Optional<MusicTrack> getCurrentTrack() {
-        return Optional.ofNullable(currentTrack);
+    /**
+     * Play the given tracks in the player.
+     *
+     * @param tracks     The tracks to play.
+     * @param trackIndex The track index to start playing as first.
+     */
+    public void play(List<MusicTrack> tracks, int trackIndex) {
+        Assert.notNull(tracks, "tracks cannot be null");
+
+        synchronized (queue) {
+            queue.clear();
+            queue.addAll(tracks);
+        }
+
+        play(queue.get(trackIndex));
+        updateNextPreviousIcons(false);
     }
 
-    /**
-     * Play the given media.
-     *
-     * @param track Set the music track to play.
-     */
-    public void play(MusicTrack track) {
-        Assert.notNull(track, "track cannot be null");
+    public void onPlay() {
+        if (mediaPlayer != null) {
+            if (playerState == PlayerState.END_OF_MEDIA) {
+                mediaPlayer.stop();
+            }
+
+            mediaPlayer.play();
+        }
+    }
+
+    public void onPause() {
+        if (mediaPlayer != null) {
+            mediaPlayer.pause();
+        }
+    }
+
+    @FXML
+    private void onNext() {
+        int nextTrackIndex = queue.indexOf(currentTrack) + 1;
+
+        if (nextTrackIndex >= queue.size())
+            nextTrackIndex = 0;
+
+        play(queue.get(nextTrackIndex));
+    }
+
+    @FXML
+    private void onPrevious() {
+        int previousTrackIndex = queue.indexOf(currentTrack) - 1;
+
+        if (previousTrackIndex < 0)
+            previousTrackIndex = queue.size() - 1;
+
+        play(queue.get(previousTrackIndex));
+    }
+
+    private void play(MusicTrack track) {
         MusicTrack oldMusicTrack = this.currentTrack;
 
         if (mediaPlayer != null) {
@@ -90,34 +135,8 @@ public class PlayerSection implements Initializable {
             }
         });
 
-        if (onTrackChange != null)
-            onTrackChange.accept(oldMusicTrack);
-    }
-
-    public void onPlay() {
-        if (mediaPlayer != null) {
-            if (playerState == PlayerState.END_OF_MEDIA) {
-                mediaPlayer.stop();
-            }
-
-            mediaPlayer.play();
-        }
-    }
-
-    public void onPause() {
-        if (mediaPlayer != null) {
-            mediaPlayer.pause();
-        }
-    }
-
-    @FXML
-    private void onNext() {
-
-    }
-
-    @FXML
-    private void onPrevious() {
-
+        invokeOnTrackChange(oldMusicTrack);
+        updateNextPreviousIcons(false);
     }
 
     private void registerMediaPlayerEvents() {
@@ -135,8 +154,12 @@ public class PlayerSection implements Initializable {
             setPlayerDisabledState(false);
         });
         mediaPlayer.setOnEndOfMedia(() -> {
-            updatePlayerState(PlayerState.END_OF_MEDIA);
-            setPlayerStatus(false);
+            if (isSingleSongQueue()) {
+                updatePlayerState(PlayerState.END_OF_MEDIA);
+                setPlayerStatus(false);
+            } else {
+                onNext();
+            }
         });
         mediaPlayer.setOnPaused(() -> {
             updatePlayerState(PlayerState.PAUSED);
@@ -158,8 +181,8 @@ public class PlayerSection implements Initializable {
 
         playerPlay.setDisable(disabled);
         playerPause.setDisable(disabled);
-        playerNext.setDisable(disabled);
-        playerPrevious.setDisable(disabled);
+
+        updateNextPreviousIcons(disabled);
     }
 
     private void updatePlayerState(PlayerState playerState) {
@@ -168,5 +191,21 @@ public class PlayerSection implements Initializable {
         this.playerState = playerState;
         if (onPlayerStateChange != null)
             onPlayerStateChange.accept(oldPlayerState);
+    }
+
+    private void updateNextPreviousIcons(boolean forceDisable) {
+        Platform.runLater(() -> {
+            playerNext.setDisable(isSingleSongQueue() || forceDisable);
+            playerPrevious.setDisable(isSingleSongQueue() || forceDisable);
+        });
+    }
+
+    private void invokeOnTrackChange(final MusicTrack oldMusicTrack) {
+        Optional.ofNullable(onTrackChange)
+                .ifPresent(e -> e.accept(new TrackChangeEvent(oldMusicTrack, currentTrack)));
+    }
+
+    private boolean isSingleSongQueue() {
+        return queue.size() <= 1;
     }
 }
