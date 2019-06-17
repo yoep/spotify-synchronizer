@@ -9,6 +9,7 @@
 <?import org.synchronizer.spotify.ui.controls.Icon?>
 <?import org.synchronizer.spotify.ui.Icons?>
 <?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.CheckBox?>
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
           fx:controller="org.synchronizer.spotify.views.components.FilterComponent" styleClass="context-menu,form">
     <columnConstraints>
@@ -40,4 +41,10 @@
            GridPane.columnIndex="0" GridPane.rowIndex="1"/>
     <ChoiceBox fx:id="filterTypes"
                GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+
+    <!-- Album songs -->
+    <Label text="%filter_show_album_songs" styleClass="form-label"
+           GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+    <CheckBox fx:id="showAlbumSongs"
+              GridPane.columnIndex="1" GridPane.rowIndex="2"/>
 </GridPane>

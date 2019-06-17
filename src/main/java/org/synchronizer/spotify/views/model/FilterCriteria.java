@@ -8,4 +8,5 @@ import org.synchronizer.spotify.settings.model.FilterType;
 @Builder
 public class FilterCriteria {
     private FilterType filterType;
+    private boolean albumSongsVisible;
 }

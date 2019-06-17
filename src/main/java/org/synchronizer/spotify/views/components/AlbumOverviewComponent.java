@@ -15,7 +15,6 @@ import javafx.scene.text.Text;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.synchronizer.spotify.SpotifySynchronizer;
-import org.synchronizer.spotify.common.PlayerState;
 import org.synchronizer.spotify.synchronize.model.Album;
 import org.synchronizer.spotify.synchronize.model.SyncTrack;
 import org.synchronizer.spotify.ui.Icons;
@@ -82,9 +81,18 @@ public class AlbumOverviewComponent extends AbstractPlaybackStateComponent imple
             }
 
             CollectionUtils.copy(albumOverview.getTracks()).stream()
-                    .filter(e -> CollectionUtils.copy(albumTracks).stream().noneMatch(albumTrackComponent -> albumTrackComponent.getSyncTrack().equals(e)))
+                    .filter(this::isTrackAlreadyPresent)
                     .forEach(this::createNewAlbumTrackComponent);
         });
+    }
+
+    /**
+     * Set the playback state of this album.
+     *
+     * @param activeInMediaPlayer The indication if this album is active in the media player.
+     */
+    public void setPlaybackState(final boolean activeInMediaPlayer) {
+        Platform.runLater(() -> playPauseIcon.setVisible(activeInMediaPlayer));
     }
 
     private void initializeAlbumDetails() {
@@ -105,26 +113,21 @@ public class AlbumOverviewComponent extends AbstractPlaybackStateComponent imple
 
     @FXML
     private void play() {
-        albumTracks.stream()
-                .findFirst()
-                .ifPresent(AlbumTrackComponent::play);
+        synchronized (albumTracks) {
+            albumTracks.stream()
+                    .findFirst()
+                    .ifPresent(AlbumTrackComponent::play);
+        }
     }
 
     @FXML
     private void playPause() {
-        albumTracks.stream()
-                .filter(AlbumTrackComponent::isActiveInMediaPlayer)
-                .findFirst()
-                .ifPresent(AlbumTrackComponent::playPauseTrack);
-    }
-
-    /**
-     * Set the playback state of this album.
-     *
-     * @param activeInMediaPlayer The indication if this album is active in the media player.
-     */
-    public void setPlaybackState(final boolean activeInMediaPlayer) {
-        Platform.runLater(() -> playPauseIcon.setVisible(activeInMediaPlayer));
+        synchronized (albumTracks) {
+            albumTracks.stream()
+                    .filter(AlbumTrackComponent::isActiveInMediaPlayer)
+                    .findFirst()
+                    .ifPresent(AlbumTrackComponent::playPauseTrack);
+        }
     }
 
     private void updateAlbumArtwork() {
@@ -147,21 +150,26 @@ public class AlbumOverviewComponent extends AbstractPlaybackStateComponent imple
         AlbumTrackComponent albumTrackComponent = new AlbumTrackComponent(syncTrack);
         albumTrackComponent.addListener(new AlbumTrackListenerImpl(this, albumTrackComponent));
 
-        albumTracks.add(albumTrackComponent);
+        synchronized (albumTracks) {
+            albumTracks.add(albumTrackComponent);
+        }
+
         updatePlaybackState();
-        Platform.runLater(() -> createNewTrack(albumTrackComponent));
+        createNewTrack(albumTrackComponent);
     }
 
     private void createNewTrack(AlbumTrackComponent albumTrackComponent) {
-        Pane track = viewLoader.loadComponent("album_track.component.fxml", albumTrackComponent);
-        int columnIndex = trackOverview.getChildren().size() % 2;
+        final Pane trackPane = viewLoader.loadComponent("album_track.component.fxml", albumTrackComponent);
 
-        // if column is even, we should create a new row
-        if (columnIndex == 0) {
-            createNewRow();
-        }
+        Platform.runLater(() -> {
+            final int columnIndex = trackOverview.getChildren().size() % 2;
 
-        trackOverview.add(track, columnIndex, lastRowIndex);
+            // if column is even, we should create a new row
+            if (columnIndex == 0)
+                createNewRow();
+
+            trackOverview.add(trackPane, columnIndex, lastRowIndex);
+        });
     }
 
     private void createNewRow() {
@@ -169,18 +177,29 @@ public class AlbumOverviewComponent extends AbstractPlaybackStateComponent imple
     }
 
     private void syncAllTracks() {
-        albumTracks.stream()
-                .filter(AlbumTrackComponent::isSyncTrackDataAvailable)
-                .forEach(AlbumTrackComponent::syncTrackData);
+        synchronized (albumTracks) {
+            albumTracks.stream()
+                    .filter(AlbumTrackComponent::isSyncTrackDataAvailable)
+                    .forEach(AlbumTrackComponent::syncTrackData);
+        }
     }
 
     private void updatePlaybackState() {
-        albumTracks.stream()
-                .filter(AlbumTrackComponent::isPlaybackAvailable)
-                .findFirst()
-                .ifPresent(e -> Platform.runLater(() -> {
-                    playbackUnavailableIcon.setVisible(false);
-                    playbackIcon.setVisible(true);
-                }));
+        synchronized (albumTracks) {
+            albumTracks.stream()
+                    .filter(AlbumTrackComponent::isPlaybackAvailable)
+                    .findFirst()
+                    .ifPresent(e -> Platform.runLater(() -> {
+                        playbackUnavailableIcon.setVisible(false);
+                        playbackIcon.setVisible(true);
+                    }));
+        }
+    }
+
+    private boolean isTrackAlreadyPresent(SyncTrack track) {
+        synchronized (albumTracks) {
+            return albumTracks.stream()
+                    .noneMatch(albumTrackComponent -> albumTrackComponent.getSyncTrack().equals(track));
+        }
     }
 }

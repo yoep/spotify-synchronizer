@@ -201,9 +201,6 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable & F
     }
 
     private void updateRendering() {
-        if (!isShowing())
-            return;
-
         int totalRenderedItems = itemsContainer.getChildren().size();
         long initialRender = calculateInitialRender();
 
@@ -352,10 +349,6 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable & F
         return !updating.get() && System.currentTimeMillis() - lastUpdated > TIME_BETWEEN_UPDATES;
     }
 
-    private boolean isShowing() {
-        return this.getScene().getWindow().isShowing();
-    }
-
     private void initializeListeners() {
         this.heightProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.doubleValue() > oldValue.doubleValue())
@@ -419,7 +412,7 @@ public class InfiniteScrollPane<T extends Comparable<? super T> & Searchable & F
 
         runTask(() -> {
             while (keepWatcherAlive) {
-                if (isShowing() && isAllowedToUpdate())
+                if (isAllowedToUpdate())
                     this.updateRendering();
 
                 // if last event was more than #WATCHER_TTL millis ago, stop the watcher

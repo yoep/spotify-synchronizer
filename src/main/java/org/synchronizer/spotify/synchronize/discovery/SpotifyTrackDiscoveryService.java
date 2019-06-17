@@ -10,13 +10,10 @@ import org.springframework.util.Assert;
 import org.synchronizer.spotify.cache.CacheService;
 import org.synchronizer.spotify.config.properties.SynchronizerProperties;
 import org.synchronizer.spotify.spotify.SpotifyService;
-import org.synchronizer.spotify.spotify.api.v1.Album;
-import org.synchronizer.spotify.spotify.api.v1.AlbumTrack;
 import org.synchronizer.spotify.spotify.api.v1.Tracks;
 import org.synchronizer.spotify.synchronize.SynchronizeException;
 import org.synchronizer.spotify.synchronize.TracksWrapper;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
-import org.synchronizer.spotify.synchronize.model.SpotifyAlbum;
 import org.synchronizer.spotify.synchronize.model.SpotifyTrack;
 
 import java.util.ArrayList;
@@ -73,18 +70,18 @@ public class SpotifyTrackDiscoveryService implements DiscoveryService {
         completableFutures = new ArrayList<>();
 
         try {
-            Tracks tracks = spotifyService.getSavedTracks().get();
-            String endpoint = tracks.getNext();
+            Tracks tracks;
+            String endpoint = null;
 
-            while (endpoint != null) {
-                Tracks result = spotifyService.getSavedTracks(endpoint).get();
-                CompletableFuture<List<MusicTrack>> completableFuture = processSpotifyTracks(result);
+            do {
+                tracks = getSavedTracksForEndpoint(endpoint);
+                endpoint = tracks.getNext();
 
+                CompletableFuture<List<MusicTrack>> completableFuture = processSpotifyTracks(tracks);
                 completableFuture.thenAccept(e -> this.tracks.addAll(e));
 
                 completableFutures.add(completableFuture);
-                endpoint = result.getNext();
-            }
+            } while (endpoint != null);
 
             CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0])).thenRun(() -> {
                 log.info("Synchronized " + this.tracks.size() + " Spotify tracks");
@@ -93,6 +90,13 @@ public class SpotifyTrackDiscoveryService implements DiscoveryService {
         } catch (Exception ex) {
             throw new SynchronizeException(ex.getMessage(), ex);
         }
+    }
+
+    private Tracks getSavedTracksForEndpoint(String endpoint) throws InterruptedException, java.util.concurrent.ExecutionException {
+        if (endpoint == null)
+            return spotifyService.getSavedTracks().get();
+
+        return spotifyService.getSavedTracks(endpoint).get();
     }
 
     private CompletableFuture<List<MusicTrack>> processSpotifyTracks(final Tracks tracks) {

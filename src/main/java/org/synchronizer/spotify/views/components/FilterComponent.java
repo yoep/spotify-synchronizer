@@ -2,6 +2,7 @@ package org.synchronizer.spotify.views.components;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -31,21 +32,13 @@ public class FilterComponent implements Initializable {
 
     @FXML
     private ChoiceBox<FilterShowHolder> filterTypes;
+    @FXML
+    private CheckBox showAlbumSongs;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        filterTypes.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            getUserInterfaceSettings().setFilterType(newValue.getType());
-            invokeListeners();
-        });
-
-        for (FilterType type : FilterType.values()) {
-            FilterShowHolder filterShowHolder = new FilterShowHolder(type, uiText.get(type));
-            filterTypes.getItems().add(filterShowHolder);
-
-            if (type == getUserInterfaceSettings().getFilterType())
-                filterTypes.getSelectionModel().select(filterShowHolder);
-        }
+        initializeFilterType();
+        initializeShowAlbumSongs();
     }
 
     public void addListener(FilterListener listener) {
@@ -67,6 +60,25 @@ public class FilterComponent implements Initializable {
         synchronized (filterViewListeners) {
             filterViewListeners.forEach(FilterViewListener::onClose);
         }
+    }
+
+    private void initializeFilterType() {
+        filterTypes.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            getUserInterfaceSettings().setFilterType(newValue.getType());
+            invokeListeners();
+        });
+
+        for (FilterType type : FilterType.values()) {
+            FilterShowHolder filterShowHolder = new FilterShowHolder(type, uiText.get(type));
+            filterTypes.getItems().add(filterShowHolder);
+
+            if (type == getUserInterfaceSettings().getFilterType())
+                filterTypes.getSelectionModel().select(filterShowHolder);
+        }
+    }
+
+    private void initializeShowAlbumSongs() {
+        showAlbumSongs.setSelected(getUserInterfaceSettings().isAlbumSongsVisible());
     }
 
     private UserInterface getUserInterfaceSettings() {

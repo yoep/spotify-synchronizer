@@ -132,20 +132,6 @@
         <plugins>
             <plugin>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.4.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <banDuplicatePomDependencyVersions/>
-                                <dependencyConvergence/>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
@@ -168,13 +154,15 @@
                 <configuration>
                     <appName>Spotify Synchronizer</appName>
                     <title>Spotify Synchronizer</title>
-                    <vendor>org.synchronizer.spotify</vendor>
+                    <vendor>Spotify Synchronizer</vendor>
                     <mainClass>org.springframework.boot.loader.JarLauncher</mainClass>
                     <jfxMainAppJarName>spotify-synchronizer.jar</jfxMainAppJarName>
                     <allPermissions>true</allPermissions>
                     <updateExistingJar>true</updateExistingJar>
                     <skipCopyingDependencies>true</skipCopyingDependencies>
                     <additionalAppResources>bundler-resources</additionalAppResources>
+                    <copyAdditionalAppResourcesToJar>false</copyAdditionalAppResourcesToJar>
+                    <useLibFolderContentForManifestClasspath>true</useLibFolderContentForManifestClasspath>
                     <description>Spotify Synchronizer allows you to synchronize your local library with your Spotify library.
 
                         It will scan your current local library location and checks if your Spotify library songs are locally available.
