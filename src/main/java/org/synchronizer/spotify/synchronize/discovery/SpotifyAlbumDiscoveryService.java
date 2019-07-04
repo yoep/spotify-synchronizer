@@ -20,10 +20,7 @@ import org.synchronizer.spotify.synchronize.model.MusicTrack;
 import org.synchronizer.spotify.synchronize.model.SpotifyAlbum;
 import org.synchronizer.spotify.synchronize.model.SpotifyAlbumDetails;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -107,6 +104,7 @@ public class SpotifyAlbumDiscoveryService implements DiscoveryService {
 
                         tracks.addAll(Arrays.stream(e)
                                 .map(CachedSpotifyAlbumDetails::getTracks)
+                                .filter(Objects::nonNull)
                                 .flatMap(Collection::stream)
                                 .collect(Collectors.toList()));
                     });

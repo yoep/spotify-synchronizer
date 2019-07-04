@@ -13,9 +13,11 @@ import org.synchronizer.spotify.utils.CacheUtils;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Log4j2
 @ToString(callSuper = true)
@@ -66,7 +68,9 @@ public class CachedSpotifyAlbumDetails extends SpotifyAlbumDetails implements Ca
     }
 
     private static List<SpotifyTrack> mapTracks(SpotifyAlbumDetails spotifyAlbum) {
-        return spotifyAlbum.getTracks().stream()
+        return Optional.ofNullable(spotifyAlbum.getTracks())
+                .map(Collection::stream)
+                .orElse(Stream.empty())
                 .map(CachedSpotifyTrack::from)
                 .collect(Collectors.toList());
     }

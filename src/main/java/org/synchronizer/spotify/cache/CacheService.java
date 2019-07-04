@@ -110,7 +110,7 @@ public class CacheService {
                     .collect(Collectors.toList());
 
             CacheUtils.writeToCache(getSyncTracksCacheFile(), cachedSyncs.toArray(new CachedSyncTrack[0]), false);
-            log.debug("{} synchronize tracks have been cached", cachedSyncs.size());
+            log.info("{} synchronize tracks have been cached", cachedSyncs.size());
         } catch (Exception ex) {
             log.error("Failed to create cache of synchronize tracks with error " + ex.getMessage(), ex);
         }
