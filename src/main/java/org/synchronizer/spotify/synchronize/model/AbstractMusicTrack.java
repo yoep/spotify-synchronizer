@@ -38,7 +38,7 @@ public abstract class AbstractMusicTrack extends AbstractObservable implements M
 
     private String removeSpecialChars(String value) {
         return Optional.ofNullable(value)
-                .map(e -> e.replaceAll("[^a-zA-Z0-9 ]", ""))
+                .map(e -> e.replaceAll("[^a-zA-Z0-9]", ""))
                 .orElse("");
     }
 }

@@ -149,7 +149,9 @@ public class SyncTrackImpl extends AbstractSyncTrack {
 
     private boolean isYearInSync(Album spotifyAlbum, Album localAlbum) {
         return Optional.ofNullable(spotifyAlbum.getYear())
-                .map(e -> e.contains(localAlbum.getYear()))
+                .map(spotifyYear -> Optional.ofNullable(localAlbum.getYear())
+                        .map(spotifyYear::contains)
+                        .orElse(false))
                 .orElse(true);
     }
 }

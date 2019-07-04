@@ -115,5 +115,6 @@ public class SettingsSynchronizeComponent implements Initializable {
     @FXML
     private void removeSelectedDirectory() {
         getSynchronizationSettings().removeLocalMusicDirectory(localMusicDirectories.getSelectionModel().getSelectedItem());
+        localMusicDirectories.getItems().remove(localMusicDirectories.getSelectionModel().getSelectedItem());
     }
 }
