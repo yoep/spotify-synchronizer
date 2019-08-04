@@ -86,6 +86,16 @@ public class SettingsService {
         });
     }
 
+    /**
+     * Logout the current user and reopen the login screen.
+     */
+    public void logout() {
+        UserSettings settings = getUserSettingsOrDefault();
+
+        settings.setAuthentication(null);
+        save(settings);
+    }
+
     private Optional<UserSettings> loadUserSettingsFromFile() {
         File settingsFile = getSettingsFile();
 

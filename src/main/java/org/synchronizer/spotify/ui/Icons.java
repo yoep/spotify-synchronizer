@@ -27,6 +27,7 @@ public class Icons {
     public static final String PREVIOUS = "\uf048";
     public static final String REFRESH = "\uf021";
     public static final String SEARCH = "\uf002";
+    public static final String SIGN_OUT = "\uf08b";
     public static final String SORT = "\uf0dc";
     public static final String SORT_ALPHA_ASC = "\uf15d";
     public static final String SORT_ALPHA_DESC = "\uf15e";

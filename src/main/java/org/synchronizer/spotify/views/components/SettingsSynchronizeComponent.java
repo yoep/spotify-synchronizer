@@ -11,6 +11,7 @@ import javafx.scene.input.TransferMode;
 import javafx.stage.DirectoryChooser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.settings.model.Synchronization;
@@ -31,6 +32,7 @@ import java.util.stream.Stream;
 public class SettingsSynchronizeComponent implements Initializable {
     private final SettingsService settingsService;
     private final ViewManager viewManager;
+    private final TaskExecutor taskExecutor;
     private final DirectoryChooser directoryChooser = new DirectoryChooser();
 
     @FXML
@@ -98,8 +100,10 @@ public class SettingsSynchronizeComponent implements Initializable {
     }
 
     private void addLocalMusicDirectories(File... directory) {
-        log.debug("Adding local music directories {} for synchronization", (Object[]) directory);
-        getSynchronizationSettings().addLocalMusicDirectory(directory);
+        taskExecutor.execute(() -> {
+            log.debug("Adding local music directories {} for synchronization", (Object[]) directory);
+            getSynchronizationSettings().addLocalMusicDirectory(directory);
+        });
 
         localMusicDirectories.getItems().addAll(directory);
     }
@@ -114,7 +118,9 @@ public class SettingsSynchronizeComponent implements Initializable {
 
     @FXML
     private void removeSelectedDirectory() {
-        getSynchronizationSettings().removeLocalMusicDirectory(localMusicDirectories.getSelectionModel().getSelectedItem());
-        localMusicDirectories.getItems().remove(localMusicDirectories.getSelectionModel().getSelectedItem());
+        final File selectedItem = localMusicDirectories.getSelectionModel().getSelectedItem();
+
+        taskExecutor.execute(() -> getSynchronizationSettings().removeLocalMusicDirectory(selectedItem));
+        localMusicDirectories.getItems().remove(selectedItem);
     }
 }

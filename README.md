@@ -22,6 +22,7 @@ As an addition, it will also verify that the metadata of the mp3 files is the sa
 - Synchronize playlist to local playlist
 - Order local mp3 files
 - Download missing local songs
+- File watching for local library
 
 ## System Requirements
 

@@ -1,7 +1,8 @@
 package org.synchronizer.spotify.ui.lang;
 
 public enum MenuMessage implements Message {
-    SETTINGS("settings");
+    SETTINGS("settings"),
+    LOGOUT("logout");
 
     private final String key;
 

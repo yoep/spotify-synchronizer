@@ -3,12 +3,14 @@ package org.synchronizer.spotify.views.components;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
+import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.ui.Icons;
 import org.synchronizer.spotify.ui.UIText;
 import org.synchronizer.spotify.ui.controls.Icon;
@@ -30,6 +32,7 @@ public class SearchComponent implements Initializable {
     private final UIText uiText;
     private final TaskExecutor uiTaskExecutor;
     private final FilterComponent filterComponent;
+    private final SettingsService settingsService;
 
     private final List<SortListener> listeners = new ArrayList<>();
 
@@ -78,7 +81,9 @@ public class SearchComponent implements Initializable {
 
     private void initializeMenu() {
         ContextMenu contextMenu = new ContextMenu(
-                UIUtils.createMenuItem(uiText.get(MenuMessage.SETTINGS), Icons.COGS, this::openSettings));
+                UIUtils.createMenuItem(uiText.get(MenuMessage.SETTINGS), Icons.COGS, this::openSettings),
+                new SeparatorMenuItem(),
+                UIUtils.createMenuItem(uiText.get(MenuMessage.LOGOUT), Icons.SIGN_OUT, this::logout));
 
         menuPane.setOnMouseClicked(event -> contextMenu.show(menuPane, event.getScreenX(), event.getScreenY()));
     }
@@ -102,14 +107,17 @@ public class SearchComponent implements Initializable {
     }
 
     @FXML
+    private void showFilter() {
+        filter.setVisible(!filter.isVisible());
+    }
+
     private void openSettings() {
         Optional.ofNullable(onSettingsClicked)
                 .ifPresent(Runnable::run);
     }
 
-    @FXML
-    private void showFilter() {
-        filter.setVisible(!filter.isVisible());
+    private void logout() {
+        settingsService.logout();
     }
 
     private void sort() {
