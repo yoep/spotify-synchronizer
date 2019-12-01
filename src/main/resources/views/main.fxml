@@ -2,7 +2,7 @@
 
 <?import javafx.scene.layout.*?>
 <GridPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1"
-          stylesheets="/styles/main.css" fx:controller="org.synchronizer.spotify.views.MainView">
+          stylesheets="/styles/main.css" fx:controller="org.synchronizer.spotify.controllers.MainView">
     <columnConstraints>
         <ColumnConstraints maxWidth="Infinity" hgrow="ALWAYS"/>
     </columnConstraints>

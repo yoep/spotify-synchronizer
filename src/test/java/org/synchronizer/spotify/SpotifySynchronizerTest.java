@@ -7,7 +7,6 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
@@ -22,15 +21,6 @@ public class SpotifySynchronizerTest {
         expectedException.expectMessage("args cannot be null");
 
         SpotifySynchronizer.main(null);
-    }
-
-    @Test
-    public void testMain_shouldSetArguments() {
-        String[] expectedResult = createArguments();
-
-        SpotifySynchronizer.main(expectedResult);
-
-        assertArrayEquals(expectedResult, SpotifySynchronizer.ARGUMENTS);
     }
 
     @Test

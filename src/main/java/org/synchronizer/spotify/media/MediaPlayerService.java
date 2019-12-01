@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.synchronizer.spotify.common.PlayerState;
 import org.synchronizer.spotify.synchronize.model.MusicTrack;
-import org.synchronizer.spotify.views.sections.PlayerSection;
+import org.synchronizer.spotify.controllers.sections.PlayerSection;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;

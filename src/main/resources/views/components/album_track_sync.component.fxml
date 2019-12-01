@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.github.spring.boot.javafx.font.controls.*?>
 <?import javafx.scene.control.ProgressIndicator?>
-<?import javafx.scene.layout.StackPane?>
-<?import org.synchronizer.spotify.ui.controls.Icon?>
-<?import org.synchronizer.spotify.ui.Icons?>
-<?import org.synchronizer.spotify.ui.controls.IconSolid?>
 <?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.StackPane?>
 <StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
     <ProgressIndicator fx:id="progressIndicator" maxHeight="10"/>
 

@@ -1,7 +1,7 @@
 package org.synchronizer.spotify.settings.model;
 
 import lombok.Getter;
-import org.synchronizer.spotify.ui.lang.Message;
+import com.github.spring.boot.javafx.text.Message;
 
 @Getter
 public enum FilterType implements Message {

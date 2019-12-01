@@ -5,7 +5,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
-<GridPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.synchronizer.spotify.views.components.SettingsLoggingComponent">
+<GridPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.synchronizer.spotify.controllers.components.SettingsLoggingComponent">
     <columnConstraints>
         <ColumnConstraints percentWidth="35" />
         <ColumnConstraints percentWidth="65" />

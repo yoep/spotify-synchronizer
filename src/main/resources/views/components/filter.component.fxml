@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import com.github.spring.boot.javafx.font.controls.Icon?>
+<?import com.github.spring.boot.javafx.font.controls.Icons?>
 <?import javafx.geometry.Insets?>
-<?import org.synchronizer.spotify.ui.controls.Icon?>
-<?import org.synchronizer.spotify.ui.Icons?>
-<?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-          fx:controller="org.synchronizer.spotify.views.components.FilterComponent" styleClass="context-menu,form">
+          fx:controller="org.synchronizer.spotify.controllers.components.FilterComponent" styleClass="context-menu,form">
     <columnConstraints>
         <ColumnConstraints/>
         <ColumnConstraints/>

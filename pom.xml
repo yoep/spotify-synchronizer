@@ -104,6 +104,13 @@
             <version>0.9.1</version>
         </dependency>
 
+        <!-- JavaFX -->
+        <dependency>
+            <groupId>com.github.yoep</groupId>
+            <artifactId>spring-boot-starter-javafx</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
         <!-- Compilation -->
         <dependency>
             <groupId>org.projectlombok</groupId>

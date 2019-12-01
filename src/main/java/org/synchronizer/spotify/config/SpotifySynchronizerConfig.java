@@ -18,7 +18,6 @@ import org.synchronizer.spotify.authorization.SpotifyAccessTokenProvider;
 import org.synchronizer.spotify.config.properties.SpotifyConfiguration;
 import org.synchronizer.spotify.settings.SettingsService;
 import org.synchronizer.spotify.spotify.OAuth2RestTemplateSpotify;
-import org.synchronizer.spotify.ui.UIText;
 
 import java.util.List;
 
@@ -26,11 +25,12 @@ import static java.util.Arrays.asList;
 
 @Configuration
 public class SpotifySynchronizerConfig {
+    private static String DIRECTORY = "lang/";
 
     @Bean
     public ResourceBundleMessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasenames(UIText.DIRECTORY + "splash", UIText.DIRECTORY + "menu", UIText.DIRECTORY + "settings", UIText.DIRECTORY + "main", UIText.DIRECTORY + "sync");
+        messageSource.setBasenames(DIRECTORY + "splash", DIRECTORY + "menu", DIRECTORY + "settings", DIRECTORY + "main", DIRECTORY + "sync");
         return messageSource;
     }
 

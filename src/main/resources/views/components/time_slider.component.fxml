@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-          fx:controller="org.synchronizer.spotify.views.components.TimeSliderComponent">
+          fx:controller="org.synchronizer.spotify.controllers.components.TimeSliderComponent">
     <columnConstraints>
         <ColumnConstraints hgrow="NEVER" maxWidth="50" minWidth="50"/>
         <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity"/>

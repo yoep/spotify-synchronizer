@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.synchronizer.spotify.ui.ViewLoader;
+import com.github.spring.boot.javafx.view.ViewLoader;
 
 public class SpotifyPreloader extends Preloader {
     private Stage stage;

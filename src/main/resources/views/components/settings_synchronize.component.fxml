@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.github.spring.boot.javafx.font.controls.Icon?>
+<?import com.github.spring.boot.javafx.font.controls.Icons?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<?import org.synchronizer.spotify.ui.controls.Icon?>
-<?import org.synchronizer.spotify.ui.Icons?>
 <GridPane xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="org.synchronizer.spotify.views.components.SettingsSynchronizeComponent">
+          fx:controller="org.synchronizer.spotify.controllers.components.SettingsSynchronizeComponent">
     <columnConstraints>
         <ColumnConstraints percentWidth="35"/>
         <ColumnConstraints percentWidth="65"/>

@@ -7,7 +7,7 @@ import org.synchronizer.spotify.settings.model.FilterType;
 import org.synchronizer.spotify.spotify.api.v1.AlbumTrack;
 import org.synchronizer.spotify.spotify.api.v1.SavedTrack;
 import org.synchronizer.spotify.spotify.api.v1.Track;
-import org.synchronizer.spotify.views.model.FilterCriteria;
+import org.synchronizer.spotify.controllers.model.FilterCriteria;
 
 import java.util.Objects;
 

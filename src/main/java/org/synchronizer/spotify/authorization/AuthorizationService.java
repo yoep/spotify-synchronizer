@@ -4,13 +4,13 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
+import com.github.spring.boot.javafx.view.ViewLoader;
+import com.github.spring.boot.javafx.view.ViewProperties;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.security.oauth2.client.resource.UserRedirectRequiredException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.synchronizer.spotify.ui.ViewLoader;
-import org.synchronizer.spotify.ui.ViewProperties;
-import org.synchronizer.spotify.views.LoginView;
+import org.synchronizer.spotify.controllers.LoginView;
 
 import java.util.HashMap;
 import java.util.Map;

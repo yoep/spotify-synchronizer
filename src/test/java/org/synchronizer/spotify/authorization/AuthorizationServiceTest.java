@@ -1,14 +1,14 @@
 package org.synchronizer.spotify.authorization;
 
+import com.github.spring.boot.javafx.view.ViewLoader;
+import com.github.spring.boot.javafx.view.ViewProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.oauth2.client.resource.UserRedirectRequiredException;
-import org.synchronizer.spotify.ui.ViewLoader;
-import org.synchronizer.spotify.ui.ViewProperties;
-import org.synchronizer.spotify.views.LoginView;
+import org.synchronizer.spotify.controllers.LoginView;
 
 import java.util.Collections;
 import java.util.Map;

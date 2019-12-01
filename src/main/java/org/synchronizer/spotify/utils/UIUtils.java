@@ -1,7 +1,7 @@
 package org.synchronizer.spotify.utils;
 
+import com.github.spring.boot.javafx.font.controls.Icon;
 import javafx.scene.control.MenuItem;
-import org.synchronizer.spotify.ui.controls.Icon;
 
 import java.util.Optional;
 

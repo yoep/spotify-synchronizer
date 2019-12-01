@@ -8,7 +8,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
-import org.synchronizer.spotify.ui.Icons;
+import com.github.spring.boot.javafx.font.controls.Icon;
+import com.github.spring.boot.javafx.font.controls.Icons;
 
 import java.util.ArrayList;
 import java.util.Collections;

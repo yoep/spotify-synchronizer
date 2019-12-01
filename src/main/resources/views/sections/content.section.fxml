@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.*?>
 <?import org.synchronizer.spotify.ui.controls.InfiniteScrollPane?>
 <GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-          fx:controller="org.synchronizer.spotify.views.sections.ContentSection">
+          fx:controller="org.synchronizer.spotify.controllers.sections.ContentSection">
     <columnConstraints>
         <ColumnConstraints percentWidth="100" halignment="CENTER"/>
     </columnConstraints>

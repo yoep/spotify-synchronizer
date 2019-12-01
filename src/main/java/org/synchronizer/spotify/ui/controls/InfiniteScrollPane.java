@@ -22,7 +22,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.util.Assert;
-import org.synchronizer.spotify.views.model.FilterCriteria;
+import org.synchronizer.spotify.controllers.model.FilterCriteria;
 
 import java.util.ArrayList;
 import java.util.Collections;

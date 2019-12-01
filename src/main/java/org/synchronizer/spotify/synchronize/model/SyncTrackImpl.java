@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.util.Assert;
 import org.synchronizer.spotify.settings.model.FilterType;
-import org.synchronizer.spotify.views.model.FilterCriteria;
+import org.synchronizer.spotify.controllers.model.FilterCriteria;
 
 import java.util.Objects;
 import java.util.Optional;

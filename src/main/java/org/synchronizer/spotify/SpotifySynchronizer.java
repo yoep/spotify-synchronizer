@@ -1,56 +1,54 @@
 package org.synchronizer.spotify;
 
-import com.sun.javafx.application.LauncherImpl;
-import javafx.application.Application;
+import com.github.spring.boot.javafx.SpringJavaFXApplication;
+import com.github.spring.boot.javafx.view.ViewLoader;
+import com.github.spring.boot.javafx.view.ViewManager;
+import com.github.spring.boot.javafx.view.ViewManagerPolicy;
+import com.github.spring.boot.javafx.view.ViewProperties;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.boot.Banner;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.Assert;
 import org.synchronizer.spotify.spotify.SpotifyService;
-import org.synchronizer.spotify.ui.*;
 
 import java.io.File;
 
 @SpringBootApplication
-public class SpotifySynchronizer extends Application {
+public class SpotifySynchronizer extends SpringJavaFXApplication {
     public static String APP_DIR = getDefaultAppDirLocation();
     public static ApplicationContext APPLICATION_CONTEXT;
-
-    static String[] ARGUMENTS;
 
     public static void main(String[] args) {
         Assert.notNull(args, "args cannot be null");
         SpotifySynchronizer.APP_DIR = System.getProperty("app.dir", getDefaultAppDirLocation());
-        SpotifySynchronizer.ARGUMENTS = args;
 
         // check if the app.dir property is set, if not, set it to the default location
         if (System.getProperty("app.dir") == null)
             System.setProperty("app.dir", SpotifySynchronizer.APP_DIR);
 
+        System.setProperty("javafx.preloader", SpotifyPreloader.class.getName());
+
         // verify if the UI needs to be started (used for test context)
         if (!ArrayUtils.contains(args, "disable-ui"))
-            LauncherImpl.launchApplication(SpotifySynchronizer.class, SpotifyPreloader.class, args);
+            launch(SpotifySynchronizer.class, args);
     }
 
     @Override
     public void init() {
-        SpringApplication application = new SpringApplication(SpotifySynchronizer.class);
-        application.setBannerMode(Banner.Mode.OFF);
-        APPLICATION_CONTEXT = application.run(ARGUMENTS);
+        super.init();
 
-        SpotifyService spotifyService = APPLICATION_CONTEXT.getBean(SpotifyService.class);
+        APPLICATION_CONTEXT = applicationContext;
+        SpotifyService spotifyService = applicationContext.getBean(SpotifyService.class);
         spotifyService.getTotalTracks();
     }
 
     @Override
     public void start(Stage primaryStage) {
-        ViewLoader loader = APPLICATION_CONTEXT.getBean(ViewLoader.class);
-        ViewManager viewManager = APPLICATION_CONTEXT.getBean(ViewManagerImpl.class);
+        ViewLoader loader = applicationContext.getBean(ViewLoader.class);
+        ViewManager viewManager = applicationContext.getBean(ViewManager.class);
 
-        loader.showPrimary(primaryStage, "main.fxml", ViewProperties.builder()
+        loader.show(primaryStage, "main.fxml", ViewProperties.builder()
                 .title("Spotify Synchronizer")
                 .icon("logo.png")
                 .centerOnScreen(true)

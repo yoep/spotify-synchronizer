@@ -1,6 +1,6 @@
 package org.synchronizer.spotify.ui.controls;
 
-import org.synchronizer.spotify.views.model.FilterCriteria;
+import org.synchronizer.spotify.controllers.model.FilterCriteria;
 
 /**
  * Indicates that the object is filterable and can be used for filtering out results.

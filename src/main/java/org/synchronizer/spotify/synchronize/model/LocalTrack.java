@@ -3,7 +3,7 @@ package org.synchronizer.spotify.synchronize.model;
 import lombok.*;
 import org.apache.commons.lang3.StringUtils;
 import org.synchronizer.spotify.settings.model.FilterType;
-import org.synchronizer.spotify.views.model.FilterCriteria;
+import org.synchronizer.spotify.controllers.model.FilterCriteria;
 
 import java.io.File;
 import java.net.URI;

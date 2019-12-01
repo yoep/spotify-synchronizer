@@ -4,7 +4,7 @@
 <?import javafx.scene.web.WebView?>
 <GridPane xmlns="http://javafx.com/javafx"
           xmlns:fx="http://javafx.com/fxml"
-          fx:controller="org.synchronizer.spotify.views.LoginView"
+          fx:controller="org.synchronizer.spotify.controllers.LoginView"
           prefHeight="650.0" prefWidth="400.0">
     <columnConstraints>
         <ColumnConstraints maxWidth="Infinity" hgrow="ALWAYS"/>

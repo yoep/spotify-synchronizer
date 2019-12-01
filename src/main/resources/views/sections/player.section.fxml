@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.github.spring.boot.javafx.font.controls.*?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<?import org.synchronizer.spotify.ui.controls.*?>
-<?import org.synchronizer.spotify.ui.*?>
 <GridPane prefHeight="75" prefWidth="800" stylesheets="/styles/main.css,/styles/player.css"
           xmlns="http://javafx.com/javafx/8.0.121"
           xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="org.synchronizer.spotify.views.sections.PlayerSection">
+          fx:controller="org.synchronizer.spotify.controllers.sections.PlayerSection">
     <columnConstraints>
         <ColumnConstraints maxWidth="75" minWidth="75"/>
         <ColumnConstraints hgrow="ALWAYS" maxWidth="Infinity"/>
