@@ -27,11 +27,9 @@ public class SpotifySynchronizer extends SpringJavaFXApplication {
         if (System.getProperty("app.dir") == null)
             System.setProperty("app.dir", SpotifySynchronizer.APP_DIR);
 
-        System.setProperty("javafx.preloader", SpotifyPreloader.class.getName());
-
         // verify if the UI needs to be started (used for test context)
         if (!ArrayUtils.contains(args, "disable-ui"))
-            launch(SpotifySynchronizer.class, args);
+            launch(SpotifySynchronizer.class, SpotifyPreloader.class, args);
     }
 
     @Override

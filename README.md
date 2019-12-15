@@ -26,4 +26,4 @@ As an addition, it will also verify that the metadata of the mp3 files is the sa
 
 ## System Requirements
 
-`java 8+`
+`java 11+`

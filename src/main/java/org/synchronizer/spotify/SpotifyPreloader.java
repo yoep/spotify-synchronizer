@@ -7,13 +7,14 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import com.github.spring.boot.javafx.view.ViewLoader;
+import org.springframework.core.io.ClassPathResource;
 
 public class SpotifyPreloader extends Preloader {
     private Stage stage;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent parent = new FXMLLoader(getClass().getResource(ViewLoader.VIEW_DIRECTORY + "splash.fxml")).load();
+        Parent parent = new FXMLLoader(new ClassPathResource(ViewLoader.VIEW_DIRECTORY + "/splash.fxml").getURL()).load();
         Scene scene = new Scene(parent);
 
         this.stage = primaryStage;

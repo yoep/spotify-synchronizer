@@ -1,5 +1,6 @@
 package org.synchronizer.spotify.controllers.components;
 
+import com.github.spring.boot.javafx.view.ViewManager;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -11,8 +12,6 @@ import javafx.scene.input.TransferMode;
 import javafx.stage.DirectoryChooser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import com.github.spring.boot.javafx.view.PrimaryWindowNotAvailableException;
-import com.github.spring.boot.javafx.view.ViewManager;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Component;
 import org.synchronizer.spotify.settings.SettingsService;
@@ -109,11 +108,14 @@ public class SettingsSynchronizeComponent implements Initializable {
     }
 
     @FXML
-    private void openDirectoryPicker() throws PrimaryWindowNotAvailableException {
-        File file = directoryChooser.showDialog(viewManager.getPrimaryWindow());
+    private void openDirectoryPicker() {
+        viewManager.getPrimaryStage()
+                .ifPresentOrElse(stage -> {
+                    File file = directoryChooser.showDialog(stage);
 
-        if (file != null)
-            addLocalMusicDirectories(file);
+                    if (file != null)
+                        addLocalMusicDirectories(file);
+                }, () -> log.error("Unable to show directory picker due to missing primary stage"));
     }
 
     @FXML
